@@ -1,0 +1,44 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "admin123",
+      "role": "admin",
+      "name": "Admin User"
+    },
+    {
+      "id": 2,
+      "username": "manager",
+      "password": "manager123",
+      "role": "manager",
+      "name": "Manager User"
+    },
+    {
+      "id": 3,
+      "username": "partner",
+      "password": "partner123",
+      "role": "partner",
+      "name": "Partner User"
+    },
+    {
+      "id": 4,
+      "username": "technician",
+      "password": "tech123",
+      "role": "technician",
+      "name": "Technician User"
+    }
+  ],
+  "customers": [],
+  "products": [],
+  "services": [],
+  "categories": [
+    { "id": 1, "name": "Electronics", "type": "product" },
+    { "id": 2, "name": "Appliances", "type": "product" },
+    { "id": 3, "name": "Installation", "type": "service" },
+    { "id": 4, "name": "Repair", "type": "service" }
+  ],
+  "tickets": [],
+  "commissions": [],
+  "bonuses": []
+}

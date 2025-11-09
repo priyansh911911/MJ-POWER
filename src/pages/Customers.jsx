@@ -1,0 +1,170 @@
+import React, { useState } from 'react';
+import { useApp } from '../context/AppContext';
+
+const Customers = () => {
+  const { data, addItem, updateItem, deleteItem, currentUser } = useApp();
+  const [showForm, setShowForm] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    assignedTo: '',
+    assignedType: 'partner'
+  });
+
+  const partners = data.users.filter(u => u.role === 'partner');
+  const technicians = data.users.filter(u => u.role === 'technician');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (editingCustomer) {
+      updateItem('customers', editingCustomer.id, formData);
+    } else {
+      addItem('customers', formData);
+    }
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setFormData({ name: '', phone: '', address: '', assignedTo: '', assignedType: 'partner' });
+    setShowForm(false);
+    setEditingCustomer(null);
+  };
+
+  const handleEdit = (customer) => {
+    setFormData(customer);
+    setEditingCustomer(customer);
+    setShowForm(true);
+  };
+
+  const canManageCustomers = ['admin', 'manager', 'partner'].includes(currentUser?.role);
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-green-400">Customers</h2>
+        {canManageCustomers && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white"
+          >
+            Add Customer
+          </button>
+        )}
+      </div>
+
+      {showForm && (
+        <div className="bg-gray-800 p-6 rounded-lg mb-6 border border-green-600">
+          <h3 className="text-lg font-semibold text-green-400 mb-4">
+            {editingCustomer ? 'Edit Customer' : 'Add Customer'}
+          </h3>
+          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+            <input
+              type="text"
+              placeholder="Name"
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              required
+            />
+            <input
+              type="tel"
+              placeholder="Phone"
+              value={formData.phone}
+              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              required
+            />
+            <textarea
+              placeholder="Address"
+              value={formData.address}
+              onChange={(e) => setFormData({...formData, address: e.target.value})}
+              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600 col-span-2"
+              rows="3"
+            />
+            <div>
+              <label className="block text-green-300 text-sm mb-1">Assign Type</label>
+              <select
+                value={formData.assignedType}
+                onChange={(e) => setFormData({...formData, assignedType: e.target.value, assignedTo: ''})}
+                className="w-full p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              >
+                <option value="partner">Partner</option>
+                <option value="technician">Technician</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-green-300 text-sm mb-1">Assign To</label>
+              <select
+                value={formData.assignedTo}
+                onChange={(e) => setFormData({...formData, assignedTo: e.target.value})}
+                className="w-full p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              >
+                <option value="">Select {formData.assignedType}</option>
+                {(formData.assignedType === 'partner' ? partners : technicians).map(user => (
+                  <option key={user.id} value={user.id}>{user.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="col-span-2 flex gap-2">
+              <button type="submit" className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">
+                {editingCustomer ? 'Update' : 'Add'}
+              </button>
+              <button type="button" onClick={resetForm} className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-white">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      <div className="bg-gray-800 rounded-lg border border-green-600">
+        <table className="w-full">
+          <thead className="bg-gray-700">
+            <tr>
+              <th className="p-4 text-left text-green-400">Name</th>
+              <th className="p-4 text-left text-green-400">Phone</th>
+              <th className="p-4 text-left text-green-400">Address</th>
+              <th className="p-4 text-left text-green-400">Assigned To</th>
+              {canManageCustomers && <th className="p-4 text-left text-green-400">Actions</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {data.customers.map(customer => {
+              const assignedUser = data.users.find(u => u.id == customer.assignedTo);
+              return (
+                <tr key={customer.id} className="border-t border-gray-700">
+                  <td className="p-4 text-green-100">{customer.name}</td>
+                  <td className="p-4 text-green-100">{customer.phone}</td>
+                  <td className="p-4 text-green-100">{customer.address}</td>
+                  <td className="p-4 text-green-100">
+                    {assignedUser ? `${assignedUser.name} (${assignedUser.role})` : 'Unassigned'}
+                  </td>
+                  {canManageCustomers && (
+                    <td className="p-4">
+                      <button
+                        onClick={() => handleEdit(customer)}
+                        className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white mr-2"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteItem('customers', customer.id)}
+                        className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default Customers;
