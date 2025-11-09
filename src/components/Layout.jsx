@@ -37,7 +37,7 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-900 text-green-100 flex">
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-gray-900 p-4">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-gray-900 p-2">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="bg-gray-800 p-2 rounded-lg border border-green-600"
@@ -103,7 +103,7 @@ const Layout = ({ children }) => {
       </div>
       
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto scrollbar-hide lg:ml-0 pt-16 lg:pt-0 lg:h-screen">
+      <div className="flex-1 overflow-y-auto scrollbar-hide lg:ml-0 pt-12 lg:pt-0 lg:h-screen">
         <main className="p-4 lg:p-8 max-w-7xl mx-auto">
           {children}
         </main>
