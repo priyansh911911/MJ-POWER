@@ -85,15 +85,15 @@ const Tickets = () => {
   const filteredTickets = getFilteredTickets();
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-green-400">
+    <div className="p-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-green-400">
           {currentUser?.role === 'technician' ? 'My Tickets' : 'Tickets'}
         </h2>
         {canCreateTickets && (
           <button
             onClick={() => setShowForm(true)}
-            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white"
+            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white w-full sm:w-auto"
           >
             Raise Ticket
           </button>
@@ -101,11 +101,11 @@ const Tickets = () => {
       </div>
 
       {showForm && canCreateTickets && (
-        <div className="bg-gray-800 p-6 rounded-lg mb-6 border border-green-600">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg mb-6 border border-green-600">
           <h3 className="text-lg font-semibold text-green-400 mb-4">
             {editingTicket ? 'Edit Ticket' : 'Raise Ticket'}
           </h3>
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <select
               value={formData.customerId}
               onChange={(e) => setFormData({...formData, customerId: e.target.value})}
@@ -151,7 +151,7 @@ const Tickets = () => {
               placeholder="Issue Description"
               value={formData.issue}
               onChange={(e) => setFormData({...formData, issue: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600 col-span-2"
+              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600 sm:col-span-2"
               rows="3"
               required
             />
@@ -159,10 +159,10 @@ const Tickets = () => {
               placeholder="Notes"
               value={formData.notes}
               onChange={(e) => setFormData({...formData, notes: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600 col-span-2"
+              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600 sm:col-span-2"
               rows="2"
             />
-            <div className="col-span-2 flex gap-2">
+            <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
               <button type="submit" className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">
                 {editingTicket ? 'Update' : 'Create'}
               </button>
@@ -174,7 +174,8 @@ const Tickets = () => {
         </div>
       )}
 
-      <div className="bg-gray-800 rounded-lg border border-green-600">
+      {/* Desktop Table */}
+      <div className="hidden lg:block bg-gray-800 rounded-lg border border-green-600">
         <table className="w-full">
           <thead className="bg-gray-700">
             <tr>
@@ -241,6 +242,76 @@ const Tickets = () => {
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="lg:hidden space-y-4">
+        {filteredTickets.map(ticket => {
+          const customer = data.customers.find(c => c.id == ticket.customerId);
+          const item = (ticket.type === 'product' ? data.products : data.services)
+            .find(i => i.id == ticket.itemId);
+          const assignedUser = data.users.find(u => u.id == ticket.assignedTo);
+          
+          return (
+            <div key={ticket.id} className="bg-gray-800 p-4 rounded-lg border border-green-600">
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <span className="text-green-400 font-semibold">#{ticket.id}</span>
+                  <span className={`px-2 py-1 rounded text-white text-xs ${getStatusColor(ticket.status)}`}>
+                    {ticket.status}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-green-400 font-semibold">Customer: </span>
+                  <span className="text-green-100">{customer?.name}</span>
+                </div>
+                <div>
+                  <span className="text-green-400 font-semibold">Item: </span>
+                  <span className="text-green-100">{item?.name} ({ticket.type})</span>
+                </div>
+                <div>
+                  <span className="text-green-400 font-semibold">Issue: </span>
+                  <span className="text-green-100">{ticket.issue}</span>
+                </div>
+                <div>
+                  <span className="text-green-400 font-semibold">Assigned To: </span>
+                  <span className="text-green-100">{assignedUser?.name}</span>
+                </div>
+                
+                <div className="pt-2 space-y-2">
+                  {canUpdateTickets && (
+                    <select
+                      value={ticket.status}
+                      onChange={(e) => updateTicketStatus(ticket.id, e.target.value)}
+                      className="w-full bg-gray-700 text-green-100 rounded border border-green-600 p-2"
+                    >
+                      <option value="open">Open</option>
+                      <option value="in-progress">In Progress</option>
+                      <option value="completed">Completed</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  )}
+                  {canManageTickets && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(ticket)}
+                        className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white flex-1"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteItem('tickets', ticket.id)}
+                        className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white flex-1"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

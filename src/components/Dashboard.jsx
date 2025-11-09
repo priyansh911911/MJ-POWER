@@ -60,66 +60,66 @@ const Dashboard = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-gray-800 p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-green-400 text-lg font-semibold">Customers</h3>
-                  <p className="text-3xl font-bold text-green-100 mt-2">{data.customers.length}</p>
+                  <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Customers</h3>
+                  <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{data.customers.length}</p>
                 </div>
-                <span className="text-4xl">👥</span>
+                <span className="text-2xl lg:text-4xl">👥</span>
               </div>
             </div>
-            <div className="bg-gray-800 p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
+            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-green-400 text-lg font-semibold">Products</h3>
-                  <p className="text-3xl font-bold text-green-100 mt-2">{data.products.length}</p>
+                  <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Products</h3>
+                  <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{data.products.length}</p>
                 </div>
-                <span className="text-4xl">📦</span>
+                <span className="text-2xl lg:text-4xl">📦</span>
               </div>
             </div>
-            <div className="bg-gray-800 p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
+            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-green-400 text-lg font-semibold">Services</h3>
-                  <p className="text-3xl font-bold text-green-100 mt-2">{data.services.length}</p>
+                  <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Services</h3>
+                  <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{data.services.length}</p>
                 </div>
-                <span className="text-4xl">🔧</span>
+                <span className="text-2xl lg:text-4xl">🔧</span>
               </div>
             </div>
-            <div className="bg-gray-800 p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
+            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-green-400 text-lg font-semibold">Tickets</h3>
-                  <p className="text-3xl font-bold text-green-100 mt-2">{data.tickets.length}</p>
+                  <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Tickets</h3>
+                  <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{data.tickets.length}</p>
                 </div>
-                <span className="text-4xl">🎫</span>
+                <span className="text-2xl lg:text-4xl">🎫</span>
               </div>
             </div>
           </div>
 
           {/* Recent Activity */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-              <h3 className="text-green-400 text-lg font-semibold mb-4">Recent Tickets</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+              <h3 className="text-green-400 text-base lg:text-lg font-semibold mb-4">Recent Tickets</h3>
               <div className="space-y-3">
                 {data.tickets.slice(0, 3).map((ticket, index) => (
                   <div key={index} className="flex justify-between items-center p-3 bg-gray-700 rounded">
-                    <span className="text-green-100">Ticket #{index + 1}</span>
-                    <span className="text-green-400 text-sm">Open</span>
+                    <span className="text-green-100 text-sm lg:text-base">Ticket #{index + 1}</span>
+                    <span className="text-green-400 text-xs lg:text-sm">Open</span>
                   </div>
                 ))}
               </div>
             </div>
             
-            <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-              <h3 className="text-green-400 text-lg font-semibold mb-4">Quick Actions</h3>
-              <div className="space-y-3">
+            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+              <h3 className="text-green-400 text-base lg:text-lg font-semibold mb-4">Quick Actions</h3>
+              <div className="space-y-2 lg:space-y-3">
                 {(currentUser?.role === 'admin' || currentUser?.role === 'partner') && (
                   <button 
                     onClick={() => setCurrentPage('customers')}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded transition-colors"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white p-2 lg:p-3 rounded transition-colors text-sm lg:text-base"
                   >
                     + Add New Customer
                   </button>
@@ -128,13 +128,13 @@ const Dashboard = () => {
                   <>
                     <button 
                       onClick={() => setCurrentPage('add partner')}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded transition-colors"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white p-2 lg:p-3 rounded transition-colors text-sm lg:text-base"
                     >
                       + Add Partner
                     </button>
                     <button 
                       onClick={() => setCurrentPage('add technician')}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded transition-colors"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white p-2 lg:p-3 rounded transition-colors text-sm lg:text-base"
                     >
                       + Add Technician
                     </button>
@@ -142,13 +142,13 @@ const Dashboard = () => {
                 )}
                 <button 
                   onClick={() => setCurrentPage('tickets')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded transition-colors"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white p-2 lg:p-3 rounded transition-colors text-sm lg:text-base"
                 >
                   + Create Ticket
                 </button>
                 <button 
                   onClick={() => setCurrentPage('reports')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded transition-colors"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white p-2 lg:p-3 rounded transition-colors text-sm lg:text-base"
                 >
                   📊 View Reports
                 </button>

@@ -55,13 +55,13 @@ const Products = () => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-green-400">Products</h2>
+    <div className="p-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-green-400">Products</h2>
         {canManageProducts && (
           <button
             onClick={() => setShowForm(true)}
-            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white"
+            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white w-full sm:w-auto"
           >
             Add Product
           </button>
@@ -69,11 +69,11 @@ const Products = () => {
       </div>
 
       {showForm && canManageProducts && (
-        <div className="bg-gray-800 p-6 rounded-lg mb-6 border border-green-600">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg mb-6 border border-green-600">
           <h3 className="text-lg font-semibold text-green-400 mb-4">
             {editingProduct ? 'Edit Product' : 'Add Product'}
           </h3>
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input
               type="text"
               placeholder="Product Name"
@@ -129,7 +129,7 @@ const Products = () => {
               className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
               required
             />
-            <div className="col-span-2 flex gap-2">
+            <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
               <button type="submit" className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">
                 {editingProduct ? 'Update' : 'Add'}
               </button>
@@ -141,7 +141,8 @@ const Products = () => {
         </div>
       )}
 
-      <div className="bg-gray-800 rounded-lg border border-green-600">
+      {/* Desktop Table */}
+      <div className="hidden md:block bg-gray-800 rounded-lg border border-green-600">
         <table className="w-full">
           <thead className="bg-gray-700">
             <tr>
@@ -183,6 +184,58 @@ const Products = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {data.products.map(product => (
+          <div key={product.id} className="bg-gray-800 p-4 rounded-lg border border-green-600">
+            <div className="space-y-2">
+              <div>
+                <span className="text-green-400 font-semibold">Name: </span>
+                <span className="text-green-100">{product.name}</span>
+              </div>
+              <div>
+                <span className="text-green-400 font-semibold">Category: </span>
+                <span className="text-green-100">{product.category}</span>
+              </div>
+              <div>
+                <span className="text-green-400 font-semibold">Price: </span>
+                <span className="text-green-100">₹{product.price}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-sm">
+                <div>
+                  <span className="text-green-400 font-semibold">GST: </span>
+                  <span className="text-green-100">{product.gstPercent}%</span>
+                </div>
+                <div>
+                  <span className="text-green-400 font-semibold">Partner: </span>
+                  <span className="text-green-100">{product.partnerCommissionPercent}%</span>
+                </div>
+                <div>
+                  <span className="text-green-400 font-semibold">Tech: </span>
+                  <span className="text-green-100">{product.technicianCommissionPercent}%</span>
+                </div>
+              </div>
+              {canManageProducts && (
+                <div className="flex gap-2 pt-2">
+                  <button
+                    onClick={() => handleEdit(product)}
+                    className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white flex-1"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteItem('products', product.id)}
+                    className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white flex-1"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

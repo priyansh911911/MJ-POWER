@@ -108,47 +108,47 @@ const Reports = () => {
 
   if (currentUser?.role === 'partner' || currentUser?.role === 'technician') {
     return (
-      <div>
-        <h2 className="text-2xl font-bold text-green-400 mb-6">My Reports</h2>
+      <div className="p-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-green-400 mb-6">My Reports</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
           {currentUser.role === 'partner' && (
             <>
-              <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-                <h3 className="text-green-400 text-lg font-semibold">My Customers</h3>
-                <p className="text-3xl font-bold text-green-100 mt-2">{myData.customers}</p>
+              <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+                <h3 className="text-green-400 text-sm lg:text-lg font-semibold">My Customers</h3>
+                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData.customers}</p>
               </div>
-              <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-                <h3 className="text-green-400 text-lg font-semibold">Tickets Raised</h3>
-                <p className="text-3xl font-bold text-green-100 mt-2">{myData.tickets}</p>
+              <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+                <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Tickets Raised</h3>
+                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData.tickets}</p>
               </div>
             </>
           )}
           
           {currentUser.role === 'technician' && (
             <>
-              <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-                <h3 className="text-green-400 text-lg font-semibold">Assigned Tickets</h3>
-                <p className="text-3xl font-bold text-green-100 mt-2">{myData.assignedTickets}</p>
+              <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+                <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Assigned Tickets</h3>
+                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData.assignedTickets}</p>
               </div>
-              <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-                <h3 className="text-green-400 text-lg font-semibold">Completed Tickets</h3>
-                <p className="text-3xl font-bold text-green-100 mt-2">{myData.completedTickets}</p>
+              <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+                <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Completed Tickets</h3>
+                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData.completedTickets}</p>
               </div>
             </>
           )}
           
-          <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-            <h3 className="text-green-400 text-lg font-semibold">Commission</h3>
-            <p className="text-3xl font-bold text-green-100 mt-2">₹{myData.commission.toFixed(2)}</p>
+          <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+            <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Commission</h3>
+            <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">₹{myData.commission.toFixed(2)}</p>
           </div>
-          <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-            <h3 className="text-green-400 text-lg font-semibold">Bonuses</h3>
-            <p className="text-3xl font-bold text-green-100 mt-2">₹{myData.bonuses.toFixed(2)}</p>
+          <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+            <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Bonuses</h3>
+            <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">₹{myData.bonuses.toFixed(2)}</p>
           </div>
-          <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-            <h3 className="text-green-400 text-lg font-semibold">Total Earnings</h3>
-            <p className="text-3xl font-bold text-green-100 mt-2">₹{myData.totalEarnings.toFixed(2)}</p>
+          <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+            <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Total Earnings</h3>
+            <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">₹{myData.totalEarnings.toFixed(2)}</p>
           </div>
         </div>
       </div>
@@ -156,13 +156,13 @@ const Reports = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-green-400">Reports & Analytics</h2>
+    <div className="p-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-green-400">Reports & Analytics</h2>
         {canManageBonuses && (
           <button
             onClick={() => setShowBonusForm(true)}
-            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white"
+            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white w-full sm:w-auto"
           >
             Add Bonus
           </button>
@@ -170,9 +170,9 @@ const Reports = () => {
       </div>
 
       {showBonusForm && (
-        <div className="bg-gray-800 p-6 rounded-lg mb-6 border border-green-600">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg mb-6 border border-green-600">
           <h3 className="text-lg font-semibold text-green-400 mb-4">Add Bonus</h3>
-          <form onSubmit={handleBonusSubmit} className="grid grid-cols-3 gap-4">
+          <form onSubmit={handleBonusSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <select
               value={bonusData.userId}
               onChange={(e) => setBonusData({...bonusData, userId: e.target.value})}
@@ -201,7 +201,7 @@ const Reports = () => {
               className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
               required
             />
-            <div className="col-span-3 flex gap-2">
+            <div className="sm:col-span-3 flex flex-col sm:flex-row gap-2">
               <button type="submit" className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">
                 Add Bonus
               </button>
@@ -213,46 +213,46 @@ const Reports = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-          <h3 className="text-green-400 text-lg font-semibold">Total Customers</h3>
-          <p className="text-3xl font-bold text-green-100 mt-2">{data.customers.length}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
+        <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+          <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Total Customers</h3>
+          <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{data.customers.length}</p>
         </div>
-        <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-          <h3 className="text-green-400 text-lg font-semibold">Total Tickets</h3>
-          <p className="text-3xl font-bold text-green-100 mt-2">{data.tickets.length}</p>
+        <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+          <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Total Tickets</h3>
+          <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{data.tickets.length}</p>
         </div>
-        <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-          <h3 className="text-green-400 text-lg font-semibold">Completed Tickets</h3>
-          <p className="text-3xl font-bold text-green-100 mt-2">
+        <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+          <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Completed Tickets</h3>
+          <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">
             {data.tickets.filter(t => t.status === 'completed').length}
           </p>
         </div>
-        <div className="bg-gray-800 p-6 rounded-lg border border-green-600">
-          <h3 className="text-green-400 text-lg font-semibold">Total Commissions</h3>
-          <p className="text-3xl font-bold text-green-100 mt-2">
+        <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
+          <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Total Commissions</h3>
+          <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">
             ₹{Object.values(commissions).reduce((sum, c) => sum + c.total, 0).toFixed(2)}
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         <div className="bg-gray-800 rounded-lg border border-green-600">
-          <h3 className="text-lg font-semibold text-green-400 p-4 border-b border-gray-700">
+          <h3 className="text-base lg:text-lg font-semibold text-green-400 p-4 border-b border-gray-700">
             Commission Summary
           </h3>
           <div className="p-4">
             {Object.values(commissions).map(({ user, total }) => (
               <div key={user.id} className="flex justify-between items-center py-2 border-b border-gray-700">
-                <span className="text-green-100">{user.name} ({user.role})</span>
-                <span className="text-green-400 font-semibold">₹{total.toFixed(2)}</span>
+                <span className="text-green-100 text-sm lg:text-base">{user.name} ({user.role})</span>
+                <span className="text-green-400 font-semibold text-sm lg:text-base">₹{total.toFixed(2)}</span>
               </div>
             ))}
           </div>
         </div>
 
         <div className="bg-gray-800 rounded-lg border border-green-600">
-          <h3 className="text-lg font-semibold text-green-400 p-4 border-b border-gray-700">
+          <h3 className="text-base lg:text-lg font-semibold text-green-400 p-4 border-b border-gray-700">
             Recent Bonuses
           </h3>
           <div className="p-4">
@@ -261,10 +261,10 @@ const Reports = () => {
               return (
                 <div key={bonus.id} className="flex justify-between items-center py-2 border-b border-gray-700">
                   <div>
-                    <span className="text-green-100">{user?.name}</span>
-                    <p className="text-sm text-gray-400">{bonus.reason}</p>
+                    <span className="text-green-100 text-sm lg:text-base">{user?.name}</span>
+                    <p className="text-xs lg:text-sm text-gray-400">{bonus.reason}</p>
                   </div>
-                  <span className="text-green-400 font-semibold">₹{bonus.amount}</span>
+                  <span className="text-green-400 font-semibold text-sm lg:text-base">₹{bonus.amount}</span>
                 </div>
               );
             })}

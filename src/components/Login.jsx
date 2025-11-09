@@ -18,19 +18,19 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-green-100 flex items-center justify-center">
+    <div className="min-h-screen bg-green-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="bg-black rounded-lg p-4 inline-block mb-6">
-            <img src={logo} alt="MJ POWER" className="w-32 h-auto" />
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="bg-black rounded-lg p-3 sm:p-4 inline-block mb-4 sm:mb-6">
+            <img src={logo} alt="MJ POWER" className="w-24 sm:w-32 h-auto" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
-          <p className="text-gray-500">Sign in to your account</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
+          <p className="text-sm sm:text-base text-gray-500">Sign in to your account</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div>
-            <label className="block text-green-700 font-medium mb-2">
+            <label className="block text-green-700 font-medium mb-2 text-sm sm:text-base">
               Username
             </label>
             <input
@@ -38,13 +38,13 @@ const Login = () => {
               placeholder="  Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:border-gray-400"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:border-gray-400 text-sm sm:text-base"
               required
             />
           </div>
           
           <div>
-            <label className="block text-green-700 font-medium mb-2">
+            <label className="block text-green-700 font-medium mb-2 text-sm sm:text-base">
               Password
             </label>
             <input
@@ -52,21 +52,21 @@ const Login = () => {
               placeholder="  Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:border-gray-400"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:border-gray-400 text-sm sm:text-base"
               required
             />
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-center">
+            <div className="bg-red-50 border border-red-200 text-red-600 px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-center text-sm sm:text-base">
               {error}
             </div>
           )}
 
-          <div style={{marginTop: '32px'}}>
+          <div className="pt-2 sm:pt-4">
           <button
             type="submit"
-            className="w-full bg-gray-800 text-white font-medium py-3 rounded-lg hover:bg-gray-700 mt-4"
+            className="w-full bg-gray-800 text-white font-medium py-2 sm:py-3 rounded-lg hover:bg-gray-700 text-sm sm:text-base"
           >
             Sign In
           </button>

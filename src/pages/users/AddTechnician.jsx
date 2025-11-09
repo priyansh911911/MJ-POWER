@@ -20,11 +20,11 @@ const AddTechnician = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold text-green-400 mb-6">Add New Technician</h2>
+    <div className="max-w-2xl mx-auto p-4">
+      <h2 className="text-xl sm:text-2xl font-bold text-green-400 mb-6">Add New Technician</h2>
       
-      <form onSubmit={handleSubmit} className="bg-gray-800 p-6 rounded-lg border border-green-600 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="bg-gray-800 p-4 sm:p-6 rounded-lg border border-green-600 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-green-300 text-sm font-medium mb-2">Name</label>
             <input
@@ -94,7 +94,7 @@ const AddTechnician = () => {
         
         <button
           type="submit"
-          className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition-colors"
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 sm:py-3 px-4 rounded transition-colors"
         >
           Add Technician
         </button>
