@@ -36,13 +36,15 @@ const Layout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-green-100 flex">
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-gray-800 p-2 rounded-lg border border-green-600"
-      >
-        <span className="text-green-400 text-xl">☰</span>
-      </button>
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-gray-900 p-4">
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="bg-gray-800 p-2 rounded-lg border border-green-600"
+        >
+          <span className="text-green-400 text-xl">☰</span>
+        </button>
+      </div>
 
       {/* Mobile Overlay */}
       {sidebarOpen && (
@@ -101,8 +103,8 @@ const Layout = ({ children }) => {
       </div>
       
       {/* Main Content */}
-      <div className="flex-1 h-screen overflow-y-auto scrollbar-hide lg:ml-0">
-        <main className="p-4 lg:p-8 pt-16 lg:pt-8 max-w-7xl mx-auto">
+      <div className="flex-1 overflow-y-auto scrollbar-hide lg:ml-0 pt-16 lg:pt-0 lg:h-screen">
+        <main className="p-4 lg:p-8 max-w-7xl mx-auto">
           {children}
         </main>
       </div>
