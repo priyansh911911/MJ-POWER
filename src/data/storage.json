@@ -39,6 +39,7 @@
     { "id": 4, "name": "Repair", "type": "service" }
   ],
   "tickets": [],
+  "orders": [],
   "commissions": [],
   "bonuses": []
 }

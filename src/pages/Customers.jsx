@@ -8,6 +8,7 @@ const Customers = () => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
+    email: '',
     address: '',
     assignedTo: '',
     assignedType: 'partner'
@@ -27,7 +28,7 @@ const Customers = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', phone: '', address: '', assignedTo: '', assignedType: 'partner' });
+    setFormData({ name: '', phone: '', email: '', address: '', assignedTo: '', assignedType: 'partner' });
     setShowForm(false);
     setEditingCustomer(null);
   };
@@ -73,6 +74,14 @@ const Customers = () => {
               placeholder="Phone"
               value={formData.phone}
               onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email (for customer login)"
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
               className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
               required
             />
@@ -126,6 +135,7 @@ const Customers = () => {
             <tr>
               <th className="p-4 text-left text-green-400">Name</th>
               <th className="p-4 text-left text-green-400">Phone</th>
+              <th className="p-4 text-left text-green-400">Email</th>
               <th className="p-4 text-left text-green-400">Address</th>
               <th className="p-4 text-left text-green-400">Assigned To</th>
               {canManageCustomers && <th className="p-4 text-left text-green-400">Actions</th>}
@@ -138,6 +148,7 @@ const Customers = () => {
                 <tr key={customer.id} className="border-t border-gray-700">
                   <td className="p-4 text-green-100">{customer.name}</td>
                   <td className="p-4 text-green-100">{customer.phone}</td>
+                  <td className="p-4 text-green-100">{customer.email}</td>
                   <td className="p-4 text-green-100">{customer.address}</td>
                   <td className="p-4 text-green-100">
                     {assignedUser ? `${assignedUser.name} (${assignedUser.role})` : 'Unassigned'}
@@ -179,6 +190,10 @@ const Customers = () => {
                 <div>
                   <span className="text-green-400 font-semibold">Phone: </span>
                   <span className="text-green-100">{customer.phone}</span>
+                </div>
+                <div>
+                  <span className="text-green-400 font-semibold">Email: </span>
+                  <span className="text-green-100">{customer.email}</span>
                 </div>
                 <div>
                   <span className="text-green-400 font-semibold">Address: </span>

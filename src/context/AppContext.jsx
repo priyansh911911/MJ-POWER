@@ -34,7 +34,13 @@ export const AppProvider = ({ children }) => {
     }
   }, [currentUser]);
 
-  const login = (username, password) => {
+  const login = (username, password, customUser = null) => {
+    if (customUser) {
+      // For customer login
+      setCurrentUser(customUser);
+      return true;
+    }
+    
     const user = data.users?.find(u => u.username === username && u.password === password);
     if (user) {
       setCurrentUser(user);
