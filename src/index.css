@@ -41,17 +41,17 @@
 
 /* Global Glassmorphism Card Styles */
 .glass-card {
-  @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl transform hover:scale-[1.02] transition-all duration-300;
+  @apply bg-white/10 backdrop-blur-xl shadow-2xl transform hover:scale-[1.02] transition-all duration-300;
   animation: slideUp 0.6s ease-out;
 }
 
 .glass-form {
-  @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl transform hover:scale-[1.01] transition-all duration-300;
+  @apply bg-white/10 backdrop-blur-xl shadow-2xl transform hover:scale-[1.01] transition-all duration-300;
   animation: fadeIn 0.5s ease-out;
 }
 
 .glass-table {
-  @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl transform hover:scale-[1.005] transition-all duration-300;
+  @apply bg-white/10 backdrop-blur-xl shadow-2xl transform hover:scale-[1.005] transition-all duration-300;
   animation: slideUp 0.6s ease-out;
 }
 
@@ -74,11 +74,20 @@
 
 /* Global Input Styles */
 .glass-input {
-  @apply bg-white/5 backdrop-blur-sm border border-white/30 text-green-100 focus:border-green-400 focus:bg-white/10 transition-all duration-200;
+  @apply bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.glass-input:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Mobile Card Animation */
 .mobile-card {
-  @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl transform hover:scale-105 transition-all duration-300 hover:shadow-2xl;
+  @apply bg-white/10 backdrop-blur-md shadow-xl transform hover:scale-105 transition-all duration-300 hover:shadow-2xl;
   animation: slideUp 0.6s ease-out;
 }

@@ -85,15 +85,15 @@ const Tickets = () => {
   const filteredTickets = getFilteredTickets();
 
   return (
-    <div className="p-4">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-green-400">
+    <div className="p-2">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-2">
+        <h2 className="text-lg sm:text-xl font-bold text-green-400">
           {currentUser?.role === 'technician' ? 'My Tickets' : 'Tickets'}
         </h2>
         {canCreateTickets && (
           <button
             onClick={() => setShowForm(true)}
-            className="btn-primary px-4 py-2 rounded w-full sm:w-auto"
+            className="btn-primary px-3 py-1.5 rounded w-full sm:w-auto text-sm"
           >
             Raise Ticket
           </button>
@@ -101,57 +101,57 @@ const Tickets = () => {
       </div>
 
       {showForm && canCreateTickets && (
-        <div className="glass-form p-4 sm:p-6 rounded-lg mb-6">
-          <h3 className="text-lg font-semibold text-green-400 mb-4">
+        <div className="glass-form p-3 sm:p-4 rounded-lg mb-4">
+          <h3 className="text-base font-semibold text-green-400 mb-3">
             {editingTicket ? 'Edit Ticket' : 'Raise Ticket'}
           </h3>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <select
               value={formData.customerId}
               onChange={(e) => setFormData({...formData, customerId: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              className="p-2 bg-gray-700 text-green-100 focus:bg-gray-600 transition-all duration-200 rounded border border-green-600 outline-none text-sm"
               required
             >
-              <option value="">Select Customer</option>
+              <option value="" className="bg-gray-700 text-green-100">Select Customer</option>
               {data.customers.map(customer => (
-                <option key={customer.id} value={customer.id}>{customer.name}</option>
+                <option key={customer.id} value={customer.id} className="bg-gray-700 text-green-100">{customer.name}</option>
               ))}
             </select>
             <select
               value={formData.type}
               onChange={(e) => setFormData({...formData, type: e.target.value, itemId: ''})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              className="p-2 bg-gray-700 text-green-100 focus:bg-gray-600 transition-all duration-200 rounded border border-green-600 outline-none text-sm"
             >
-              <option value="product">Product</option>
-              <option value="service">Service</option>
+              <option value="product" className="bg-gray-700 text-green-100">Product</option>
+              <option value="service" className="bg-gray-700 text-green-100">Service</option>
             </select>
             <select
               value={formData.itemId}
               onChange={(e) => setFormData({...formData, itemId: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              className="p-2 bg-gray-700 text-green-100 focus:bg-gray-600 transition-all duration-200 rounded border border-green-600 outline-none text-sm"
               required
             >
-              <option value="">Select {formData.type}</option>
+              <option value="" className="bg-gray-700 text-green-100">Select {formData.type}</option>
               {(formData.type === 'product' ? data.products : data.services).map(item => (
-                <option key={item.id} value={item.id}>{item.name}</option>
+                <option key={item.id} value={item.id} className="bg-gray-700 text-green-100">{item.name}</option>
               ))}
             </select>
             <select
               value={formData.assignedTo}
               onChange={(e) => setFormData({...formData, assignedTo: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              className="p-2 bg-gray-700 text-green-100 focus:bg-gray-600 transition-all duration-200 rounded border border-green-600 outline-none text-sm"
               required
             >
-              <option value="">Assign Technician</option>
+              <option value="" className="bg-gray-700 text-green-100">Assign Technician</option>
               {data.users.filter(u => u.role === 'technician').map(tech => (
-                <option key={tech.id} value={tech.id}>{tech.name}</option>
+                <option key={tech.id} value={tech.id} className="bg-gray-700 text-green-100">{tech.name}</option>
               ))}
             </select>
             <textarea
               placeholder="Issue Description"
               value={formData.issue}
               onChange={(e) => setFormData({...formData, issue: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600 sm:col-span-2"
+              className="p-2 bg-gray-700 text-green-100 focus:bg-gray-600 transition-all duration-200 rounded border border-green-600 outline-none text-sm sm:col-span-2"
               rows="3"
               required
             />
@@ -159,7 +159,7 @@ const Tickets = () => {
               placeholder="Notes"
               value={formData.notes}
               onChange={(e) => setFormData({...formData, notes: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600 sm:col-span-2"
+              className="p-2 bg-gray-700 text-green-100 focus:bg-gray-600 transition-all duration-200 rounded border border-green-600 outline-none text-sm sm:col-span-2"
               rows="2"
             />
             <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
@@ -177,15 +177,15 @@ const Tickets = () => {
       {/* Desktop Table */}
       <div className="hidden lg:block glass-table rounded-lg">
         <table className="w-full">
-          <thead className="bg-gray-700">
+          <thead className="bg-white/5">
             <tr>
-              <th className="p-4 text-left text-green-400">ID</th>
-              <th className="p-4 text-left text-green-400">Customer</th>
-              <th className="p-4 text-left text-green-400">Item</th>
-              <th className="p-4 text-left text-green-400">Issue</th>
-              <th className="p-4 text-left text-green-400">Assigned To</th>
-              <th className="p-4 text-left text-green-400">Status</th>
-              <th className="p-4 text-left text-green-400">Actions</th>
+              <th className="p-2 text-left text-green-400 text-sm">ID</th>
+              <th className="p-2 text-left text-green-400 text-sm">Customer</th>
+              <th className="p-2 text-left text-green-400 text-sm">Item</th>
+              <th className="p-2 text-left text-green-400 text-sm">Issue</th>
+              <th className="p-2 text-left text-green-400 text-sm">Assigned To</th>
+              <th className="p-2 text-left text-green-400 text-sm">Status</th>
+              <th className="p-2 text-left text-green-400 text-sm">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -197,22 +197,22 @@ const Tickets = () => {
               
               return (
                 <tr key={ticket.id} className="border-t border-gray-700">
-                  <td className="p-4 text-green-100">#{ticket.id}</td>
-                  <td className="p-4 text-green-100">{customer?.name}</td>
-                  <td className="p-4 text-green-100">{item?.name} ({ticket.type})</td>
-                  <td className="p-4 text-green-100">{ticket.issue}</td>
-                  <td className="p-4 text-green-100">{assignedUser?.name}</td>
-                  <td className="p-4">
-                    <span className={`px-2 py-1 rounded text-white text-sm ${getStatusColor(ticket.status)}`}>
+                  <td className="p-2 text-green-100 text-sm">#{ticket.id}</td>
+                  <td className="p-2 text-green-100 text-sm">{customer?.name}</td>
+                  <td className="p-2 text-green-100 text-sm">{item?.name} ({ticket.type})</td>
+                  <td className="p-2 text-green-100 text-sm">{ticket.issue}</td>
+                  <td className="p-2 text-green-100 text-sm">{assignedUser?.name}</td>
+                  <td className="p-2">
+                    <span className={`px-1.5 py-0.5 rounded text-white text-xs ${getStatusColor(ticket.status)}`}>
                       {ticket.status}
                     </span>
                   </td>
-                  <td className="p-4">
+                  <td className="p-2">
                     {canUpdateTickets && (
                       <select
                         value={ticket.status}
                         onChange={(e) => updateTicketStatus(ticket.id, e.target.value)}
-                        className="bg-gray-700 text-green-100 rounded border border-green-600 p-1 mr-2"
+                        className="bg-gray-700 text-green-100 rounded border border-green-600 p-1 mr-1 text-xs"
                       >
                         <option value="open">Open</option>
                         <option value="in-progress">In Progress</option>
@@ -224,13 +224,13 @@ const Tickets = () => {
                       <>
                         <button
                           onClick={() => handleEdit(ticket)}
-                          className="btn-info px-3 py-1 rounded mr-2"
+                          className="btn-info px-2 py-1 rounded mr-1 text-xs"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => deleteItem('tickets', ticket.id)}
-                          className="btn-danger px-3 py-1 rounded"
+                          className="btn-danger px-2 py-1 rounded text-xs"
                         >
                           Delete
                         </button>
@@ -245,7 +245,7 @@ const Tickets = () => {
       </div>
 
       {/* Mobile Cards */}
-      <div className="lg:hidden space-y-4">
+      <div className="lg:hidden space-y-2">
         {filteredTickets.map(ticket => {
           const customer = data.customers.find(c => c.id == ticket.customerId);
           const item = (ticket.type === 'product' ? data.products : data.services)
@@ -253,7 +253,7 @@ const Tickets = () => {
           const assignedUser = data.users.find(u => u.id == ticket.assignedTo);
           
           return (
-            <div key={ticket.id} className="mobile-card p-4 rounded-lg">
+            <div key={ticket.id} className="mobile-card p-3 rounded-lg">
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
                   <span className="text-green-400 font-semibold">#{ticket.id}</span>
@@ -283,7 +283,7 @@ const Tickets = () => {
                     <select
                       value={ticket.status}
                       onChange={(e) => updateTicketStatus(ticket.id, e.target.value)}
-                      className="w-full bg-gray-700 text-green-100 rounded border border-green-600 p-2"
+                      className="w-full bg-gray-700 text-green-100 rounded border border-green-600 p-1.5 text-sm"
                     >
                       <option value="open">Open</option>
                       <option value="in-progress">In Progress</option>
@@ -295,13 +295,13 @@ const Tickets = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(ticket)}
-                        className="btn-info px-3 py-1 rounded flex-1"
+                        className="btn-info px-2 py-1 rounded flex-1 text-xs"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deleteItem('tickets', ticket.id)}
-                        className="btn-danger px-3 py-1 rounded flex-1"
+                        className="btn-danger px-2 py-1 rounded flex-1 text-xs"
                       >
                         Delete
                       </button>

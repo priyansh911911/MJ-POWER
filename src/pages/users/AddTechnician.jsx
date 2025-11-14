@@ -20,7 +20,7 @@ const AddTechnician = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="w-full p-4">
       <div className="flex items-center gap-4 mb-6">
         <button
           onClick={() => window.history.back()}
@@ -39,7 +39,7 @@ const AddTechnician = () => {
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
           </div>
@@ -50,7 +50,7 @@ const AddTechnician = () => {
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
           </div>
@@ -61,7 +61,7 @@ const AddTechnician = () => {
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({...formData, phone: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
           </div>
@@ -72,7 +72,7 @@ const AddTechnician = () => {
               type="text"
               value={formData.username}
               onChange={(e) => setFormData({...formData, username: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
           </div>
@@ -83,7 +83,7 @@ const AddTechnician = () => {
               type="password"
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
           </div>
@@ -94,7 +94,7 @@ const AddTechnician = () => {
               type="text"
               value={formData.specialization}
               onChange={(e) => setFormData({...formData, specialization: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               placeholder="e.g., Electrical, Plumbing"
             />
           </div>

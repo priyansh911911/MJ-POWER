@@ -42,13 +42,13 @@ const Customers = () => {
   const canManageCustomers = ['admin', 'manager', 'partner'].includes(currentUser?.role);
 
   return (
-    <div className="p-4">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-green-400">Customers</h2>
+    <div className="p-2">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-2">
+        <h2 className="text-lg sm:text-xl font-bold text-green-400">Customers</h2>
         {canManageCustomers && (
           <button
             onClick={() => setShowForm(true)}
-            className="btn-primary px-4 py-2 rounded w-full sm:w-auto"
+            className="btn-primary px-3 py-1.5 rounded w-full sm:w-auto text-sm"
           >
             Add Customer
           </button>
@@ -56,17 +56,17 @@ const Customers = () => {
       </div>
 
       {showForm && (
-        <div className="glass-form p-4 sm:p-6 rounded-lg mb-6">
-          <h3 className="text-lg font-semibold text-green-400 mb-4">
+        <div className="glass-form p-3 sm:p-4 rounded-lg mb-4">
+          <h3 className="text-base font-semibold text-green-400 mb-3">
             {editingCustomer ? 'Edit Customer' : 'Add Customer'}
           </h3>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
               type="text"
               placeholder="Name"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              className="p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
             <input
@@ -74,7 +74,7 @@ const Customers = () => {
               placeholder="Phone"
               value={formData.phone}
               onChange={(e) => setFormData({...formData, phone: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              className="p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
             <input
@@ -82,14 +82,14 @@ const Customers = () => {
               placeholder="Email (for customer login)"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+              className="p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
             <textarea
               placeholder="Address"
               value={formData.address}
               onChange={(e) => setFormData({...formData, address: e.target.value})}
-              className="p-3 bg-gray-700 text-green-100 rounded border border-green-600 sm:col-span-2"
+              className="p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none sm:col-span-2"
               rows="3"
             />
             <div>
@@ -97,7 +97,7 @@ const Customers = () => {
               <select
                 value={formData.assignedType}
                 onChange={(e) => setFormData({...formData, assignedType: e.target.value, assignedTo: ''})}
-                className="w-full p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+                className="w-full p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               >
                 <option value="partner">Partner</option>
                 <option value="technician">Technician</option>
@@ -108,7 +108,7 @@ const Customers = () => {
               <select
                 value={formData.assignedTo}
                 onChange={(e) => setFormData({...formData, assignedTo: e.target.value})}
-                className="w-full p-3 bg-gray-700 text-green-100 rounded border border-green-600"
+                className="w-full p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               >
                 <option value="">Select {formData.assignedType}</option>
                 {(formData.assignedType === 'partner' ? partners : technicians).map(user => (
@@ -131,39 +131,39 @@ const Customers = () => {
       {/* Desktop Table */}
       <div className="hidden md:block glass-table rounded-lg">
         <table className="w-full">
-          <thead className="bg-gray-700">
+          <thead className="bg-white/5">
             <tr>
-              <th className="p-4 text-left text-green-400">Name</th>
-              <th className="p-4 text-left text-green-400">Phone</th>
-              <th className="p-4 text-left text-green-400">Email</th>
-              <th className="p-4 text-left text-green-400">Address</th>
-              <th className="p-4 text-left text-green-400">Assigned To</th>
-              {canManageCustomers && <th className="p-4 text-left text-green-400">Actions</th>}
+              <th className="p-2 text-left text-green-400 text-sm">Name</th>
+              <th className="p-2 text-left text-green-400 text-sm">Phone</th>
+              <th className="p-2 text-left text-green-400 text-sm">Email</th>
+              <th className="p-2 text-left text-green-400 text-sm">Address</th>
+              <th className="p-2 text-left text-green-400 text-sm">Assigned To</th>
+              {canManageCustomers && <th className="p-2 text-left text-green-400 text-sm">Actions</th>}
             </tr>
           </thead>
           <tbody>
             {data.customers.map(customer => {
               const assignedUser = data.users.find(u => u.id == customer.assignedTo);
               return (
-                <tr key={customer.id} className="border-t border-gray-700">
-                  <td className="p-4 text-green-100">{customer.name}</td>
-                  <td className="p-4 text-green-100">{customer.phone}</td>
-                  <td className="p-4 text-green-100">{customer.email}</td>
-                  <td className="p-4 text-green-100">{customer.address}</td>
-                  <td className="p-4 text-green-100">
+                <tr key={customer.id} className="border-t border-white/10">
+                  <td className="p-2 text-green-100 text-sm">{customer.name}</td>
+                  <td className="p-2 text-green-100 text-sm">{customer.phone}</td>
+                  <td className="p-2 text-green-100 text-sm">{customer.email}</td>
+                  <td className="p-2 text-green-100 text-sm">{customer.address}</td>
+                  <td className="p-2 text-green-100 text-sm">
                     {assignedUser ? `${assignedUser.name} (${assignedUser.role})` : 'Unassigned'}
                   </td>
                   {canManageCustomers && (
-                    <td className="p-4">
+                    <td className="p-2">
                       <button
                         onClick={() => handleEdit(customer)}
-                        className="btn-info px-3 py-1 rounded mr-2"
+                        className="btn-info px-2 py-1 rounded mr-1 text-xs"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deleteItem('customers', customer.id)}
-                        className="btn-danger px-3 py-1 rounded"
+                        className="btn-danger px-2 py-1 rounded text-xs"
                       >
                         Delete
                       </button>
@@ -177,11 +177,11 @@ const Customers = () => {
       </div>
 
       {/* Mobile Cards */}
-      <div className="md:hidden space-y-4">
+      <div className="md:hidden space-y-2">
         {data.customers.map(customer => {
           const assignedUser = data.users.find(u => u.id == customer.assignedTo);
           return (
-            <div key={customer.id} className="mobile-card p-4 rounded-lg">
+            <div key={customer.id} className="mobile-card p-3 rounded-lg">
               <div className="space-y-2">
                 <div>
                   <span className="text-green-400 font-semibold">Name: </span>
@@ -209,13 +209,13 @@ const Customers = () => {
                   <div className="flex gap-2 pt-2">
                     <button
                       onClick={() => handleEdit(customer)}
-                      className="btn-info px-3 py-1 rounded flex-1"
+                      className="btn-info px-2 py-1 rounded flex-1 text-xs"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => deleteItem('customers', customer.id)}
-                      className="btn-danger px-3 py-1 rounded flex-1"
+                      className="btn-danger px-2 py-1 rounded flex-1 text-xs"
                     >
                       Delete
                     </button>

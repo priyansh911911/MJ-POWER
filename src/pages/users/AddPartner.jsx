@@ -21,7 +21,7 @@ const AddPartner = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="w-full p-4">
       <div className="flex items-center gap-4 mb-6">
         <button
           onClick={() => window.history.back()}
@@ -40,7 +40,7 @@ const AddPartner = () => {
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               required
             />
           </div>
@@ -51,7 +51,7 @@ const AddPartner = () => {
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               required
             />
           </div>
@@ -62,7 +62,7 @@ const AddPartner = () => {
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({...formData, phone: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               required
             />
           </div>
@@ -73,7 +73,7 @@ const AddPartner = () => {
               type="text"
               value={formData.username}
               onChange={(e) => setFormData({...formData, username: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               required
             />
           </div>
@@ -84,7 +84,7 @@ const AddPartner = () => {
               type="password"
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               required
             />
           </div>
@@ -95,7 +95,7 @@ const AddPartner = () => {
               type="text"
               value={formData.company}
               onChange={(e) => setFormData({...formData, company: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               placeholder="Partner company name"
             />
           </div>
@@ -106,7 +106,7 @@ const AddPartner = () => {
               type="text"
               value={formData.territory}
               onChange={(e) => setFormData({...formData, territory: e.target.value})}
-              className="w-full px-3 py-2 input-glass rounded"
+              className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               placeholder="Assigned territory or region"
             />
           </div>

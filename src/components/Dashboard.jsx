@@ -52,74 +52,74 @@ const Dashboard = () => {
       case 'add technician': return <AddTechnician />;
       case 'add partner': return <AddPartner />;
       default: return (
-        <div className="space-y-8">
+        <div className="space-y-4">
           {/* Welcome Section */}
-          <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-lg border border-green-600">
-            <h1 className="text-2xl font-bold text-green-400 mb-2">Welcome back, {currentUser?.name}!</h1>
-            <p className="text-green-100">Here's your {currentUser?.role} dashboard overview</p>
+          <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-3 rounded-lg border border-green-600">
+            <h1 className="text-lg font-bold text-green-400 mb-1">Welcome back, {currentUser?.name}!</h1>
+            <p className="text-green-100 text-sm">Here's your {currentUser?.role} dashboard overview</p>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3">
+            <div className="bg-gray-800 p-2 lg:p-3 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Customers</h3>
-                  <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{data.customers.length}</p>
+                  <h3 className="text-green-400 text-xs lg:text-sm font-semibold">Customers</h3>
+                  <p className="text-lg lg:text-xl font-bold text-green-100 mt-1">{data.customers.length}</p>
                 </div>
-                <span className="text-2xl lg:text-4xl">👥</span>
+                <span className="text-lg lg:text-xl">👥</span>
               </div>
             </div>
-            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
+            <div className="bg-gray-800 p-2 lg:p-3 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Products</h3>
-                  <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{data.products.length}</p>
+                  <h3 className="text-green-400 text-xs lg:text-sm font-semibold">Products</h3>
+                  <p className="text-lg lg:text-xl font-bold text-green-100 mt-1">{data.products.length}</p>
                 </div>
-                <span className="text-2xl lg:text-4xl">📦</span>
+                <span className="text-lg lg:text-xl">📦</span>
               </div>
             </div>
-            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
+            <div className="bg-gray-800 p-2 lg:p-3 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Services</h3>
-                  <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{data.services.length}</p>
+                  <h3 className="text-green-400 text-xs lg:text-sm font-semibold">Services</h3>
+                  <p className="text-lg lg:text-xl font-bold text-green-100 mt-1">{data.services.length}</p>
                 </div>
-                <span className="text-2xl lg:text-4xl">🔧</span>
+                <span className="text-lg lg:text-xl">🔧</span>
               </div>
             </div>
-            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
+            <div className="bg-gray-800 p-2 lg:p-3 rounded-lg border border-green-600 hover:border-green-500 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Tickets</h3>
-                  <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{data.tickets.length}</p>
+                  <h3 className="text-green-400 text-xs lg:text-sm font-semibold">Tickets</h3>
+                  <p className="text-lg lg:text-xl font-bold text-green-100 mt-1">{data.tickets.length}</p>
                 </div>
-                <span className="text-2xl lg:text-4xl">🎫</span>
+                <span className="text-lg lg:text-xl">🎫</span>
               </div>
             </div>
           </div>
 
           {/* Recent Activity */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
-              <h3 className="text-green-400 text-base lg:text-lg font-semibold mb-4">Recent Tickets</h3>
-              <div className="space-y-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-3">
+            <div className="bg-gray-800 p-2 lg:p-3 rounded-lg border border-green-600">
+              <h3 className="text-green-400 text-sm font-semibold mb-2">Recent Tickets</h3>
+              <div className="space-y-1">
                 {data.tickets.slice(0, 3).map((ticket, index) => (
-                  <div key={index} className="flex justify-between items-center p-3 bg-gray-700 rounded">
-                    <span className="text-green-100 text-sm lg:text-base">Ticket #{index + 1}</span>
-                    <span className="text-green-400 text-xs lg:text-sm">Open</span>
+                  <div key={index} className="flex justify-between items-center p-2 bg-gray-700 rounded">
+                    <span className="text-green-100 text-xs">Ticket #{index + 1}</span>
+                    <span className="text-green-400 text-xs">Open</span>
                   </div>
                 ))}
               </div>
             </div>
             
-            <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
-              <h3 className="text-green-400 text-base lg:text-lg font-semibold mb-4">Quick Actions</h3>
-              <div className="space-y-2 lg:space-y-3">
+            <div className="bg-gray-800 p-2 lg:p-3 rounded-lg border border-green-600">
+              <h3 className="text-green-400 text-sm font-semibold mb-2">Quick Actions</h3>
+              <div className="space-y-1">
                 {(currentUser?.role === 'admin' || currentUser?.role === 'partner') && (
                   <button 
                     onClick={() => setCurrentPage('customers')}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white p-2 lg:p-3 rounded transition-colors text-sm lg:text-base"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white p-1.5 rounded transition-colors text-xs"
                   >
                     + Add New Customer
                   </button>
@@ -128,13 +128,13 @@ const Dashboard = () => {
                   <>
                     <button 
                       onClick={() => setCurrentPage('add partner')}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white p-2 lg:p-3 rounded transition-colors text-sm lg:text-base"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white p-1.5 rounded transition-colors text-xs"
                     >
                       + Add Partner
                     </button>
                     <button 
                       onClick={() => setCurrentPage('add technician')}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white p-2 lg:p-3 rounded transition-colors text-sm lg:text-base"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white p-1.5 rounded transition-colors text-xs"
                     >
                       + Add Technician
                     </button>
@@ -142,13 +142,13 @@ const Dashboard = () => {
                 )}
                 <button 
                   onClick={() => setCurrentPage('tickets')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white p-2 lg:p-3 rounded transition-colors text-sm lg:text-base"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white p-1.5 rounded transition-colors text-xs"
                 >
                   + Create Ticket
                 </button>
                 <button 
                   onClick={() => setCurrentPage('reports')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white p-2 lg:p-3 rounded transition-colors text-sm lg:text-base"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white p-1.5 rounded transition-colors text-xs"
                 >
                   📊 View Reports
                 </button>
