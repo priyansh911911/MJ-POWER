@@ -22,9 +22,17 @@ const AddPartner = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-4">
-      <h2 className="text-xl sm:text-2xl font-bold text-green-400 mb-6">Add New Partner</h2>
+      <div className="flex items-center gap-4 mb-6">
+        <button
+          onClick={() => window.history.back()}
+          className="btn-secondary px-3 py-2 rounded flex items-center gap-2"
+        >
+          ← Back
+        </button>
+        <h2 className="text-xl sm:text-2xl font-bold text-green-400">Add New Partner</h2>
+      </div>
       
-      <form onSubmit={handleSubmit} className="bg-gray-800 p-4 sm:p-6 rounded-lg border border-green-600 space-y-4">
+      <form onSubmit={handleSubmit} className="glass-form p-4 sm:p-6 rounded-lg space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-green-300 text-sm font-medium mb-2">Name</label>
@@ -32,7 +40,7 @@ const AddPartner = () => {
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500 text-green-100"
+              className="w-full px-3 py-2 input-glass rounded"
               required
             />
           </div>
@@ -43,7 +51,7 @@ const AddPartner = () => {
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500 text-green-100"
+              className="w-full px-3 py-2 input-glass rounded"
               required
             />
           </div>
@@ -54,7 +62,7 @@ const AddPartner = () => {
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({...formData, phone: e.target.value})}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500 text-green-100"
+              className="w-full px-3 py-2 input-glass rounded"
               required
             />
           </div>
@@ -65,7 +73,7 @@ const AddPartner = () => {
               type="text"
               value={formData.username}
               onChange={(e) => setFormData({...formData, username: e.target.value})}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500 text-green-100"
+              className="w-full px-3 py-2 input-glass rounded"
               required
             />
           </div>
@@ -76,7 +84,7 @@ const AddPartner = () => {
               type="password"
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500 text-green-100"
+              className="w-full px-3 py-2 input-glass rounded"
               required
             />
           </div>
@@ -87,7 +95,7 @@ const AddPartner = () => {
               type="text"
               value={formData.company}
               onChange={(e) => setFormData({...formData, company: e.target.value})}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500 text-green-100"
+              className="w-full px-3 py-2 input-glass rounded"
               placeholder="Partner company name"
             />
           </div>
@@ -98,7 +106,7 @@ const AddPartner = () => {
               type="text"
               value={formData.territory}
               onChange={(e) => setFormData({...formData, territory: e.target.value})}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500 text-green-100"
+              className="w-full px-3 py-2 input-glass rounded"
               placeholder="Assigned territory or region"
             />
           </div>
@@ -106,7 +114,7 @@ const AddPartner = () => {
         
         <button
           type="submit"
-          className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 sm:py-3 px-4 rounded transition-colors"
+          className="w-full btn-primary font-bold py-2 sm:py-3 px-4 rounded"
         >
           Add Partner
         </button>

@@ -93,7 +93,7 @@ const Tickets = () => {
         {canCreateTickets && (
           <button
             onClick={() => setShowForm(true)}
-            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white w-full sm:w-auto"
+            className="btn-primary px-4 py-2 rounded w-full sm:w-auto"
           >
             Raise Ticket
           </button>
@@ -101,7 +101,7 @@ const Tickets = () => {
       </div>
 
       {showForm && canCreateTickets && (
-        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg mb-6 border border-green-600">
+        <div className="glass-form p-4 sm:p-6 rounded-lg mb-6">
           <h3 className="text-lg font-semibold text-green-400 mb-4">
             {editingTicket ? 'Edit Ticket' : 'Raise Ticket'}
           </h3>
@@ -163,10 +163,10 @@ const Tickets = () => {
               rows="2"
             />
             <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
-              <button type="submit" className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">
+              <button type="submit" className="btn-primary px-4 py-2 rounded">
                 {editingTicket ? 'Update' : 'Create'}
               </button>
-              <button type="button" onClick={resetForm} className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-white">
+              <button type="button" onClick={resetForm} className="btn-secondary px-4 py-2 rounded">
                 Cancel
               </button>
             </div>
@@ -175,7 +175,7 @@ const Tickets = () => {
       )}
 
       {/* Desktop Table */}
-      <div className="hidden lg:block bg-gray-800 rounded-lg border border-green-600">
+      <div className="hidden lg:block glass-table rounded-lg">
         <table className="w-full">
           <thead className="bg-gray-700">
             <tr>
@@ -224,13 +224,13 @@ const Tickets = () => {
                       <>
                         <button
                           onClick={() => handleEdit(ticket)}
-                          className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white mr-2"
+                          className="btn-info px-3 py-1 rounded mr-2"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => deleteItem('tickets', ticket.id)}
-                          className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white"
+                          className="btn-danger px-3 py-1 rounded"
                         >
                           Delete
                         </button>
@@ -253,7 +253,7 @@ const Tickets = () => {
           const assignedUser = data.users.find(u => u.id == ticket.assignedTo);
           
           return (
-            <div key={ticket.id} className="bg-gray-800 p-4 rounded-lg border border-green-600">
+            <div key={ticket.id} className="mobile-card p-4 rounded-lg">
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
                   <span className="text-green-400 font-semibold">#{ticket.id}</span>
@@ -295,13 +295,13 @@ const Tickets = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(ticket)}
-                        className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white flex-1"
+                        className="btn-info px-3 py-1 rounded flex-1"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deleteItem('tickets', ticket.id)}
-                        className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white flex-1"
+                        className="btn-danger px-3 py-1 rounded flex-1"
                       >
                         Delete
                       </button>

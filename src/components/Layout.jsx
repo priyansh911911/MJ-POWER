@@ -35,7 +35,7 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-green-100 flex">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-green-100 flex">
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-gray-900 p-2">
         <button
@@ -55,7 +55,7 @@ const Layout = ({ children }) => {
       )}
 
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gray-800 border-r border-green-600 flex flex-col h-screen overflow-y-auto scrollbar-hide transition-transform duration-300 ease-in-out`}>
+      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white/10 backdrop-blur-md border-r border-green-600/50 flex flex-col h-screen overflow-y-auto scrollbar-hide transition-transform duration-300 ease-in-out shadow-2xl`}>
         <div className="flex-1 p-4 lg:p-6">
           <div className="flex justify-center mb-6 lg:mb-8">
             <img src={logo} alt="MJ POWER" className="h-24 w-24 lg:h-32 lg:w-32 rounded" />

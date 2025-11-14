@@ -70,7 +70,13 @@ const CustomerPortal = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-green-100 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white flex relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse"></div>
+      </div>
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div 
@@ -80,20 +86,20 @@ const CustomerPortal = () => {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 border-r border-green-600 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white/10 backdrop-blur-xl border-r border-white/20 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-2xl ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
-        <div className="flex items-center justify-between p-4 border-b border-green-600">
-          <h1 className="text-lg font-bold text-green-400">Customer Portal</h1>
+        <div className="flex items-center justify-between p-6 border-b border-white/20">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">Customer Portal</h1>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-green-300 hover:text-white"
+            className="lg:hidden text-white/70 hover:text-white transition-colors duration-200 text-xl"
           >
             ✕
           </button>
         </div>
         
-        <nav className="mt-4">
+        <nav className="mt-6 px-3">
           {menuItems.map(item => (
             <button
               key={item.id}
@@ -101,39 +107,44 @@ const CustomerPortal = () => {
                 setActiveTab(item.id);
                 setSidebarOpen(false);
               }}
-              className={`w-full flex items-center px-4 py-3 text-left hover:bg-gray-700 ${
-                activeTab === item.id ? 'bg-green-600 text-white' : 'text-green-300'
+              className={`w-full flex items-center px-4 py-3 mb-2 text-left rounded-xl transition-all duration-200 ${
+                activeTab === item.id 
+                  ? 'bg-gradient-to-r from-green-500/20 to-blue-500/20 backdrop-blur-sm border border-white/20 text-white shadow-lg' 
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
               }`}
             >
-              <span className="mr-3">{item.icon}</span>
-              {item.label}
+              <span className="mr-3 text-lg">{item.icon}</span>
+              <span className="font-medium">{item.label}</span>
             </button>
           ))}
         </nav>
         
-        <div className="absolute bottom-4 left-4 right-4">
-          <div className="text-sm text-green-300 mb-2">Welcome, {currentUser.name}</div>
-          <button
-            onClick={logout}
-            className="w-full bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-white text-sm"
-          >
-            Logout
-          </button>
+        <div className="absolute bottom-6 left-4 right-4">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+            <div className="text-sm text-white/80 mb-3">Welcome back,</div>
+            <div className="font-semibold text-white mb-4">{currentUser.name}</div>
+            <button
+              onClick={logout}
+              className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 px-4 py-2 rounded-lg text-white text-sm font-medium transition-all duration-200 shadow-lg"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Mobile Header */}
-        <div className="lg:hidden bg-gray-800 border-b border-green-600 p-4">
+        <div className="lg:hidden bg-white/10 backdrop-blur-xl border-b border-white/20 p-4 relative z-10">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="text-green-300 hover:text-white"
+              className="text-white/80 hover:text-white transition-colors duration-200 text-xl"
             >
               ☰
             </button>
-            <h1 className="text-lg font-bold text-green-400">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
               {menuItems.find(item => item.id === activeTab)?.label}
             </h1>
             <div className="w-6"></div>
@@ -141,24 +152,24 @@ const CustomerPortal = () => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-4 lg:p-6">
+        <div className="flex-1 p-4 lg:p-6 relative z-10">
         {activeTab === 'dashboard' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-gray-800 p-4 rounded-lg border border-green-600">
-              <h3 className="text-green-400 font-semibold">Total Orders</h3>
-              <p className="text-2xl font-bold">{myOrders.length}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white/10 backdrop-blur-xl p-6 rounded-2xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+              <h3 className="text-green-400 font-semibold mb-2">Total Orders</h3>
+              <p className="text-3xl font-bold text-white">{myOrders.length}</p>
             </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-green-600">
-              <h3 className="text-green-400 font-semibold">Open Tickets</h3>
-              <p className="text-2xl font-bold">{myTickets.filter(t => t.status === 'open').length}</p>
+            <div className="bg-white/10 backdrop-blur-xl p-6 rounded-2xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+              <h3 className="text-yellow-400 font-semibold mb-2">Open Tickets</h3>
+              <p className="text-3xl font-bold text-white">{myTickets.filter(t => t.status === 'open').length}</p>
             </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-green-600">
-              <h3 className="text-green-400 font-semibold">Pending Orders</h3>
-              <p className="text-2xl font-bold">{myOrders.filter(o => o.status === 'pending').length}</p>
+            <div className="bg-white/10 backdrop-blur-xl p-6 rounded-2xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+              <h3 className="text-blue-400 font-semibold mb-2">Pending Orders</h3>
+              <p className="text-3xl font-bold text-white">{myOrders.filter(o => o.status === 'pending').length}</p>
             </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-green-600">
-              <h3 className="text-green-400 font-semibold">Completed Orders</h3>
-              <p className="text-2xl font-bold">{myOrders.filter(o => o.status === 'completed').length}</p>
+            <div className="bg-white/10 backdrop-blur-xl p-6 rounded-2xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+              <h3 className="text-purple-400 font-semibold mb-2">Completed Orders</h3>
+              <p className="text-3xl font-bold text-white">{myOrders.filter(o => o.status === 'completed').length}</p>
             </div>
           </div>
         )}
@@ -180,7 +191,7 @@ const CustomerPortal = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {(orderForm.type === 'product' ? data.products : data.services)?.map(item => (
-                <div key={item.id} className="bg-gray-800 p-4 rounded-lg border border-green-600">
+                <div key={item.id} className="bg-white/10 backdrop-blur-xl p-4 rounded-xl border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
                   <h3 className="text-lg font-semibold text-green-300 mb-2">{item.name}</h3>
                   <p className="text-green-100 mb-2">Category: {item.category}</p>
                   <p className="text-xl font-bold text-green-400 mb-4">₹{item.price}</p>
@@ -267,8 +278,8 @@ const CustomerPortal = () => {
         )}
 
         {activeTab === 'raise-ticket' && (
-          <div className="max-w-md mx-auto bg-gray-800 p-6 rounded-lg border border-green-600">
-            <h2 className="text-xl font-bold text-green-400 mb-4">Raise Ticket</h2>
+          <div className="max-w-md mx-auto p-6 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-4">Raise Ticket</h2>
             <form onSubmit={handleRaiseTicket} className="space-y-4">
               <select
                 value={ticketForm.type}

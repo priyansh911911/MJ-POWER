@@ -48,7 +48,7 @@ const Customers = () => {
         {canManageCustomers && (
           <button
             onClick={() => setShowForm(true)}
-            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white w-full sm:w-auto"
+            className="btn-primary px-4 py-2 rounded w-full sm:w-auto"
           >
             Add Customer
           </button>
@@ -56,7 +56,7 @@ const Customers = () => {
       </div>
 
       {showForm && (
-        <div className="bg-gray-800 p-4 sm:p-6 rounded-lg mb-6 border border-green-600">
+        <div className="glass-form p-4 sm:p-6 rounded-lg mb-6">
           <h3 className="text-lg font-semibold text-green-400 mb-4">
             {editingCustomer ? 'Edit Customer' : 'Add Customer'}
           </h3>
@@ -117,10 +117,10 @@ const Customers = () => {
               </select>
             </div>
             <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
-              <button type="submit" className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">
+              <button type="submit" className="btn-primary px-4 py-2 rounded">
                 {editingCustomer ? 'Update' : 'Add'}
               </button>
-              <button type="button" onClick={resetForm} className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-white">
+              <button type="button" onClick={resetForm} className="btn-secondary px-4 py-2 rounded">
                 Cancel
               </button>
             </div>
@@ -129,7 +129,7 @@ const Customers = () => {
       )}
 
       {/* Desktop Table */}
-      <div className="hidden md:block bg-gray-800 rounded-lg border border-green-600">
+      <div className="hidden md:block glass-table rounded-lg">
         <table className="w-full">
           <thead className="bg-gray-700">
             <tr>
@@ -157,13 +157,13 @@ const Customers = () => {
                     <td className="p-4">
                       <button
                         onClick={() => handleEdit(customer)}
-                        className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white mr-2"
+                        className="btn-info px-3 py-1 rounded mr-2"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deleteItem('customers', customer.id)}
-                        className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white"
+                        className="btn-danger px-3 py-1 rounded"
                       >
                         Delete
                       </button>
@@ -181,7 +181,7 @@ const Customers = () => {
         {data.customers.map(customer => {
           const assignedUser = data.users.find(u => u.id == customer.assignedTo);
           return (
-            <div key={customer.id} className="bg-gray-800 p-4 rounded-lg border border-green-600">
+            <div key={customer.id} className="mobile-card p-4 rounded-lg">
               <div className="space-y-2">
                 <div>
                   <span className="text-green-400 font-semibold">Name: </span>
@@ -209,13 +209,13 @@ const Customers = () => {
                   <div className="flex gap-2 pt-2">
                     <button
                       onClick={() => handleEdit(customer)}
-                      className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white flex-1"
+                      className="btn-info px-3 py-1 rounded flex-1"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => deleteItem('customers', customer.id)}
-                      className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white flex-1"
+                      className="btn-danger px-3 py-1 rounded flex-1"
                     >
                       Delete
                     </button>
