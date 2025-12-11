@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/priya/OneDrive/Documents/GitHub/MJ-POWER/pages/api/tickets.js"],"sourcesContent":["export default function handler(req, res) {\n  res.status(200).json({ data: [] });\n}"],"names":[],"mappings":";;;;AAAe,SAAS,QAAQ,GAAG,EAAE,GAAG;IACtC,IAAI,MAAM,CAAC,KAAK,IAAI,CAAC;QAAE,MAAM,EAAE;IAAC;AAClC"}}]
+}

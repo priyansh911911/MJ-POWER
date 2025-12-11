@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+body {
+  background: #ffffff;
+}
+
+/* Alpex Solar Color Theme */
+.btn-primary {
+  @apply bg-orange-500 hover:bg-orange-600 text-white;
+}
+
+.btn-secondary {
+  @apply bg-gray-500 hover:bg-gray-600 text-white;
+}
+
+.btn-danger {
+  @apply bg-red-500 hover:bg-red-600 text-white;
+}
+
+.btn-info {
+  @apply bg-blue-500 hover:bg-blue-600 text-white;
+}
+
+.glass-card, .glass-form, .glass-table, .mobile-card {
+  @apply bg-white shadow-lg border border-gray-200 rounded-lg;
+}
+
+input, select, textarea {
+  @apply bg-white border border-gray-300 text-black focus:border-orange-500 focus:ring-2 focus:ring-orange-200;
+}
+
+select option {
+  @apply bg-white text-black;
+}
+
+/* Override all text colors to black */
+h1, h2, h3, h4, h5, h6, p, span, div, td, th, label {
+  @apply text-black;
+}
