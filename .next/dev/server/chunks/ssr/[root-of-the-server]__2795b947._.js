@@ -16,13 +16,13 @@ __turbopack_context__.s([
     "fqConfig",
     ()=>fqConfig
 ]);
-const API_BASE_URL = 'https://v5.frontql.dev';
+const API_BASE_URL = 'https://v6.frontql.dev';
 const DATABASE = 's3_mjpower_solar';
 const fqConfig = {
-    tokenPath: ("TURBOPACK compile-time value", "C:\\Users\\priya\\OneDrive\\Documents\\GitHub\\MJ-POWER\\src\\services\\tokens.json") || 'src/services/tokens.json',
+    tokenPath: process.env.NEXT_PUBLIC_TOKEN_PATH || 'src/services/tokens.json',
     dev: {
         appName: 's3_mjpower_solar',
-        serverUrl: 'https://v5.frontql.dev'
+        serverUrl: 'http://localhost:4466'
     },
     prod: {
         appName: 's3_mjpower_solar',
@@ -41,16 +41,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2f
 "use strict";
 
 __turbopack_context__.s([
-    "_BASE_URL",
-    ()=>_BASE_URL,
-    "_DATABASE",
-    ()=>_DATABASE,
     "default",
-    ()=>__TURBOPACK__default__export__,
-    "getImageUrl",
-    ()=>getImageUrl,
-    "uploadImage",
-    ()=>uploadImage
+    ()=>__TURBOPACK__default__export__
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$tokens$2e$json__$28$json$29$__ = __turbopack_context__.i("[project]/src/services/tokens.json (json)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2f$index$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/src/services/config/index.ts [ssr] (ecmascript) <locals>");
@@ -136,8 +128,7 @@ const makeRequest = async (method, endpoint, options = {})=>{
             headers: {
                 ...headers,
                 "Content-Type": "application/json",
-                "app": FQ_APP_NAME,
-                "token": ("TURBOPACK compile-time value", "czNfbWpwb3dlcl9zb2xhciwxNzY1NDUxOTI1ODU4Ok1YbGxPSGhw") || ""
+                app: FQ_APP_NAME
             },
             body: body ? JSON.stringify(body) : null
         };
@@ -168,39 +159,6 @@ const Api = {
     post: async (endpoint, options)=>makeRequest("post", endpoint, options),
     delete: async (endpoint, options)=>makeRequest("delete", endpoint, options),
     sql: async (endpoint, options)=>makeRequest("post", `/sql-${endpoint.replace("/", "")}`, options)
-};
-const _DATABASE = FQ_APP_NAME;
-const _BASE_URL = FQ_PROD_SERVER_URL;
-const IMAGES_BASE_URL = ("TURBOPACK compile-time value", "https://uploads.backendservices.in/storage/admin/packages/") || "https://uploads.backendservices.in/storage/admin/packages/";
-const UPLOADS_API_URL = ("TURBOPACK compile-time value", "https://uploads.backendservices.in/api") || "https://uploads.backendservices.in/api";
-const uploadImage = async (file)=>{
-    const formData = new FormData();
-    formData.append("folder", "packages");
-    formData.append("image", file);
-    try {
-        const response = await fetch(UPLOADS_API_URL, {
-            method: "POST",
-            headers: {
-                username: ("TURBOPACK compile-time value", "admin") || "admin",
-                password: ("TURBOPACK compile-time value", "arodos") || "arodos"
-            },
-            body: formData
-        });
-        if (!response.ok) throw new Error(`Upload failed with status ${response.status}`);
-        const data = await response.json();
-        const path = data?.files?.image;
-        if (!path) return null;
-        const parts = path.split("/");
-        return parts[parts.length - 1] || null;
-    } catch (error) {
-        console.error('Image upload failed:', error);
-        throw error;
-    }
-};
-const getImageUrl = (file)=>{
-    if (!file) return '';
-    if (file.startsWith('http://') || file.startsWith('https://')) return file;
-    return `${IMAGES_BASE_URL}${file}`;
 };
 const __TURBOPACK__default__export__ = Api;
 }),
