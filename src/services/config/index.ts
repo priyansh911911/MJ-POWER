@@ -1,0 +1,1 @@
+export { fqConfig } from './defaults';

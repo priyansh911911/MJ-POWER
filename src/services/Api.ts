@@ -1,13 +1,12 @@
 import tokens from "./tokens.json";
-import { fqConfig } from '../config/defaults';
+import { fqConfig } from './config';
 
 const FQ_APP_NAME = fqConfig.prod.appName;
 const FQ_DEV_SERVER_URL = fqConfig.dev.serverUrl;
 const FQ_PROD_SERVER_URL = fqConfig.prod.serverUrl;
 const FQ_FULL_TOKEN_PATH = fqConfig.tokenPath;
 
-export const _DATABASE = FQ_APP_NAME;
-export const _BASE_URL = FQ_PROD_SERVER_URL;
+
 
 interface Tokens {
   [key: string]: string | false;
@@ -28,6 +27,7 @@ function uniqueKey(input: string): string {
   }
   return key;
 }
+
 
 type HttpMethod = "get" | "post" | "put" | "delete" | "sql";
 
@@ -51,7 +51,7 @@ type RequestOptions = {
   permissions?: string;
 };
 
-function cleanUrlPath(urlPath: string) {
+function cleanUrlPath(urlPath: String) {
   let urlPathArr = urlPath.split('/');
   if (urlPathArr.length > 2) {
     urlPathArr.pop();
@@ -81,7 +81,7 @@ function getKey(method: HttpMethod, url: string, options: RequestOptions) {
   return method + ":" + _url + ">" + uniqueKey(tokenStr);
 }
 
-const makeRequest = async (method: HttpMethod, endpoint: string, options: RequestOptions = {}): Promise<any> => {
+const makeRequest = async (method: HttpMethod, endpoint: string, options: RequestOptions = {}): Promise<unknown> => {
   const {
     body,
     page,
@@ -135,8 +135,8 @@ const makeRequest = async (method: HttpMethod, endpoint: string, options: Reques
       headers: {
         ...headers,
         "Content-Type": "application/json",
-        app: FQ_APP_NAME,
-        "token": process.env.NEXT_PUBLIC_AUTH_KEY,
+        "app": FQ_APP_NAME,
+        "token": process.env.NEXT_PUBLIC_AUTH_KEY || "",
       },
       body: body ? JSON.stringify(body) : null,
     };
@@ -147,9 +147,9 @@ const makeRequest = async (method: HttpMethod, endpoint: string, options: Reques
       url += `?${query.toString()}`;
     }
 
-    const final_url = token ? FQ_PROD_SERVER_URL + url : FQ_DEV_SERVER_URL + url;
+    const final_url = token ? FQ_PROD_SERVER_URL + url : FQ_DEV_SERVER_URL + url
 
-    console.log(final_url, requestConfig);
+    console.log(final_url, requestConfig)
 
     const response = await fetch(final_url, requestConfig);
 
@@ -175,6 +175,9 @@ const Api = {
   sql: async (endpoint: string, options?: RequestOptions): Promise<any> =>
     makeRequest("post", `/sql-${endpoint.replace("/", "")}`, options),
 };
+
+export const _DATABASE = FQ_APP_NAME;
+export const _BASE_URL = FQ_PROD_SERVER_URL;
 
 const IMAGES_BASE_URL = process.env.NEXT_PUBLIC_IMAGES_BASE_URL || "https://uploads.backendservices.in/storage/admin/packages/";
 const UPLOADS_API_URL = process.env.NEXT_PUBLIC_UPLOADS_API_URL || "https://uploads.backendservices.in/api";
