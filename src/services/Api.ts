@@ -135,8 +135,7 @@ const makeRequest = async (method: HttpMethod, endpoint: string, options: Reques
       headers: {
         ...headers,
         "Content-Type": "application/json",
-        "app": FQ_APP_NAME,
-        "token": process.env.NEXT_PUBLIC_AUTH_KEY || "",
+        app: FQ_APP_NAME,
       },
       body: body ? JSON.stringify(body) : null,
     };
@@ -174,47 +173,6 @@ const Api = {
   delete: async (endpoint: string, options?: RequestOptions): Promise<any> => makeRequest("delete", endpoint, options),
   sql: async (endpoint: string, options?: RequestOptions): Promise<any> =>
     makeRequest("post", `/sql-${endpoint.replace("/", "")}`, options),
-};
-
-export const _DATABASE = FQ_APP_NAME;
-export const _BASE_URL = FQ_PROD_SERVER_URL;
-
-const IMAGES_BASE_URL = process.env.NEXT_PUBLIC_IMAGES_BASE_URL || "https://uploads.backendservices.in/storage/admin/packages/";
-const UPLOADS_API_URL = process.env.NEXT_PUBLIC_UPLOADS_API_URL || "https://uploads.backendservices.in/api";
-
-export const uploadImage = async (file: File): Promise<string | null> => {
-  const formData = new FormData();
-  formData.append("folder", "packages");
-  formData.append("image", file);
-  
-  try {
-    const response = await fetch(UPLOADS_API_URL, {
-      method: "POST",
-      headers: {
-        username: process.env.NEXT_PUBLIC_UPLOAD_USERNAME || "admin",
-        password: process.env.NEXT_PUBLIC_UPLOAD_PASSWORD || "arodos",
-      },
-      body: formData,
-    });
-    
-    if (!response.ok) throw new Error(`Upload failed with status ${response.status}`);
-    const data = await response.json();
-    
-    const path = data?.files?.image;
-    if (!path) return null;
-    
-    const parts = path.split("/");
-    return parts[parts.length - 1] || null;
-  } catch (error) {
-    console.error('Image upload failed:', error);
-    throw error;
-  }
-};
-
-export const getImageUrl = (file: string): string => {
-  if (!file) return '';
-  if (file.startsWith('http://') || file.startsWith('https://')) return file;
-  return `${IMAGES_BASE_URL}${file}`;
 };
 
 export default Api;

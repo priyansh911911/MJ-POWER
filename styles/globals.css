@@ -21,11 +21,16 @@ body {
   @apply bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded;
 }
 
-.glass-card, .glass-form, .glass-table, .mobile-card {
+.glass-card,
+.glass-form,
+.glass-table,
+.mobile-card {
   @apply bg-white shadow-lg border border-gray-200 rounded-lg p-4;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   @apply bg-white border border-gray-300 text-black focus:border-orange-500 focus:ring-2 focus:ring-orange-200 px-3 py-2 rounded;
 }
 
@@ -34,6 +39,17 @@ select option {
 }
 
 /* Override all text colors to black */
-h1, h2, h3, h4, h5, h6, p, span, div, td, th, label {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div,
+td,
+th,
+label {
   @apply text-black;
 }

@@ -1,5 +1,10 @@
-interface Customer {
+export interface BaseRecord {
   id: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface Customers extends BaseRecord {
   name: string;
   email: string;
   password: string;
@@ -7,11 +12,9 @@ interface Customer {
   address: string;
   assignedTo: string;
   assignedType: string;
-  created_at: Date;
-  updated_at: Date;
 }
 
-interface Order {
+export interface Orders extends BaseRecord {
   type: string;
   itemId: number;
   quantity: number;
@@ -23,11 +26,9 @@ interface Order {
   status: string;
   preferredDate: string;
   description: string;
-  createdAt: string;
 }
 
-interface Product {
-  id: number;
+export interface Products extends BaseRecord {
   name: string;
   category: string;
   price: number;
@@ -41,19 +42,16 @@ interface Product {
   gstPercent: number;
 }
 
-interface Service {
-  id: number;
+export interface Services extends BaseRecord {
   name: string;
   category: string;
   price: number;
   description: string;
   duration: string;
   includes: string;
-  created_at: Date;
-  updated_at: Date;
 }
 
-interface Ticket {
+export interface Tickets extends BaseRecord {
   type: string;
   itemId: number;
   customerId: number;
@@ -62,11 +60,9 @@ interface Ticket {
   notes: string;
   status: string;
   assignedTo: string;
-  createdBy: number;
-  createdAt: string;
 }
 
-interface User {
+export interface Users extends BaseRecord {
   username: string;
   password: string;
   role: string;

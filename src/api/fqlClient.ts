@@ -1,24 +1,7 @@
 import Api from "../services/Api";
 import { getCached, setCached, makeKey} from "../lib/simpleCache";
 import { getClientSessionToken, getCurrentUser } from "./authEvents";
-import {
-  Role,
-  BaseRecord,
-  AreaRecord,
-  ItemRecord,
-  SaleRecord,
-  UnitRecord,
-  ClientRecord,
-  VendorRecord,
-  ReceiptRecord,
-  PaymentRecord,
-  CustomerRecord,
-  PurchaseRecord,
-  AdminUserRecord,
-  ClientUserRecord,
-  PurchaseEntryRecord,
-  PurchaseVariableRecord,
-} from "./fqlSchema";
+import type { BaseRecord, Customers, Orders, Products, Services, Tickets, Users } from "./fqlSchema";
 
 const DEFAULT_TTL_MS = 5 * 60 * 1000;
 
@@ -362,10 +345,10 @@ export function createFQL<TRecord extends BaseRecord = BaseRecord>(resource: str
 
 /** Pre-configured FQL instances */
 export const fql = {
-  customers: createFQL<CustomersRecord>("customers"),
-  products: createFQL<ProductsRecord>("products"),
-  orders: createFQL<OrdersRecord>("orders"),
-  users: createFQL<UsersRecord>("users"),
-  tickets: createFQL<TicketsRecord>("tickets"),
-  services: createFQL<ServicesRecord>("services"),
+  users: createFQL<Users>("users"),
+  orders: createFQL<Orders>("orders"),
+  tickets: createFQL<Tickets>("tickets"),
+  products: createFQL<Products>("products"),
+  services: createFQL<Services>("services"),
+  customers: createFQL<Customers>("customers"),
 };

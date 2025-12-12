@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import storageData from '../assets/data/storage.json';
-import Api, { _BASE_URL } from '../services/Api';
+import Api from '../services/Api';
+import { fql } from '../api/fqlClient';
 
 const AppContext = createContext();
 
@@ -44,12 +45,12 @@ export const AppProvider = ({ children }) => {
     try {
       const [customers, products, services, tickets, orders] = await Promise.all([
         Api.get('/customers'),
-        Api.get('/products'), 
+        Api.get('/products'),
         Api.get('/services'),
         Api.get('/tickets'),
         Api.get('/orders')
       ]);
-      
+
       setData({
         ...storageData,
         customers: customers?.data || [],
@@ -99,7 +100,7 @@ export const AppProvider = ({ children }) => {
       setCurrentUser(customUser);
       return true;
     }
-    
+
     const user = data.users?.find(u => u.username === username && u.password === password);
     if (user) {
       setCurrentUser(user);
@@ -113,6 +114,38 @@ export const AppProvider = ({ children }) => {
     setCurrentPage('dashboard');
   };
 
+  const fetchData = async (key: keyof typeof data, query: string) => {
+    try {
+      if (!query?.trim()) {
+        setData(prev => ({
+          ...prev,
+          [key]: [],
+        }));
+        return;
+      }
+
+      const products = await fql.products.findAll();
+
+      const filtered = products.result?.filter((item: any) =>
+        item.name.toLowerCase().includes(query.toLowerCase())
+      ) || [];
+
+      setData(prev => ({
+        ...prev,
+        [key]: filtered,
+      }));
+    } catch (error) {
+      console.error("fetchData error:", error);
+      setData(prev => ({
+        ...prev,
+        [key]: [],
+      }));
+    }
+  };
+
+
+
+
   const updateData = (key, newData) => {
     setData(prev => ({
       ...prev,
@@ -122,26 +155,26 @@ export const AppProvider = ({ children }) => {
 
   const addItem = async (key, item) => {
     console.log(`Attempting to add ${key}:`, item);
-    console.log('Base URL:', _BASE_URL);
-    
+    // console.log('Base URL:', _BASE_URL);
+
     try {
       console.log(`Making API call to: POST /${key}`);
       const response = await Api.post(`/${key}`, { body: item });
       console.log('API Response:', response);
-      
+
       const newItem = response.data?.[0] || { ...item, id: Date.now() };
-      
+
       setData(prev => ({
         ...prev,
         [key]: [...(prev[key] || []), newItem]
       }));
-      
+
       console.log('Item added to local state:', newItem);
       return newItem;
     } catch (error) {
       console.error('Database add failed:', error);
       console.error('Error details:', error.response?.data || error.message);
-      
+
       // Fallback to local storage
       const newItem = { ...item, id: Date.now() };
       setData(prev => ({
@@ -156,7 +189,7 @@ export const AppProvider = ({ children }) => {
   const updateItem = async (key, id, updatedItem) => {
     try {
       await Api.put(`/${key}/${id}`, { body: updatedItem });
-      
+
       setData(prev => ({
         ...prev,
         [key]: prev[key].map(item => item.id === id ? { ...item, ...updatedItem } : item)
@@ -174,7 +207,7 @@ export const AppProvider = ({ children }) => {
   const deleteItem = async (key, id) => {
     try {
       await Api.delete(`/${key}/${id}`);
-      
+
       setData(prev => ({
         ...prev,
         [key]: prev[key].filter(item => item.id !== id)
@@ -204,7 +237,8 @@ export const AppProvider = ({ children }) => {
       useCloud,
       setUseCloud,
       syncToCloud,
-      loadFromCloud
+      loadFromCloud,
+      fetchData
     }}>
       {children}
     </AppContext.Provider>

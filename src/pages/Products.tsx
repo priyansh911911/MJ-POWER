@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { uploadImage, getImageUrl } from '../services/Api';
+import { getImageUrl } from '../lib/images';
+import { uploadImage } from '../lib/uploads';
 
 const Products = () => {
-  const { data, addItem, updateItem, deleteItem, currentUser } = useApp();
+  const { data, fetchData, addItem, updateItem, deleteItem, currentUser } = useApp();
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
@@ -25,16 +26,20 @@ const Products = () => {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     setUploading(true);
     try {
       const imageUrl = await uploadImage(file);
-      setFormData({...formData, image: imageUrl});
+      setFormData({ ...formData, image: imageUrl });
     } catch (error) {
       alert('Image upload failed');
     }
     setUploading(false);
   };
+
+  useEffect(() => {
+    fetchData("products", "");
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,9 +54,9 @@ const Products = () => {
       partnerCommissionPercent: parseFloat(formData.partnerCommissionPercent),
       technicianCommissionPercent: parseFloat(formData.technicianCommissionPercent)
     };
-    
+
     console.log('Submitting product data:', productData);
-    
+
     try {
       if (editingProduct) {
         await updateItem('products', editingProduct.id, productData);
@@ -115,7 +120,7 @@ const Products = () => {
               type="text"
               placeholder="Product Name (e.g., Solar Panel 500W)"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
               required
             />
@@ -131,7 +136,7 @@ const Products = () => {
             </div>
             <select
               value={formData.category}
-              onChange={(e) => setFormData({...formData, category: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
               required
             >
@@ -145,21 +150,21 @@ const Products = () => {
               step="0.01"
               placeholder="Price (₹)"
               value={formData.price}
-              onChange={(e) => setFormData({...formData, price: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
               required
             />
             <textarea
               placeholder="Product Description"
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
               rows="3"
             />
             <textarea
               placeholder="Technical Specifications"
               value={formData.specifications}
-              onChange={(e) => setFormData({...formData, specifications: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, specifications: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
               rows="2"
             />
@@ -168,7 +173,7 @@ const Products = () => {
               step="0.01"
               placeholder="GST %"
               value={formData.gstPercent}
-              onChange={(e) => setFormData({...formData, gstPercent: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, gstPercent: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
             />
             <input
@@ -176,7 +181,7 @@ const Products = () => {
               step="0.01"
               placeholder="Partner Commission %"
               value={formData.partnerCommissionPercent}
-              onChange={(e) => setFormData({...formData, partnerCommissionPercent: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, partnerCommissionPercent: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
             />
             <input
@@ -184,7 +189,7 @@ const Products = () => {
               step="0.01"
               placeholder="Technician Commission %"
               value={formData.technicianCommissionPercent}
-              onChange={(e) => setFormData({...formData, technicianCommissionPercent: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, technicianCommissionPercent: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
             />
             <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
@@ -215,45 +220,61 @@ const Products = () => {
           </thead>
           <tbody>
             {data.products?.length > 0 ? (
-              data.products.map(product => (
-                <tr key={product.id} className="border-t border-blue-300/20 hover:bg-white/5 transition-all">
-                  <td className="p-3 text-white">
-                    <div className="flex items-center gap-2">
-                      {product.image && <img src={getImageUrl(product.image)} alt={product.name} className="h-10 w-10 object-cover rounded" />}
-                      {product.name}
-                    </div>
-                  </td>
-                  <td className="p-3 text-blue-100">{product.category}</td>
-                  <td className="p-3 text-green-300 font-semibold">₹{product.price}</td>
-                  <td className="p-3 text-blue-100">{product.gstPercent}%</td>
-                  <td className="p-3 text-blue-100">{product.partnerCommissionPercent}%</td>
-                  <td className="p-3 text-blue-100">{product.technicianCommissionPercent}%</td>
-                  {canManageProducts && (
-                    <td className="p-3">
-                      <button
-                        onClick={() => handleEdit(product)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg mr-2 text-sm transition-all"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteItem('products', product.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-sm transition-all"
-                      >
-                        Delete
-                      </button>
+              data.products.map(product => {
+                const hasImage = product.image && product.image.trim() !== "";
+
+                return (
+                  <tr key={product.id} className="border-t border-blue-300/20 hover:bg-white/5 transition-all">
+                    <td className="p-3 text-white">
+                      <div className="flex items-center gap-2">
+                        {hasImage ? (
+                          <img
+                            src={getImageUrl(product.image)}
+                            alt={product.name}
+                            className="h-10 w-10 object-cover rounded"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded bg-white/10 flex items-center justify-center text-xs text-blue-200">
+                            No Img
+                          </div>
+                        )}
+                        {product.name}
+                      </div>
                     </td>
-                  )}
-                </tr>
-              ))
+                    <td className="p-3 text-blue-100">{product.category}</td>
+                    <td className="p-3 text-green-300 font-semibold">₹{product.price}</td>
+                    <td className="p-3 text-blue-100">{product.gstPercent}%</td>
+                    <td className="p-3 text-blue-100">{product.partnerCommissionPercent}%</td>
+                    <td className="p-3 text-blue-100">{product.technicianCommissionPercent}%</td>
+                    {canManageProducts && (
+                      <td className="p-3 whitespace-nowrap">
+                        <button
+                          onClick={() => handleEdit(product)}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg mr-2 text-sm transition-all"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => deleteItem("products", product.id)}
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-sm transition-all"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })
             ) : (
               <tr>
-                <td colSpan="7" className="p-6 text-center text-blue-200">
+                <td colSpan={canManageProducts ? 7 : 6} className="p-6 text-center text-blue-200">
                   No solar products added yet. Click "Add Product" to get started.
                 </td>
               </tr>
             )}
           </tbody>
+
+
         </table>
       </div>
 
