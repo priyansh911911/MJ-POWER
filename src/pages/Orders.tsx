@@ -33,7 +33,7 @@ const Orders = () => {
         </h2>
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e: any) => setStatusFilter(e.target.value)}
           className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
         >
           <option value="all">All Orders</option>
@@ -80,7 +80,7 @@ const Orders = () => {
                     <td className="p-3 whitespace-nowrap">
                       <select
                         value={order.status}
-                        onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
+                        onChange={(e: any) => handleStatusUpdate(order.id, e.target.value)}
                         className="text-sm border border-gray-300 rounded px-2 py-1 mr-2"
                       >
                         <option value="pending">Pending</option>
@@ -151,7 +151,7 @@ const Orders = () => {
                   <div className="flex gap-2 pt-2">
                     <select
                       value={order.status}
-                      onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
+                      onChange={(e: any) => handleStatusUpdate(order.id, e.target.value)}
                       className="flex-1 text-sm border border-gray-300 rounded px-2 py-2"
                     >
                       <option value="pending">Pending</option>

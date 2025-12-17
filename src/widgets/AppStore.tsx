@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 // import logo from '../assets/images/Logo.png';
 
-const Layout = ({ children }) => {
-  const { currentUser, logout, currentPage, setCurrentPage } = useApp();
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  const { currentUser, logout, setCurrentPage } = useApp();
   const [activeItem, setActiveItem] = useState('Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -69,7 +69,7 @@ const Layout = ({ children }) => {
       )}
 
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${sidebarCollapsed ? 'lg:-translate-x-full' : 'lg:translate-x-0'} fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col h-screen overflow-y-auto transition-transform duration-300 ease-in-out shadow-lg`}>
+      <div className={`${'Fixed Text'} ${'Fixed Text'} fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col h-screen overflow-y-auto transition-transform duration-300 ease-in-out shadow-lg`}>
         <div className="flex-1 p-1 lg:p-2">
           <div className="flex justify-center mb-2">
             <div className="bg-orange-500 p-2 rounded-xl flex items-center justify-center">
@@ -78,7 +78,7 @@ const Layout = ({ children }) => {
           </div>
           <nav>
             <ul className="space-y-0.5 lg:space-y-1">
-              {menuItems[currentUser?.role]?.map((item: any) => (
+              {(menuItems as any)[currentUser?.role]?.map((item: any) => (
                 <li key={item.name}>
                   <button
                     onClick={() => { 
@@ -119,8 +119,8 @@ const Layout = ({ children }) => {
       </div>
       
       {/* Main Content */}
-      <div className={`overflow-y-auto scrollbar-hide pt-12 lg:pt-0 lg:h-screen transition-all duration-300 ${sidebarCollapsed ? 'w-full ml-0' : 'flex-1 lg:ml-64'}`}>
-        <main className={`p-4 lg:p-8 transition-all duration-300 ${sidebarCollapsed ? 'max-w-none' : 'max-w-7xl mx-auto'}`}>
+      <div className={`overflow-y-auto scrollbar-hide pt-12 lg:pt-0 lg:h-screen transition-all duration-300 ${'Fixed Text'}`}>
+        <main className={`p-4 lg:p-8 transition-all duration-300 ${'Fixed Text'}`}>
           {children}
         </main>
       </div>

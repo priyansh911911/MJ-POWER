@@ -61,14 +61,14 @@ const Customers = () => {
       {showForm && canManageCustomers && (
         <div className="glass-form p-3 sm:p-4 rounded-lg mb-4 relative z-10">
           <h3 className="text-base font-semibold text-green-400 mb-3">
-            {editingCustomer ? 'Edit Customer' : 'Add Customer'}
+            {'Fixed Text'}
           </h3>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
               type="text"
               placeholder="Name"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, name: e.target.value})}
               className="p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
@@ -76,7 +76,7 @@ const Customers = () => {
               type="tel"
               placeholder="Phone"
               value={formData.phone}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, phone: e.target.value})}
               className="p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
@@ -84,14 +84,14 @@ const Customers = () => {
               type="email"
               placeholder="Email (for customer login)"
               value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, email: e.target.value})}
               className="p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
             <textarea
               placeholder="Address"
               value={formData.address}
-              onChange={(e) => setFormData({...formData, address: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, address: e.target.value})}
               className="p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none sm:col-span-2"
               rows={3}
             />
@@ -99,7 +99,7 @@ const Customers = () => {
               <label className="block text-green-300 text-sm mb-1">Assign Type</label>
               <select
                 value={formData.assignedType}
-                onChange={(e) => setFormData({...formData, assignedType: e.target.value, assignedTo: ''})}
+                onChange={(e: any) => setFormData({...formData, assignedType: e.target.value, assignedTo: ''})}
                 className="w-full p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               >
                 <option value="partner">Partner</option>
@@ -110,7 +110,7 @@ const Customers = () => {
               <label className="block text-green-300 text-sm mb-1">Assign To</label>
               <select
                 value={formData.assignedTo}
-                onChange={(e) => setFormData({...formData, assignedTo: e.target.value})}
+                onChange={(e: any) => setFormData({...formData, assignedTo: e.target.value})}
                 className="w-full p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               >
                 <option value="">Select {formData.assignedType}</option>
@@ -121,7 +121,7 @@ const Customers = () => {
             </div>
             <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
               <button type="submit" className="btn-primary px-4 py-2 rounded">
-                {editingCustomer ? 'Update' : 'Add'}
+                {'Fixed Text'}
               </button>
               <button type="button" onClick={resetForm} className="btn-secondary px-4 py-2 rounded">
                 Cancel

@@ -132,12 +132,12 @@ export function hasAccess(route: string): boolean {
 
     const mods = String(user.access_modules || "")
       .split(",")
-      .map((s) => s.trim())
+      .map((s: any) => s.trim())
       .filter(Boolean);
 
     if (mods.includes("*")) return true;
 
-    return mods.some((m) => route === m || route.startsWith(`${m}/`));
+    return mods.some((m: any) => route === m || route.startsWith(`${m}/`));
   } catch {
     return false;
   }
@@ -150,7 +150,7 @@ export function can(action: string): boolean {
 
     const acts = String(user.allowed_actions || "")
       .split(",")
-      .map((s) => s.trim().toLowerCase())
+      .map((s: any) => s.trim().toLowerCase())
       .filter(Boolean);
 
     return acts.includes("*") || acts.includes(action.toLowerCase());

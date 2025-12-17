@@ -1,4 +1,4 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import Customers from '../pages/Customers';
 import Products from '../pages/Products';
@@ -13,41 +13,41 @@ import AddPartner from '../pages/users/AddPartner';
 const Dashboard = () => {
   const { currentUser, data, currentPage, setCurrentPage } = useApp();
 
-  const getMenuItems = () => {
-    const baseItems = [
-      { key: 'dashboard', label: 'Dashboard', roles: ['admin', 'manager', 'partner', 'technician'] }
-    ];
+  // const getMenuItems = () => {
+  //   const baseItems = [
+  //     { key: 'dashboard', label: 'Dashboard', roles: ['admin', 'manager', 'partner', 'technician'] }
+  //   ];
 
-    const roleItems = {
-      admin: [
-        { key: 'products', label: 'Products' },
-        { key: 'services', label: 'Services' },
-        { key: 'tickets', label: 'Tickets' },
-        { key: 'reports', label: 'Reports' }
-      ],
-      manager: [
-        { key: 'products', label: 'Products' },
-        { key: 'services', label: 'Services' },
-        { key: 'tickets', label: 'Tickets' },
-        { key: 'reports', label: 'Reports' }
-      ],
-      partner: [
-        { key: 'customers', label: 'Customers' },
-        { key: 'tickets', label: 'Tickets' }
-      ],
-      technician: [
-        { key: 'tickets', label: 'My Tickets' },
-        { key: 'reports', label: 'My Reports' }
-      ],
-      customer: [
-        { key: 'products', label: 'Solar Products' },
-        { key: 'services', label: 'Solar Services' },
-        { key: 'tickets', label: 'My Tickets' }
-      ]
-    };
+  //   const roleItems = {
+  //     admin: [
+  //       { key: 'products', label: 'Products' },
+  //       { key: 'services', label: 'Services' },
+  //       { key: 'tickets', label: 'Tickets' },
+  //       { key: 'reports', label: 'Reports' }
+  //     ],
+  //     manager: [
+  //       { key: 'products', label: 'Products' },
+  //       { key: 'services', label: 'Services' },
+  //       { key: 'tickets', label: 'Tickets' },
+  //       { key: 'reports', label: 'Reports' }
+  //     ],
+  //     partner: [
+  //       { key: 'customers', label: 'Customers' },
+  //       { key: 'tickets', label: 'Tickets' }
+  //     ],
+  //     technician: [
+  //       { key: 'tickets', label: 'My Tickets' },
+  //       { key: 'reports', label: 'My Reports' }
+  //     ],
+  //     customer: [
+  //       { key: 'products', label: 'Solar Products' },
+  //       { key: 'services', label: 'Solar Services' },
+  //       { key: 'tickets', label: 'My Tickets' }
+  //     ]
+  //   };
 
-    return [...baseItems, ...(roleItems[currentUser?.role] || [])];
-  };
+  //   return [...baseItems, ...(roleItems[((currentUser as any)?.role] || [])];
+  // };
 
   const renderContent = () => {
     switch (currentPage) {
@@ -116,7 +116,7 @@ const Dashboard = () => {
                 <span className="mr-2">🎫</span> Recent Support Tickets
               </h3>
               <div className="space-y-3">
-                {Array.isArray(data.tickets) ? data.tickets.slice(0, 3).map((ticket, index) => (
+                {Array.isArray(data.tickets) ? data.tickets.slice(0, 3).map((_: any, index: number) => (
                   <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
                     <span className="text-gray-900 text-sm font-medium">Ticket #{index + 1}</span>
                     <span className="text-orange-600 text-xs font-semibold bg-orange-100 px-2 py-1 rounded">Open</span>

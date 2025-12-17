@@ -214,12 +214,12 @@ export class GenericFQL<TRecord extends BaseRecord = BaseRecord> {
 
   async createMany(data: Partial<TRecord>[], options: FQLCreateOptions = {}): Promise<FQLResponse<TRecord[]>> {
     const { useSession = false, fields = "*" } = options;
-    let body: any[] = data.map(item => ({ ...item }));
+    let body: any[] = data.map((item: any) => ({ ...item }));
     if (useSession) {
       const user: any = getCurrentUser();
       const clientId = user?.client?.id ?? user?.client;
       if (clientId) {
-        body = body.map(item => item.client == null ? { ...item, client: clientId } : item);
+        body = body.map((item: any) => item.client == null ? { ...item, client: clientId } : item);
       }
     }
     const response = await Api.post(`/${this.resource}`, {
@@ -279,7 +279,7 @@ export class GenericFQL<TRecord extends BaseRecord = BaseRecord> {
   async softDeleteMany(ids: number[], options: FQLUpdateOptions = {}): Promise<FQLResponse<TRecord[]>> {
     this.ensureValidIds(ids, "softDeleteMany");
 
-    const updates = ids.map(id => ({
+    const updates = ids.map((id: any) => ({
       id,
       data: { is_deleted: 1 } as any,
     }));
@@ -296,7 +296,7 @@ export class GenericFQL<TRecord extends BaseRecord = BaseRecord> {
   async restoreMany(ids: number[], options: FQLUpdateOptions = {}): Promise<FQLResponse<TRecord[]>> {
     this.ensureValidIds(ids, "restoreMany");
 
-    const updates = ids.map(id => ({
+    const updates = ids.map((id: any) => ({
       id,
       data: { is_deleted: 0 } as any,
     }));

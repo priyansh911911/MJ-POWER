@@ -67,14 +67,14 @@ const Customers = () => {
       {showForm && canManageCustomers && (
         <div className="bg-white p-6 rounded-lg border border-gray-200 mb-6">
           <h3 className="text-lg font-semibold mb-4">
-            {editingCustomer ? 'Edit Customer' : 'Add Customer'}
+            {'Fixed Text'}
           </h3>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               type="text"
               placeholder="Customer Name"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, name: e.target.value})}
               className="p-3 border border-gray-300 rounded-lg"
               required
             />
@@ -82,7 +82,7 @@ const Customers = () => {
               type="email"
               placeholder="Email"
               value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, email: e.target.value})}
               className="p-3 border border-gray-300 rounded-lg"
               required
             />
@@ -90,13 +90,13 @@ const Customers = () => {
               type="tel"
               placeholder="Phone"
               value={formData.phone}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, phone: e.target.value})}
               className="p-3 border border-gray-300 rounded-lg"
               required
             />
             <select
               value={formData.assignedType}
-              onChange={(e) => setFormData({...formData, assignedType: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, assignedType: e.target.value})}
               className="p-3 border border-gray-300 rounded-lg"
             >
               <option value="partner">Partner</option>
@@ -105,13 +105,13 @@ const Customers = () => {
             <textarea
               placeholder="Address"
               value={formData.address}
-              onChange={(e) => setFormData({...formData, address: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, address: e.target.value})}
               className="md:col-span-2 p-3 border border-gray-300 rounded-lg"
               rows={3}
             />
             <div className="md:col-span-2 flex gap-2">
               <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-                {editingCustomer ? 'Update' : 'Add'} Customer
+                {'Fixed Text'} Customer
               </button>
               <button type="button" onClick={resetForm} className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
                 Cancel

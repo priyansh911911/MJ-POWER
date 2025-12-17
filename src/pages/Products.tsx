@@ -113,7 +113,7 @@ const Products = () => {
       {showForm && canManageProducts && (
         <div className="bg-white/10 backdrop-blur-xl border border-yellow-400/30 p-4 sm:p-6 rounded-xl mb-4 shadow-lg relative z-10">
           <h3 className="text-lg font-semibold text-yellow-300 mb-4">
-            {editingProduct ? 'Edit Solar Product' : 'Add Solar Product'}
+            {'Fixed Text'}
           </h3>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input
@@ -194,7 +194,7 @@ const Products = () => {
             />
             <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
               <button type="submit" className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition-all">
-                {editingProduct ? 'Update Product' : 'Add Product'}
+                {'Fixed Text'}
               </button>
               <button type="button" onClick={resetForm} className="bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-700 hover:to-gray-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md transition-all">
                 Cancel

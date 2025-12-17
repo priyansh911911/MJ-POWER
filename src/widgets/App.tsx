@@ -3,14 +3,14 @@ import { useApp } from '../context/AppContext';
 import logo from '../assets/images/Logo.png';
 
 const Login = ({ onBackToCustomer }: { onBackToCustomer: () => void }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
   const [isCustomerMode, setIsCustomerMode] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
+  const [name, setName] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
   const { login, addItem, data } = useApp();
 
   const handleSubmit = (e: any) => {
@@ -105,10 +105,10 @@ const Login = ({ onBackToCustomer }: { onBackToCustomer: () => void }) => {
                 <img src={logo} alt="MJ POWER Solar" className="w-16 h-auto" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {isRegistering ? 'Create Account' : 'Customer Login'}
+                {'Fixed Text'}
               </h2>
               <p className="text-gray-600">
-                {isRegistering ? 'Join thousands of happy customers' : 'Access your solar dashboard'}
+                {'Fixed Text'}
               </p>
             </div>
 
@@ -198,7 +198,7 @@ const Login = ({ onBackToCustomer }: { onBackToCustomer: () => void }) => {
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
               >
-                {isRegistering ? 'Create Account' : 'Login'}
+                {'Fixed Text'}
               </button>
               
               {isRegistering && (
@@ -235,7 +235,7 @@ const Login = ({ onBackToCustomer }: { onBackToCustomer: () => void }) => {
                   }}
                   className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
                 >
-                  {onBackToCustomer ? 'Back to Customer Portal' : 'Staff Login'}
+                  {'Back to Customer Portal'}
                 </button>
               )}
               
@@ -343,7 +343,7 @@ const Login = ({ onBackToCustomer }: { onBackToCustomer: () => void }) => {
             }}
             className="text-black hover:text-blue-600 text-sm font-semibold bg-gray-100 px-6 py-2 rounded-full hover:bg-gray-200 transition-all duration-200"
           >
-            {onBackToCustomer ? '🏠 Back to Customer Portal' : '🏠 Customer Login'}
+            {'🏠 Back to Customer Portal'}
           </button>
         </div>
       </div>

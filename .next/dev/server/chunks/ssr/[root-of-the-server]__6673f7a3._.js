@@ -923,7 +923,7 @@ const Login = ({ onBackToCustomer })=>{
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h2", {
                                         className: "text-2xl font-bold text-gray-900 mb-2",
-                                        children: isRegistering ? 'Create Account' : 'Customer Login'
+                                        children: 'Fixed Text'
                                     }, void 0, false, {
                                         fileName: "[project]/src/widgets/App.tsx",
                                         lineNumber: 107,
@@ -931,7 +931,7 @@ const Login = ({ onBackToCustomer })=>{
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                         className: "text-gray-600",
-                                        children: isRegistering ? 'Join thousands of happy customers' : 'Access your solar dashboard'
+                                        children: 'Fixed Text'
                                     }, void 0, false, {
                                         fileName: "[project]/src/widgets/App.tsx",
                                         lineNumber: 110,
@@ -1097,7 +1097,7 @@ const Login = ({ onBackToCustomer })=>{
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
                                         type: "submit",
                                         className: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg",
-                                        children: isRegistering ? 'Create Account' : 'Login'
+                                        children: 'Fixed Text'
                                     }, void 0, false, {
                                         fileName: "[project]/src/widgets/App.tsx",
                                         lineNumber: 197,
@@ -1142,7 +1142,7 @@ const Login = ({ onBackToCustomer })=>{
                                             }
                                         },
                                         className: "text-blue-600 hover:text-blue-800 text-sm font-medium underline",
-                                        children: onBackToCustomer ? 'Back to Customer Portal' : 'Staff Login'
+                                        children: 'Back to Customer Portal'
                                     }, void 0, false, {
                                         fileName: "[project]/src/widgets/App.tsx",
                                         lineNumber: 225,
@@ -1402,7 +1402,7 @@ const Login = ({ onBackToCustomer })=>{
                                 }
                             },
                             className: "text-black hover:text-blue-600 text-sm font-semibold bg-gray-100 px-6 py-2 rounded-full hover:bg-gray-200 transition-all duration-200",
-                            children: onBackToCustomer ? '🏠 Back to Customer Portal' : '🏠 Customer Login'
+                            children: '🏠 Back to Customer Portal'
                         }, void 0, false, {
                             fileName: "[project]/src/widgets/App.tsx",
                             lineNumber: 333,
@@ -1443,7 +1443,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext
 ;
 // import logo from '../assets/images/Logo.png';
 const Layout = ({ children })=>{
-    const { currentUser, logout, currentPage, setCurrentPage } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useApp"])();
+    const { currentUser, logout, setCurrentPage } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useApp"])();
     const [activeItem, setActiveItem] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])('Dashboard');
     const [sidebarOpen, setSidebarOpen] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [sidebarCollapsed, setSidebarCollapsed] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
@@ -1583,7 +1583,7 @@ const Layout = ({ children })=>{
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                className: `${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${sidebarCollapsed ? 'lg:-translate-x-full' : 'lg:translate-x-0'} fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col h-screen overflow-y-auto transition-transform duration-300 ease-in-out shadow-lg`,
+                className: `${'Fixed Text'} ${'Fixed Text'} fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col h-screen overflow-y-auto transition-transform duration-300 ease-in-out shadow-lg`,
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                         className: "flex-1 p-1 lg:p-2",
@@ -1721,9 +1721,9 @@ const Layout = ({ children })=>{
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                className: `overflow-y-auto scrollbar-hide pt-12 lg:pt-0 lg:h-screen transition-all duration-300 ${sidebarCollapsed ? 'w-full ml-0' : 'flex-1 lg:ml-64'}`,
+                className: `overflow-y-auto scrollbar-hide pt-12 lg:pt-0 lg:h-screen transition-all duration-300 ${'Fixed Text'}`,
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("main", {
-                    className: `p-4 lg:p-8 transition-all duration-300 ${sidebarCollapsed ? 'max-w-none' : 'max-w-7xl mx-auto'}`,
+                    className: `p-4 lg:p-8 transition-all duration-300 ${'Fixed Text'}`,
                     children: children
                 }, void 0, false, {
                     fileName: "[project]/src/widgets/AppStore.tsx",
@@ -1838,7 +1838,7 @@ const Customers = ()=>{
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
                         className: "text-lg font-semibold mb-4",
-                        children: editingCustomer ? 'Edit Customer' : 'Add Customer'
+                        children: 'Fixed Text'
                     }, void 0, false, {
                         fileName: "[project]/src/pages/Customers.tsx",
                         lineNumber: 69,
@@ -1944,7 +1944,7 @@ const Customers = ()=>{
                                         type: "submit",
                                         className: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg",
                                         children: [
-                                            editingCustomer ? 'Update' : 'Add',
+                                            'Fixed Text',
                                             " Customer"
                                         ]
                                     }, void 0, true, {
@@ -2351,7 +2351,7 @@ const Products = ()=>{
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
                         className: "text-lg font-semibold text-yellow-300 mb-4",
-                        children: editingProduct ? 'Edit Solar Product' : 'Add Solar Product'
+                        children: 'Fixed Text'
                     }, void 0, false, {
                         fileName: "[project]/src/pages/Products.tsx",
                         lineNumber: 115,
@@ -2537,7 +2537,7 @@ const Products = ()=>{
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
                                         type: "submit",
                                         className: "bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition-all",
-                                        children: editingProduct ? 'Update Product' : 'Add Product'
+                                        children: 'Fixed Text'
                                     }, void 0, false, {
                                         fileName: "[project]/src/pages/Products.tsx",
                                         lineNumber: 196,
@@ -3147,7 +3147,7 @@ const Services = ()=>{
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
                         className: "text-base font-semibold text-green-400 mb-3",
-                        children: editingService ? 'Edit Service' : 'Add Service'
+                        children: 'Fixed Text'
                     }, void 0, false, {
                         fileName: "[project]/src/pages/Services.tsx",
                         lineNumber: 81,
@@ -3269,7 +3269,7 @@ const Services = ()=>{
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
                                         type: "submit",
                                         className: "btn-primary px-3 py-1.5 rounded text-sm",
-                                        children: editingService ? 'Update' : 'Add'
+                                        children: 'Fixed Text'
                                     }, void 0, false, {
                                         fileName: "[project]/src/pages/Services.tsx",
                                         lineNumber: 135,
@@ -4438,7 +4438,7 @@ const Tickets = ()=>{
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
                         className: "text-lg font-semibold mb-4",
-                        children: editingTicket ? 'Edit Ticket' : 'Create Ticket'
+                        children: 'Fixed Text'
                     }, void 0, false, {
                         fileName: "[project]/src/pages/Tickets.tsx",
                         lineNumber: 66,
@@ -4607,7 +4607,7 @@ const Tickets = ()=>{
                                         type: "submit",
                                         className: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg",
                                         children: [
-                                            editingTicket ? 'Update' : 'Create',
+                                            'Fixed Text',
                                             " Ticket"
                                         ]
                                     }, void 0, true, {
@@ -6187,6 +6187,7 @@ const __TURBOPACK__default__export__ = AddPartner;
 "[project]/src/widgets/index.tsx [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
+// import { useState } from 'react';
 __turbopack_context__.s([
     "default",
     ()=>__TURBOPACK__default__export__
@@ -6213,96 +6214,39 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$pages$2f$users$2f$Add
 ;
 const Dashboard = ()=>{
     const { currentUser, data, currentPage, setCurrentPage } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useApp"])();
-    const getMenuItems = ()=>{
-        const baseItems = [
-            {
-                key: 'dashboard',
-                label: 'Dashboard',
-                roles: [
-                    'admin',
-                    'manager',
-                    'partner',
-                    'technician'
-                ]
-            }
-        ];
-        const roleItems = {
-            admin: [
-                {
-                    key: 'products',
-                    label: 'Products'
-                },
-                {
-                    key: 'services',
-                    label: 'Services'
-                },
-                {
-                    key: 'tickets',
-                    label: 'Tickets'
-                },
-                {
-                    key: 'reports',
-                    label: 'Reports'
-                }
-            ],
-            manager: [
-                {
-                    key: 'products',
-                    label: 'Products'
-                },
-                {
-                    key: 'services',
-                    label: 'Services'
-                },
-                {
-                    key: 'tickets',
-                    label: 'Tickets'
-                },
-                {
-                    key: 'reports',
-                    label: 'Reports'
-                }
-            ],
-            partner: [
-                {
-                    key: 'customers',
-                    label: 'Customers'
-                },
-                {
-                    key: 'tickets',
-                    label: 'Tickets'
-                }
-            ],
-            technician: [
-                {
-                    key: 'tickets',
-                    label: 'My Tickets'
-                },
-                {
-                    key: 'reports',
-                    label: 'My Reports'
-                }
-            ],
-            customer: [
-                {
-                    key: 'products',
-                    label: 'Solar Products'
-                },
-                {
-                    key: 'services',
-                    label: 'Solar Services'
-                },
-                {
-                    key: 'tickets',
-                    label: 'My Tickets'
-                }
-            ]
-        };
-        return [
-            ...baseItems,
-            ...roleItems[currentUser?.role] || []
-        ];
-    };
+    // const getMenuItems = () => {
+    //   const baseItems = [
+    //     { key: 'dashboard', label: 'Dashboard', roles: ['admin', 'manager', 'partner', 'technician'] }
+    //   ];
+    //   const roleItems = {
+    //     admin: [
+    //       { key: 'products', label: 'Products' },
+    //       { key: 'services', label: 'Services' },
+    //       { key: 'tickets', label: 'Tickets' },
+    //       { key: 'reports', label: 'Reports' }
+    //     ],
+    //     manager: [
+    //       { key: 'products', label: 'Products' },
+    //       { key: 'services', label: 'Services' },
+    //       { key: 'tickets', label: 'Tickets' },
+    //       { key: 'reports', label: 'Reports' }
+    //     ],
+    //     partner: [
+    //       { key: 'customers', label: 'Customers' },
+    //       { key: 'tickets', label: 'Tickets' }
+    //     ],
+    //     technician: [
+    //       { key: 'tickets', label: 'My Tickets' },
+    //       { key: 'reports', label: 'My Reports' }
+    //     ],
+    //     customer: [
+    //       { key: 'products', label: 'Solar Products' },
+    //       { key: 'services', label: 'Solar Services' },
+    //       { key: 'tickets', label: 'My Tickets' }
+    //     ]
+    //   };
+    //   return [...baseItems, ...(roleItems[((currentUser as any)?.role] || [])];
+    // };
     const renderContent = ()=>{
         switch(currentPage){
             case 'customers':
@@ -6626,7 +6570,7 @@ const Dashboard = ()=>{
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                             className: "space-y-3",
                                             children: [
-                                                Array.isArray(data.tickets) ? data.tickets.slice(0, 3).map((ticket, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                Array.isArray(data.tickets) ? data.tickets.slice(0, 3).map((_, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                         className: "flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100",
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -6798,12 +6742,13 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$images$2e$ts__
 ;
 ;
 ;
+// import logo from '../../assets/images/Logo.png';
 const CustomerPortal = ({ onStaffLogin })=>{
     const { currentUser, logout, data, addItem, login } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useApp"])();
-    const refreshData = ()=>{
-        localStorage.removeItem('mjpower-data');
-        window.location.reload();
-    };
+    // const refreshData = () => {
+    //   localStorage.removeItem('mjpower-data');
+    //   window.location.reload();
+    // };
     const [activeTab, setActiveTab] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])('home');
     const [isDarkMode, setIsDarkMode] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [orderForm, setOrderForm] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])({
@@ -6822,8 +6767,8 @@ const CustomerPortal = ({ onStaffLogin })=>{
     const [cart, setCart] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])([]);
     const [showLoginPrompt, setShowLoginPrompt] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [loginAction, setLoginAction] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])('');
-    const [searchQuery, setSearchQuery] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])('');
-    React.useEffect(()=>{
+    // const [, setSearchQuery] = useState('');
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
         if (!currentUser && (activeTab === 'my-orders' || activeTab === 'my-tickets')) {
             setActiveTab('home');
         }
@@ -6930,10 +6875,10 @@ const CustomerPortal = ({ onStaffLogin })=>{
         }
     ];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-        className: `min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`,
+        className: `min-h-screen ${'Fixed Text'}`,
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("nav", {
-                className: `fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border-b backdrop-blur-sm bg-opacity-95`,
+                className: `fixed top-0 left-0 right-0 z-50 ${'Fixed Text'} border-b backdrop-blur-sm bg-opacity-95`,
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                     className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -7016,10 +6961,10 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
                                         onClick: ()=>setIsDarkMode(!isDarkMode),
-                                        className: `p-2 rounded-lg transition-all ${isDarkMode ? 'text-gray-300 hover:text-white hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`,
+                                        className: `p-2 rounded-lg transition-all ${'Fixed Text'}`,
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                             className: "text-lg",
-                                            children: isDarkMode ? '☀️' : '🌙'
+                                            children: 'Fixed Text'
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
                                             lineNumber: 131,
@@ -7032,7 +6977,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
                                         onClick: ()=>setActiveTab('cart'),
-                                        className: `relative p-2 rounded-lg transition-all ${isDarkMode ? 'text-gray-300 hover:text-white hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`,
+                                        className: `relative p-2 rounded-lg transition-all ${'Fixed Text'}`,
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                 className: "text-lg",
@@ -7060,7 +7005,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                         className: "flex items-center space-x-3",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                                className: `text-sm font-medium max-w-32 truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                className: `text-sm font-medium max-w-32 truncate ${'Fixed Text'}`,
                                                 title: currentUser.name,
                                                 children: currentUser.name
                                             }, void 0, false, {
@@ -7142,7 +7087,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                         activeTab === 'home' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                    className: `relative rounded-3xl overflow-hidden mb-16 ${isDarkMode ? 'bg-gradient-to-br from-gray-800 to-gray-900' : 'bg-gradient-to-br from-teal-600 via-cyan-600 to-teal-700'}`,
+                                    className: `relative rounded-3xl overflow-hidden mb-16 ${'Fixed Text'}`,
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                         className: "relative px-8 py-16 lg:px-16 lg:py-24",
                                         children: [
@@ -7240,7 +7185,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             className: "text-center mb-12",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h2", {
-                                                    className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                    className: `text-4xl font-bold mb-4 ${'Fixed Text'}`,
                                                     children: "Our Solar Solutions"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7248,7 +7193,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                    className: `text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto`,
+                                                    className: `text-xl ${'Fixed Text'} max-w-2xl mx-auto`,
                                                     children: "Comprehensive solar energy solutions tailored to your needs"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7283,7 +7228,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                            className: `text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: `text-lg font-semibold mb-2 ${'Fixed Text'}`,
                                                             children: category.name
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7291,7 +7236,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                            className: `text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                            className: `text-sm ${'Fixed Text'}`,
                                                             children: [
                                                                 "Professional ",
                                                                 category.name.toLowerCase(),
@@ -7326,7 +7271,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             className: "flex justify-between items-center mb-8",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                    className: `text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                    className: `text-3xl font-bold ${'Fixed Text'}`,
                                                     children: "Featured Products"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7372,7 +7317,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             className: "p-6",
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                                    className: `text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                    className: `text-xl font-semibold mb-2 ${'Fixed Text'}`,
                                                                     children: product.name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7380,7 +7325,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                                    className: `text-sm mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                                    className: `text-sm mb-4 ${'Fixed Text'}`,
                                                                     children: product.category
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7440,13 +7385,13 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                    className: `rounded-3xl p-8 lg:p-12 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`,
+                                    className: `rounded-3xl p-8 lg:p-12 ${'Fixed Text'}`,
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                             className: "text-center mb-12",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                    className: `text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                    className: `text-3xl font-bold mb-4 ${'Fixed Text'}`,
                                                     children: "Why Choose MJPOWER Solar?"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7454,7 +7399,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                    className: `text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                    className: `text-lg ${'Fixed Text'}`,
                                                     children: "Leading the way in sustainable energy solutions"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7489,7 +7434,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                            className: `text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: `text-lg font-semibold mb-2 ${'Fixed Text'}`,
                                                             children: "Expert Installation"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7497,7 +7442,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                            className: `${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                            className: `${'Fixed Text'}`,
                                                             children: "Professional installation by certified technicians"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7529,7 +7474,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                            className: `text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: `text-lg font-semibold mb-2 ${'Fixed Text'}`,
                                                             children: "Premium Quality"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7537,7 +7482,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                            className: `${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                            className: `${'Fixed Text'}`,
                                                             children: "High-efficiency solar panels and components"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7569,7 +7514,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                            className: `text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: `text-lg font-semibold mb-2 ${'Fixed Text'}`,
                                                             children: "24/7 Support"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7577,7 +7522,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                            className: `${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                            className: `${'Fixed Text'}`,
                                                             children: "Round-the-clock maintenance and support"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7614,7 +7559,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     className: "text-center mb-12",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h2", {
-                                            className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: `text-4xl font-bold mb-4 ${'Fixed Text'}`,
                                             children: "Solar Services"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7622,7 +7567,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                            className: `text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto`,
+                                            className: `text-xl ${'Fixed Text'} max-w-2xl mx-auto`,
                                             children: "Professional solar services to maximize your energy efficiency"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7659,7 +7604,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                     className: "p-6",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                            className: `text-xl font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: `text-xl font-semibold mb-3 ${'Fixed Text'}`,
                                                             children: service.name
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7667,7 +7612,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                            className: `mb-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} leading-relaxed`,
+                                                            className: `mb-6 ${'Fixed Text'} leading-relaxed`,
                                                             children: service.description
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7689,7 +7634,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                                                    className: `text-sm px-3 py-1 rounded-full ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`,
+                                                                    className: `text-sm px-3 py-1 rounded-full ${'Fixed Text'}`,
                                                                     children: "Service"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7752,7 +7697,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     className: "text-center mb-12",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h2", {
-                                            className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: `text-4xl font-bold mb-4 ${'Fixed Text'}`,
                                             children: "Products & Services"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7760,7 +7705,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                            className: `text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto`,
+                                            className: `text-xl ${'Fixed Text'} max-w-2xl mx-auto`,
                                             children: "Complete solar solutions for your energy needs"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7777,7 +7722,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     className: "mb-16",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                            className: `text-3xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: `text-3xl font-bold mb-8 ${'Fixed Text'}`,
                                             children: "Solar Products"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7819,7 +7764,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                     className: "flex justify-between items-start mb-3",
                                                                     children: [
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                                            className: `text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                            className: `text-lg font-semibold ${'Fixed Text'}`,
                                                                             children: item.name
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7827,7 +7772,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             columnNumber: 27
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                                                            className: `text-xs px-2 py-1 rounded-full ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`,
+                                                                            className: `text-xs px-2 py-1 rounded-full ${'Fixed Text'}`,
                                                                             children: item.category
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7841,7 +7786,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                                    className: `text-sm mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} line-clamp-2`,
+                                                                    className: `text-sm mb-4 ${'Fixed Text'} line-clamp-2`,
                                                                     children: item.description
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -7972,7 +7917,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                            className: `text-3xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: `text-3xl font-bold mb-8 ${'Fixed Text'}`,
                                             children: "Solar Services"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8006,7 +7951,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                     className: "flex justify-between items-start mb-3",
                                                                     children: [
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                                            className: `text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                            className: `text-lg font-semibold ${'Fixed Text'}`,
                                                                             children: item.name
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8014,7 +7959,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             columnNumber: 27
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                                                            className: `text-xs px-2 py-1 rounded-full ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`,
+                                                                            className: `text-xs px-2 py-1 rounded-full ${'Fixed Text'}`,
                                                                             children: "Service"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8028,7 +7973,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                                    className: `text-sm mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} line-clamp-2`,
+                                                                    className: `text-sm mb-4 ${'Fixed Text'} line-clamp-2`,
                                                                     children: item.description
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8111,7 +8056,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     className: "text-center mb-12",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h2", {
-                                            className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: `text-4xl font-bold mb-4 ${'Fixed Text'}`,
                                             children: "Shopping Cart"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8119,7 +8064,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                            className: `text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                            className: `text-xl ${'Fixed Text'}`,
                                             children: "Review your selected items"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8144,7 +8089,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                            className: `text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: `text-2xl font-semibold mb-4 ${'Fixed Text'}`,
                                             children: "Your cart is empty"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8152,7 +8097,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                            className: `text-lg mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                            className: `text-lg mb-8 ${'Fixed Text'}`,
                                             children: "Add some solar products to get started!"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8179,12 +8124,12 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                             className: "lg:col-span-2",
                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                                className: `rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`,
+                                                className: `rounded-2xl ${'Fixed Text'}`,
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                                        className: `p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`,
+                                                        className: `p-6 border-b ${'Fixed Text'}`,
                                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                            className: `text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: `text-xl font-semibold ${'Fixed Text'}`,
                                                             children: [
                                                                 "Cart Items (",
                                                                 cart.length,
@@ -8232,7 +8177,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                         className: "flex-1",
                                                                         children: [
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                                                className: `text-lg font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                                className: `text-lg font-semibold mb-1 ${'Fixed Text'}`,
                                                                                 children: item.name
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8240,7 +8185,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                 columnNumber: 31
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                                                className: `text-sm mb-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                                                className: `text-sm mb-2 ${'Fixed Text'}`,
                                                                                 children: item.category
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8282,7 +8227,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                 columnNumber: 31
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                                                                className: `w-12 text-center font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                                className: `w-12 text-center font-semibold ${'Fixed Text'}`,
                                                                                 children: item.quantity
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8313,7 +8258,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                         onClick: ()=>{
                                                                             setCart(cart.filter((cartItem)=>cartItem.id !== item.id));
                                                                         },
-                                                                        className: `p-3 rounded-lg transition-all ${isDarkMode ? 'text-red-400 hover:text-red-300 hover:bg-gray-700' : 'text-red-500 hover:text-red-700 hover:bg-red-50'}`,
+                                                                        className: `p-3 rounded-lg transition-all ${'Fixed Text'}`,
                                                                         children: "🗑️"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8345,12 +8290,12 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                             className: "lg:col-span-1",
                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                                className: `rounded-2xl sticky top-24 ${isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`,
+                                                className: `rounded-2xl sticky top-24 ${'Fixed Text'}`,
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                                        className: `p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`,
+                                                        className: `p-6 border-b ${'Fixed Text'}`,
                                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                            className: `text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: `text-xl font-semibold ${'Fixed Text'}`,
                                                             children: "Order Summary"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8366,7 +8311,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         className: "p-6 space-y-4",
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                                                className: `flex justify-between text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`,
+                                                                className: `flex justify-between text-lg ${'Fixed Text'}`,
                                                                 children: [
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                                         children: "Subtotal:"
@@ -8392,7 +8337,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                                                className: `flex justify-between text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`,
+                                                                className: `flex justify-between text-lg ${'Fixed Text'}`,
                                                                 children: [
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                                         children: "Tax (18%):"
@@ -8418,9 +8363,9 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                                                className: `border-t pt-4 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`,
+                                                                className: `border-t pt-4 ${'Fixed Text'}`,
                                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                                                    className: `flex justify-between text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                    className: `flex justify-between text-xl font-bold ${'Fixed Text'}`,
                                                                     children: [
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                                             children: "Total:"
@@ -8521,7 +8466,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     className: "text-center mb-12",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h2", {
-                                            className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: `text-4xl font-bold mb-4 ${'Fixed Text'}`,
                                             children: "Support Center"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8529,7 +8474,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                            className: `text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                            className: `text-xl ${'Fixed Text'}`,
                                             children: "Get help with your solar solutions"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8543,7 +8488,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                    className: `p-8 rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`,
+                                    className: `p-8 rounded-2xl ${'Fixed Text'}`,
                                     children: !currentUser ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                         className: "text-center py-12",
                                         children: [
@@ -8556,7 +8501,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                className: `text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                className: `text-2xl font-semibold mb-4 ${'Fixed Text'}`,
                                                 children: "Login Required"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8564,7 +8509,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                className: `text-lg mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                className: `text-lg mb-8 ${'Fixed Text'}`,
                                                 children: "Please login to raise a support ticket"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8591,7 +8536,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                className: `text-2xl font-semibold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                className: `text-2xl font-semibold mb-6 ${'Fixed Text'}`,
                                                 children: "Create Support Ticket"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8605,7 +8550,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
-                                                                className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`,
+                                                                className: `block text-sm font-medium mb-2 ${'Fixed Text'}`,
                                                                 children: "Category"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8652,7 +8597,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
-                                                                className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`,
+                                                                className: `block text-sm font-medium mb-2 ${'Fixed Text'}`,
                                                                 children: "Select Item"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8702,7 +8647,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
-                                                                className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`,
+                                                                className: `block text-sm font-medium mb-2 ${'Fixed Text'}`,
                                                                 children: "Issue Description"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8733,7 +8678,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
-                                                                className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`,
+                                                                className: `block text-sm font-medium mb-2 ${'Fixed Text'}`,
                                                                 children: "Additional Notes (Optional)"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8798,7 +8743,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     className: "text-center mb-12",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h2", {
-                                            className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: `text-4xl font-bold mb-4 ${'Fixed Text'}`,
                                             children: "My Orders"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8806,7 +8751,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                            className: `text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                            className: `text-xl ${'Fixed Text'}`,
                                             children: "Track your solar product orders"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8820,12 +8765,12 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                    className: `rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`,
+                                    className: `rounded-2xl ${'Fixed Text'}`,
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                            className: `p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`,
+                                            className: `p-6 border-b ${'Fixed Text'}`,
                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                className: `text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                className: `text-xl font-semibold ${'Fixed Text'}`,
                                                 children: "Order History"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8851,7 +8796,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                        className: `text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                        className: `text-2xl font-semibold mb-4 ${'Fixed Text'}`,
                                                         children: "Login Required"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8859,7 +8804,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                        className: `text-lg mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                        className: `text-lg mb-8 ${'Fixed Text'}`,
                                                         children: "Please login to view your orders"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8895,7 +8840,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                        className: `text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                        className: `text-2xl font-semibold mb-4 ${'Fixed Text'}`,
                                                         children: "No Orders Yet"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8903,7 +8848,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                        className: `text-lg mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                        className: `text-lg mb-8 ${'Fixed Text'}`,
                                                         children: "Start shopping for solar products"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8935,7 +8880,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                     className: "flex-1",
                                                                     children: [
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                                            className: `text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                            className: `text-lg font-semibold mb-2 ${'Fixed Text'}`,
                                                                             children: order.itemName
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8946,7 +8891,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             className: "flex items-center space-x-4 mb-3",
                                                                             children: [
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                                                                    className: `text-sm px-3 py-1 rounded-full ${isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-600'}`,
+                                                                                    className: `text-sm px-3 py-1 rounded-full ${'Fixed Text'}`,
                                                                                     children: order.type
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -8954,7 +8899,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                     columnNumber: 33
                                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                                 order.type === 'product' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                                                                    className: `text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                                                    className: `text-sm ${'Fixed Text'}`,
                                                                                     children: [
                                                                                         "Qty: ",
                                                                                         order.quantity
@@ -8982,7 +8927,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             columnNumber: 31
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         order.description && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                                            className: `text-sm mb-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                                            className: `text-sm mb-2 ${'Fixed Text'}`,
                                                                             children: order.description
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9071,7 +9016,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     className: "text-center mb-12",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h2", {
-                                            className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: `text-4xl font-bold mb-4 ${'Fixed Text'}`,
                                             children: "Support Tickets"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9079,7 +9024,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                            className: `text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                            className: `text-xl ${'Fixed Text'}`,
                                             children: "Track your support requests"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9093,12 +9038,12 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                    className: `rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`,
+                                    className: `rounded-2xl ${'Fixed Text'}`,
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                            className: `p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`,
+                                            className: `p-6 border-b ${'Fixed Text'}`,
                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                className: `text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                className: `text-xl font-semibold ${'Fixed Text'}`,
                                                 children: "Ticket History"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9124,7 +9069,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                        className: `text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                        className: `text-2xl font-semibold mb-4 ${'Fixed Text'}`,
                                                         children: "Login Required"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9132,7 +9077,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                        className: `text-lg mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                        className: `text-lg mb-8 ${'Fixed Text'}`,
                                                         children: "Please login to view your support tickets"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9168,7 +9113,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                                        className: `text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                        className: `text-2xl font-semibold mb-4 ${'Fixed Text'}`,
                                                         children: "No Support Tickets"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9176,7 +9121,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                        className: `text-lg mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                        className: `text-lg mb-8 ${'Fixed Text'}`,
                                                         children: "Need help? Create a support ticket"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9213,7 +9158,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             className: "flex items-center space-x-3 mb-3",
                                                                             children: [
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                                                    className: `text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                                    className: `text-lg font-semibold ${'Fixed Text'}`,
                                                                                     children: [
                                                                                         "Ticket #",
                                                                                         ticket.id
@@ -9224,7 +9169,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                     columnNumber: 35
                                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                                                                    className: `text-sm px-3 py-1 rounded-full ${isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-600'}`,
+                                                                                    className: `text-sm px-3 py-1 rounded-full ${'Fixed Text'}`,
                                                                                     children: ticket.type
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9238,7 +9183,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             columnNumber: 33
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                                            className: `text-sm mb-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                                            className: `text-sm mb-2 ${'Fixed Text'}`,
                                                                             children: [
                                                                                 "Related to: ",
                                                                                 item?.name
@@ -9249,7 +9194,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             columnNumber: 33
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                                            className: `mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                            className: `mb-3 ${'Fixed Text'}`,
                                                                             children: ticket.issue
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9257,7 +9202,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             columnNumber: 33
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         ticket.notes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                                                            className: `text-sm mb-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                                                            className: `text-sm mb-3 ${'Fixed Text'}`,
                                                                             children: [
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                                                     className: "font-medium",
@@ -9337,10 +9282,10 @@ const CustomerPortal = ({ onStaffLogin })=>{
                         showLoginPrompt && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                             className: "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50",
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                className: `rounded-2xl p-8 max-w-md w-full mx-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`,
+                                className: `rounded-2xl p-8 max-w-md w-full mx-4 ${'Fixed Text'}`,
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
-                                        className: `text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                        className: `text-2xl font-bold mb-2 ${'Fixed Text'}`,
                                         children: "Customer Login"
                                     }, void 0, false, {
                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9348,7 +9293,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                        className: `mb-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                                        className: `mb-6 ${'Fixed Text'}`,
                                         children: loginAction === 'checkout' ? 'Please login to complete your purchase.' : loginAction === 'ticket' ? 'Please login to raise a support ticket.' : 'Please login to access your account.'
                                     }, void 0, false, {
                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9378,7 +9323,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
-                                                        className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`,
+                                                        className: `block text-sm font-medium mb-2 ${'Fixed Text'}`,
                                                         children: "Email"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9389,7 +9334,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         name: "email",
                                                         type: "email",
                                                         required: true,
-                                                        className: `w-full p-3 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`,
+                                                        className: `w-full p-3 rounded-lg border ${'Fixed Text'}`,
                                                         placeholder: "Enter your email"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9405,7 +9350,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
-                                                        className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`,
+                                                        className: `block text-sm font-medium mb-2 ${'Fixed Text'}`,
                                                         children: "Password"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9416,7 +9361,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         name: "password",
                                                         type: "password",
                                                         required: true,
-                                                        className: `w-full p-3 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`,
+                                                        className: `w-full p-3 rounded-lg border ${'Fixed Text'}`,
                                                         placeholder: "Enter your password"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9438,7 +9383,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             setShowLoginPrompt(false);
                                                             setActiveTab('home');
                                                         },
-                                                        className: `flex-1 py-3 px-4 rounded-lg font-semibold ${isDarkMode ? 'bg-gray-600 hover:bg-gray-700 text-white' : 'bg-gray-500 hover:bg-gray-600 text-white'}`,
+                                                        className: `flex-1 py-3 px-4 rounded-lg font-semibold ${'Fixed Text'}`,
                                                         children: "Cancel"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
