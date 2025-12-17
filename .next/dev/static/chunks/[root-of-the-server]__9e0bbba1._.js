@@ -503,7 +503,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2e
 ;
 ;
 const FQ_APP_NAME = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fqConfig"].prod.appName;
-const FQ_DEV_SERVER_URL = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fqConfig"].dev.serverUrl;
+// const FQ_DEV_SERVER_URL = fqConfig.dev.serverUrl;
 const FQ_PROD_SERVER_URL = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fqConfig"].prod.serverUrl;
 const FQ_FULL_TOKEN_PATH = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fqConfig"].tokenPath;
 function uniqueKey(input) {
@@ -616,7 +616,7 @@ const makeRequest = async (method, endpoint, options = {})=>{
         console.log('URL:', final_url);
         console.log('Method:', requestConfig.method);
         console.log('Headers:', requestConfig.headers);
-        console.log('Body (parsed):', JSON.parse(requestConfig.body || '{}'));
+        console.log('Body (parsed):', requestConfig.body ? JSON.parse(requestConfig.body) : {});
         console.log('========================');
         const response = await fetch(final_url, requestConfig);
         if (!response.ok) {
@@ -5591,7 +5591,7 @@ const Reports = ()=>{
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2",
-                                            children: myData.customers
+                                            children: myData?.customers
                                         }, void 0, false, {
                                             fileName: "[project]/src/pages/Reports.tsx",
                                             lineNumber: 119,
@@ -5616,7 +5616,7 @@ const Reports = ()=>{
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2",
-                                            children: myData.tickets
+                                            children: myData?.tickets
                                         }, void 0, false, {
                                             fileName: "[project]/src/pages/Reports.tsx",
                                             lineNumber: 123,
@@ -5645,7 +5645,7 @@ const Reports = ()=>{
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2",
-                                            children: myData.assignedTickets
+                                            children: myData?.assignedTickets
                                         }, void 0, false, {
                                             fileName: "[project]/src/pages/Reports.tsx",
                                             lineNumber: 132,
@@ -5670,7 +5670,7 @@ const Reports = ()=>{
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2",
-                                            children: myData.completedTickets
+                                            children: myData?.completedTickets
                                         }, void 0, false, {
                                             fileName: "[project]/src/pages/Reports.tsx",
                                             lineNumber: 136,
@@ -5699,7 +5699,7 @@ const Reports = ()=>{
                                     className: "text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2",
                                     children: [
                                         "₹",
-                                        myData.commission.toFixed(2)
+                                        myData?.commission.toFixed(2)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/pages/Reports.tsx",
@@ -5727,7 +5727,7 @@ const Reports = ()=>{
                                     className: "text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2",
                                     children: [
                                         "₹",
-                                        myData.bonuses.toFixed(2)
+                                        myData?.bonuses.toFixed(2)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/pages/Reports.tsx",
@@ -5755,7 +5755,7 @@ const Reports = ()=>{
                                     className: "text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2",
                                     children: [
                                         "₹",
-                                        myData.totalEarnings.toFixed(2)
+                                        myData?.totalEarnings.toFixed(2)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/pages/Reports.tsx",

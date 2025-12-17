@@ -74,7 +74,7 @@ const Reports = () => {
       );
       const myCommission = commissions[currentUser.id]?.total || 0;
       const myBonuses = bonuses.filter((b: any) => b.userId == currentUser.id);
-      const totalBonuses = myBonuses.reduce((sum, b) => sum + b.amount, 0);
+      const totalBonuses = myBonuses.reduce((sum: number, b: any) => sum + b.amount, 0);
       
       return {
         customers: myCustomers.length,
@@ -90,7 +90,7 @@ const Reports = () => {
       const completedTickets = myTickets.filter((t: any) => t.status === 'completed');
       const myCommission = commissions[currentUser.id]?.total || 0;
       const myBonuses = bonuses.filter((b: any) => b.userId == currentUser.id);
-      const totalBonuses = myBonuses.reduce((sum, b) => sum + b.amount, 0);
+      const totalBonuses = myBonuses.reduce((sum: number, b: any) => sum + b.amount, 0);
       
       return {
         assignedTickets: myTickets.length,
@@ -116,11 +116,11 @@ const Reports = () => {
             <>
               <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
                 <h3 className="text-green-400 text-sm lg:text-lg font-semibold">My Customers</h3>
-                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData.customers}</p>
+                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData?.customers}</p>
               </div>
               <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
                 <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Tickets Raised</h3>
-                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData.tickets}</p>
+                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData?.tickets}</p>
               </div>
             </>
           )}
@@ -129,26 +129,26 @@ const Reports = () => {
             <>
               <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
                 <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Assigned Tickets</h3>
-                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData.assignedTickets}</p>
+                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData?.assignedTickets}</p>
               </div>
               <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
                 <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Completed Tickets</h3>
-                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData.completedTickets}</p>
+                <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">{myData?.completedTickets}</p>
               </div>
             </>
           )}
           
           <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
             <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Commission</h3>
-            <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">₹{myData.commission.toFixed(2)}</p>
+            <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">₹{myData?.commission.toFixed(2)}</p>
           </div>
           <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
             <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Bonuses</h3>
-            <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">₹{myData.bonuses.toFixed(2)}</p>
+            <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">₹{myData?.bonuses.toFixed(2)}</p>
           </div>
           <div className="bg-gray-800 p-4 lg:p-6 rounded-lg border border-green-600">
             <h3 className="text-green-400 text-sm lg:text-lg font-semibold">Total Earnings</h3>
-            <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">₹{myData.totalEarnings.toFixed(2)}</p>
+            <p className="text-xl lg:text-3xl font-bold text-green-100 mt-1 lg:mt-2">₹{myData?.totalEarnings.toFixed(2)}</p>
           </div>
         </div>
       </div>
@@ -231,7 +231,7 @@ const Reports = () => {
         <div className="bg-white p-4 lg:p-6 rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-gray-600 text-sm lg:text-lg font-semibold">Total Commissions</h3>
           <p className="text-xl lg:text-3xl font-bold text-black mt-1 lg:mt-2">
-            ₹{Object.values(commissions).reduce((sum, c) => sum + c.total, 0).toFixed(2)}
+            ₹{Object.values(commissions).reduce((sum: number, c: any) => sum + c.total, 0).toFixed(2)}
           </p>
         </div>
       </div>
@@ -242,7 +242,7 @@ const Reports = () => {
             Commission Summary
           </h3>
           <div className="p-4">
-            {Object.values(commissions).map(({ user, total }) => (
+            {Object.values(commissions).map(({ user, total }: any) => (
               <div key={user.id} className="flex justify-between items-center py-2 border-b border-gray-200">
                 <span className="text-black text-sm lg:text-base">{user.name} ({user.role})</span>
                 <span className="text-orange-500 font-semibold text-sm lg:text-base">₹{total.toFixed(2)}</span>

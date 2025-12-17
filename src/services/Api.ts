@@ -2,7 +2,7 @@ import tokens from "./tokens.json";
 import { fqConfig } from './config';
 
 const FQ_APP_NAME = fqConfig.prod.appName;
-const FQ_DEV_SERVER_URL = fqConfig.dev.serverUrl;
+// const FQ_DEV_SERVER_URL = fqConfig.dev.serverUrl;
 const FQ_PROD_SERVER_URL = fqConfig.prod.serverUrl;
 const FQ_FULL_TOKEN_PATH = fqConfig.tokenPath;
 
@@ -176,7 +176,7 @@ const makeRequest = async (method: HttpMethod, endpoint: string, options: Reques
     console.log('URL:', final_url);
     console.log('Method:', requestConfig.method);
     console.log('Headers:', requestConfig.headers);
-    console.log('Body (parsed):', JSON.parse(requestConfig.body || '{}'));
+    console.log('Body (parsed):', requestConfig.body ? JSON.parse(requestConfig.body as string) : {});
     console.log('========================');
 
     const response = await fetch(final_url, requestConfig);

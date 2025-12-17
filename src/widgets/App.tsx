@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import logo from '../assets/images/Logo.png';
 
-const Login = ({ onBackToCustomer }) => {
+const Login = ({ onBackToCustomer }: { onBackToCustomer: () => void }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
