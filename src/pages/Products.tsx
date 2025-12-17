@@ -38,7 +38,7 @@ const Products = () => {
   };
 
   useEffect(() => {
-    fetchData("products", "");
+    // Products are already loaded from AppContext, no need to fetch
   }, []);
 
   const handleSubmit = async (e) => {
@@ -97,7 +97,7 @@ const Products = () => {
   return (
     <div className="p-2">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2 relative z-10">
-        <h2 className="text-xl sm:text-2xl font-bold text-yellow-300 flex items-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center">
           <span className="mr-2">🔋</span> Solar Products
         </h2>
         {canManageProducts && (
@@ -205,17 +205,17 @@ const Products = () => {
       )}
 
       {/* Desktop Table */}
-      <div className="hidden md:block bg-white/10 backdrop-blur-xl border border-yellow-400/30 rounded-xl overflow-hidden shadow-lg">
+      <div className="hidden md:block bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
         <table className="w-full">
-          <thead className="bg-white/5">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="p-3 text-left text-yellow-300 font-semibold">Product Name</th>
-              <th className="p-3 text-left text-yellow-300 font-semibold">Category</th>
-              <th className="p-3 text-left text-yellow-300 font-semibold">Price</th>
-              <th className="p-3 text-left text-yellow-300 font-semibold">GST %</th>
-              <th className="p-3 text-left text-yellow-300 font-semibold">Partner %</th>
-              <th className="p-3 text-left text-yellow-300 font-semibold">Tech %</th>
-              {canManageProducts && <th className="p-3 text-left text-yellow-300 font-semibold">Actions</th>}
+              <th className="p-3 text-left text-gray-900 font-semibold">Product Name</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Category</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Price</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">GST %</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Partner %</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Tech %</th>
+              {canManageProducts && <th className="p-3 text-left text-gray-900 font-semibold">Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -224,8 +224,8 @@ const Products = () => {
                 const hasImage = product.image && product.image.trim() !== "";
 
                 return (
-                  <tr key={product.id} className="border-t border-blue-300/20 hover:bg-white/5 transition-all">
-                    <td className="p-3 text-white">
+                  <tr key={product.id} className="border-t border-gray-200 hover:bg-gray-50 transition-all">
+                    <td className="p-3 text-gray-900">
                       <div className="flex items-center gap-2">
                         {hasImage ? (
                           <img
@@ -241,11 +241,11 @@ const Products = () => {
                         {product.name}
                       </div>
                     </td>
-                    <td className="p-3 text-blue-100">{product.category}</td>
-                    <td className="p-3 text-green-300 font-semibold">₹{product.price}</td>
-                    <td className="p-3 text-blue-100">{product.gstPercent}%</td>
-                    <td className="p-3 text-blue-100">{product.partnerCommissionPercent}%</td>
-                    <td className="p-3 text-blue-100">{product.technicianCommissionPercent}%</td>
+                    <td className="p-3 text-gray-700">{product.category}</td>
+                    <td className="p-3 text-green-600 font-semibold">₹{product.price}</td>
+                    <td className="p-3 text-gray-700">{product.gstPercent}%</td>
+                    <td className="p-3 text-gray-700">{product.partnerCommissionPercent}%</td>
+                    <td className="p-3 text-gray-700">{product.technicianCommissionPercent}%</td>
                     {canManageProducts && (
                       <td className="p-3 whitespace-nowrap">
                         <button
@@ -267,7 +267,7 @@ const Products = () => {
               })
             ) : (
               <tr>
-                <td colSpan={canManageProducts ? 7 : 6} className="p-6 text-center text-blue-200">
+                <td colSpan={canManageProducts ? 7 : 6} className="p-6 text-center text-gray-500">
                   No solar products added yet. Click "Add Product" to get started.
                 </td>
               </tr>
@@ -282,33 +282,33 @@ const Products = () => {
       <div className="md:hidden space-y-3">
         {data.products?.length > 0 ? (
           data.products.map(product => (
-            <div key={product.id} className="bg-white/10 backdrop-blur-xl border border-yellow-400/30 p-4 rounded-xl shadow-lg">
+            <div key={product.id} className="bg-white border border-gray-200 p-4 rounded-xl shadow-lg">
               <div className="space-y-2">
                 {product.image && <img src={getImageUrl(product.image)} alt={product.name} className="h-32 w-full object-cover rounded" />}
                 <div>
-                  <span className="text-yellow-300 font-semibold">Product: </span>
-                  <span className="text-white">{product.name}</span>
+                  <span className="text-gray-700 font-semibold">Product: </span>
+                  <span className="text-gray-900">{product.name}</span>
                 </div>
                 <div>
-                  <span className="text-yellow-300 font-semibold">Category: </span>
-                  <span className="text-blue-100">{product.category}</span>
+                  <span className="text-gray-700 font-semibold">Category: </span>
+                  <span className="text-gray-800">{product.category}</span>
                 </div>
                 <div>
-                  <span className="text-yellow-300 font-semibold">Price: </span>
-                  <span className="text-green-300 font-bold">₹{product.price}</span>
+                  <span className="text-gray-700 font-semibold">Price: </span>
+                  <span className="text-green-600 font-bold">₹{product.price}</span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-sm">
                   <div>
-                    <span className="text-yellow-300 font-semibold">GST: </span>
-                    <span className="text-blue-100">{product.gstPercent}%</span>
+                    <span className="text-gray-700 font-semibold">GST: </span>
+                    <span className="text-gray-800">{product.gstPercent}%</span>
                   </div>
                   <div>
-                    <span className="text-yellow-300 font-semibold">Partner: </span>
-                    <span className="text-blue-100">{product.partnerCommissionPercent}%</span>
+                    <span className="text-gray-700 font-semibold">Partner: </span>
+                    <span className="text-gray-800">{product.partnerCommissionPercent}%</span>
                   </div>
                   <div>
-                    <span className="text-yellow-300 font-semibold">Tech: </span>
-                    <span className="text-blue-100">{product.technicianCommissionPercent}%</span>
+                    <span className="text-gray-700 font-semibold">Tech: </span>
+                    <span className="text-gray-800">{product.technicianCommissionPercent}%</span>
                   </div>
                 </div>
                 {canManageProducts && (
@@ -331,7 +331,7 @@ const Products = () => {
             </div>
           ))
         ) : (
-          <div className="bg-white/10 backdrop-blur-xl border border-yellow-400/30 p-6 rounded-xl text-center text-blue-200">
+          <div className="bg-white border border-gray-200 p-6 rounded-xl text-center text-gray-500">
             No solar products added yet. Click "Add Product" to get started.
           </div>
         )}

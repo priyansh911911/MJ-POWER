@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import logo from '../assets/images/Logo.png';
 
-const Login = () => {
+const Login = ({ onBackToCustomer }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -224,14 +224,18 @@ const Login = () => {
               {!isRegistering && (
                 <button
                   onClick={() => {
-                    setIsCustomerMode(!isCustomerMode);
-                    setError('');
-                    setUsername('');
-                    setPassword('');
+                    if (onBackToCustomer) {
+                      onBackToCustomer();
+                    } else {
+                      setIsCustomerMode(!isCustomerMode);
+                      setError('');
+                      setUsername('');
+                      setPassword('');
+                    }
                   }}
                   className="text-blue-600 hover:text-blue-800 text-sm font-medium underline"
                 >
-                  Staff Login
+                  {onBackToCustomer ? 'Back to Customer Portal' : 'Staff Login'}
                 </button>
               )}
               
@@ -328,14 +332,18 @@ const Login = () => {
         <div className="mt-6 text-center space-y-3">
           <button
             onClick={() => {
-              setIsCustomerMode(!isCustomerMode);
-              setError('');
-              setUsername('');
-              setPassword('');
+              if (onBackToCustomer) {
+                onBackToCustomer();
+              } else {
+                setIsCustomerMode(!isCustomerMode);
+                setError('');
+                setUsername('');
+                setPassword('');
+              }
             }}
             className="text-black hover:text-blue-600 text-sm font-semibold bg-gray-100 px-6 py-2 rounded-full hover:bg-gray-200 transition-all duration-200"
           >
-            🏠 Customer Login
+            {onBackToCustomer ? '🏠 Back to Customer Portal' : '🏠 Customer Login'}
           </button>
         </div>
       </div>

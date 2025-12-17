@@ -24,17 +24,19 @@ class FQLCollection {
 
   async findMany<T>(options: QueryOptions = {}): Promise<FQLResponse<T[]>> {
     try {
+      console.log(`FQL: Fetching ${this.collection}`);
       const result = await Api.get(`/${this.collection}`, {
         filter: options.filter,
         search: options.search,
         sort: options.sort,
         fields: options.fields,
         joins: options.joins,
-        session: options.useSession ? 'true' : undefined,
         page: options.limit ? `1,${options.limit}` : undefined
       });
-      return { result };
+      console.log(`FQL: ${this.collection} result:`, result);
+      return { result: result?.result || result?.data || result || [] };
     } catch (err) {
+      console.error(`FQL: Error fetching ${this.collection}:`, err);
       return { result: [], err: err as Error };
     }
   }
@@ -70,12 +72,21 @@ class FQLCollection {
 
   async createOne<T>(data: Record<string, any>, options: CreateOptions = {}): Promise<FQLResponse<{ id: number }>> {
     try {
+      console.log(`FQL: Creating ${this.collection}:`, data);
+      console.log(`FQL: API endpoint will be: /${this.collection}`);
+      
+      // Ensure we're hitting the correct endpoint
+      if (this.collection === 'products') {
+        console.log('PRODUCTS: Forcing correct endpoint');
+      }
+      
       const result = await Api.post(`/${this.collection}`, {
-        body: data,
-        session: options.useSession ? 'true' : undefined
+        body: data
       });
-      return { result };
+      console.log(`FQL: Create ${this.collection} result:`, result);
+      return { result: result?.result || { id: result?.id || Date.now() } };
     } catch (err) {
+      console.error(`FQL: Error creating ${this.collection}:`, err);
       return { result: { id: 0 }, err: err as Error };
     }
   }

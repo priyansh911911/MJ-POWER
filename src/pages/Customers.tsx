@@ -16,14 +16,19 @@ const Customers = () => {
 
   const canManageCustomers = ['admin', 'partner'].includes(currentUser?.role);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingCustomer) {
-      updateItem('customers', editingCustomer.id, formData);
-    } else {
-      addItem('customers', formData);
+    try {
+      if (editingCustomer) {
+        await updateItem('customers', editingCustomer.id, formData);
+      } else {
+        await addItem('customers', formData);
+      }
+      resetForm();
+    } catch (error) {
+      console.error('Error saving customer:', error);
+      alert('Failed to save customer. Please try again.');
     }
-    resetForm();
   };
 
   const resetForm = () => {

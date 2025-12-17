@@ -9,9 +9,9 @@ const Services = () => {
     name: '',
     category: '',
     price: '',
-    gstPercent: '',
-    partnerCommissionPercent: '',
-    technicianCommissionPercent: ''
+    description: '',
+    duration: '',
+    includes: ''
   });
 
   const canManageServices = ['admin', 'manager'].includes(currentUser?.role);
@@ -20,11 +20,12 @@ const Services = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const serviceData = {
-      ...formData,
+      name: formData.name,
+      category: formData.category,
       price: parseFloat(formData.price),
-      gstPercent: parseFloat(formData.gstPercent),
-      partnerCommissionPercent: parseFloat(formData.partnerCommissionPercent),
-      technicianCommissionPercent: parseFloat(formData.technicianCommissionPercent)
+      description: formData.description,
+      duration: formData.duration,
+      includes: formData.includes
     };
     
     if (editingService) {
@@ -40,16 +41,23 @@ const Services = () => {
       name: '',
       category: '',
       price: '',
-      gstPercent: '',
-      partnerCommissionPercent: '',
-      technicianCommissionPercent: ''
+      description: '',
+      duration: '',
+      includes: ''
     });
     setShowForm(false);
     setEditingService(null);
   };
 
   const handleEdit = (service) => {
-    setFormData(service);
+    setFormData({
+      name: service.name || '',
+      category: service.category || '',
+      price: service.price?.toString() || '',
+      description: service.description || '',
+      duration: service.duration || '',
+      includes: service.includes || ''
+    });
     setEditingService(service);
     setShowForm(true);
   };
@@ -57,7 +65,7 @@ const Services = () => {
   return (
     <div className="p-2">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2 relative z-10">
-        <h2 className="text-lg sm:text-xl font-bold text-green-400">Services</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900">Services</h2>
         {canManageServices && (
           <button
             onClick={() => setShowForm(true)}
@@ -103,31 +111,25 @@ const Services = () => {
               required
             />
             <input
-              type="number"
-              step="0.01"
-              placeholder="GST %"
-              value={formData.gstPercent}
-              onChange={(e) => setFormData({...formData, gstPercent: e.target.value})}
+              type="text"
+              placeholder="Duration (e.g., 2-3 hours)"
+              value={formData.duration}
+              onChange={(e) => setFormData({...formData, duration: e.target.value})}
               className="p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm"
-              required
             />
-            <input
-              type="number"
-              step="0.01"
-              placeholder="Partner Commission %"
-              value={formData.partnerCommissionPercent}
-              onChange={(e) => setFormData({...formData, partnerCommissionPercent: e.target.value})}
+            <textarea
+              placeholder="Description"
+              value={formData.description}
+              onChange={(e) => setFormData({...formData, description: e.target.value})}
               className="p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm"
-              required
+              rows="2"
             />
-            <input
-              type="number"
-              step="0.01"
-              placeholder="Technician Commission %"
-              value={formData.technicianCommissionPercent}
-              onChange={(e) => setFormData({...formData, technicianCommissionPercent: e.target.value})}
+            <textarea
+              placeholder="What's included"
+              value={formData.includes}
+              onChange={(e) => setFormData({...formData, includes: e.target.value})}
               className="p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm"
-              required
+              rows="2"
             />
             <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
               <button type="submit" className="btn-primary px-3 py-1.5 rounded text-sm">
@@ -142,28 +144,26 @@ const Services = () => {
       )}
 
       {/* Desktop Table */}
-      <div className="hidden md:block glass-table rounded-lg">
+      <div className="hidden md:block bg-white border border-gray-200 rounded-lg">
         <table className="w-full">
-          <thead className="bg-white/5">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="p-2 text-left text-green-400 text-sm">Name</th>
-              <th className="p-2 text-left text-green-400 text-sm">Category</th>
-              <th className="p-2 text-left text-green-400 text-sm">Price</th>
-              <th className="p-2 text-left text-green-400 text-sm">GST %</th>
-              <th className="p-2 text-left text-green-400 text-sm">Partner %</th>
-              <th className="p-2 text-left text-green-400 text-sm">Tech %</th>
-              {canManageServices && <th className="p-2 text-left text-green-400 text-sm">Actions</th>}
+              <th className="p-2 text-left text-gray-900 text-sm">Name</th>
+              <th className="p-2 text-left text-gray-900 text-sm">Category</th>
+              <th className="p-2 text-left text-gray-900 text-sm">Price</th>
+              <th className="p-2 text-left text-gray-900 text-sm">Duration</th>
+              <th className="p-2 text-left text-gray-900 text-sm">Description</th>
+              {canManageServices && <th className="p-2 text-left text-gray-900 text-sm">Actions</th>}
             </tr>
           </thead>
           <tbody>
-            {data.services.map(service => (
-              <tr key={service.id} className="border-t border-gray-700">
-                <td className="p-2 text-green-100 text-sm">{service.name}</td>
-                <td className="p-2 text-green-100 text-sm">{service.category}</td>
-                <td className="p-2 text-green-100 text-sm">₹{service.price}</td>
-                <td className="p-2 text-green-100 text-sm">{service.gstPercent}%</td>
-                <td className="p-2 text-green-100 text-sm">{service.partnerCommissionPercent}%</td>
-                <td className="p-2 text-green-100 text-sm">{service.technicianCommissionPercent}%</td>
+            {data.services?.map(service => (
+              <tr key={service.id} className="border-t border-gray-200">
+                <td className="p-2 text-gray-900 text-sm">{service.name}</td>
+                <td className="p-2 text-gray-700 text-sm">{service.category}</td>
+                <td className="p-2 text-green-600 text-sm">₹{service.price}</td>
+                <td className="p-2 text-gray-700 text-sm">{service.duration}</td>
+                <td className="p-2 text-gray-700 text-sm">{service.description}</td>
                 {canManageServices && (
                   <td className="p-2">
                     <button
@@ -188,34 +188,32 @@ const Services = () => {
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-2">
-        {data.services.map(service => (
-          <div key={service.id} className="mobile-card p-3 rounded-lg">
+        {data.services?.map(service => (
+          <div key={service.id} className="bg-white border border-gray-200 p-3 rounded-lg">
             <div className="space-y-2">
               <div>
-                <span className="text-green-400 font-semibold">Name: </span>
-                <span className="text-green-100">{service.name}</span>
+                <span className="text-gray-700 font-semibold">Name: </span>
+                <span className="text-gray-900">{service.name}</span>
               </div>
               <div>
-                <span className="text-green-400 font-semibold">Category: </span>
-                <span className="text-green-100">{service.category}</span>
+                <span className="text-gray-700 font-semibold">Category: </span>
+                <span className="text-gray-800">{service.category}</span>
               </div>
               <div>
-                <span className="text-green-400 font-semibold">Price: </span>
-                <span className="text-green-100">₹{service.price}</span>
+                <span className="text-gray-700 font-semibold">Price: </span>
+                <span className="text-green-600">₹{service.price}</span>
               </div>
-              <div className="grid grid-cols-3 gap-2 text-sm">
-                <div>
-                  <span className="text-green-400 font-semibold">GST: </span>
-                  <span className="text-green-100">{service.gstPercent}%</span>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Partner: </span>
-                  <span className="text-green-100">{service.partnerCommissionPercent}%</span>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Tech: </span>
-                  <span className="text-green-100">{service.technicianCommissionPercent}%</span>
-                </div>
+              <div>
+                <span className="text-gray-700 font-semibold">Duration: </span>
+                <span className="text-gray-800">{service.duration}</span>
+              </div>
+              <div>
+                <span className="text-gray-700 font-semibold">Description: </span>
+                <span className="text-gray-800">{service.description}</span>
+              </div>
+              <div>
+                <span className="text-gray-700 font-semibold">Includes: </span>
+                <span className="text-gray-800">{service.includes}</span>
               </div>
               {canManageServices && (
                 <div className="flex gap-2 pt-2">

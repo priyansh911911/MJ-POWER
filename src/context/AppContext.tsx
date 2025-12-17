@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import storageData from '../assets/data/storage.json';
 import Api from '../services/Api';
-import { fql } from '../api/fqlClient';
+import { fql } from '../events/fqlClient';
 
 const AppContext = createContext();
 
@@ -44,24 +44,31 @@ export const AppProvider = ({ children }) => {
   const loadFromDatabase = async () => {
     try {
       const [customers, products, services, tickets, orders] = await Promise.all([
-        Api.get('/customers'),
-        Api.get('/products'),
-        Api.get('/services'),
-        Api.get('/tickets'),
-        Api.get('/orders')
+        fql.customers.findMany({}),
+        fql.products.findMany({}),
+        fql.services.findMany({}),
+        fql.tickets.findMany({}),
+        fql.orders.findMany({})
       ]);
 
+      console.log('Setting data from FQL:', {
+        customers: customers?.result || [],
+        products: products?.result || [],
+        services: services?.result || [],
+        tickets: tickets?.result || [],
+        orders: orders?.result || []
+      });
+      
       setData({
         ...storageData,
-        customers: customers?.data || [],
-        products: products?.data || [],
-        services: services?.data || [],
-        tickets: tickets?.data || [],
-        orders: orders?.data || []
+        customers: customers?.result || [],
+        products: products?.result || [],
+        services: services?.result || [],
+        tickets: tickets?.result || [],
+        orders: orders?.result || []
       });
     } catch (error) {
       console.error('Failed to load from database:', error);
-      // Keep using localStorage data as fallback
     }
   };
 
@@ -154,49 +161,56 @@ export const AppProvider = ({ children }) => {
   };
 
   const addItem = async (key, item) => {
-    console.log(`Attempting to add ${key}:`, item);
-    // console.log('Base URL:', _BASE_URL);
-
     try {
-      console.log(`Making API call to: POST /${key}`);
-      const response = await Api.post(`/${key}`, { body: item });
-      console.log('API Response:', response);
+      console.log(`=== Adding item to ${key} ===`);
+      console.log('Item data:', item);
+      console.log('FQL collection exists:', !!fql[key]);
+      
+      const response = await fql[key].createOne(item, {});
+      console.log('FQL response:', response);
+      
+      if (response.err) {
+        console.log('API returned error, falling back to local storage');
+        throw new Error(response.err.message || response.result);
+      }
 
-      const newItem = response.data?.[0] || { ...item, id: Date.now() };
-
+      const newItem = { ...item, id: response.result.id };
       setData(prev => ({
         ...prev,
         [key]: [...(prev[key] || []), newItem]
       }));
-
-      console.log('Item added to local state:', newItem);
+      
+      console.log(`Successfully added to ${key}:`, newItem);
+      
+      // Debug: Fetch and log current products to verify correct storage
+      if (key === 'products') {
+        setTimeout(async () => {
+          const currentProducts = await fql.products.findMany({});
+          console.log('=== Current Products in Database ===', currentProducts);
+        }, 1000);
+      }
+      
       return newItem;
     } catch (error) {
-      console.error('Database add failed:', error);
-      console.error('Error details:', error.response?.data || error.message);
-
-      // Fallback to local storage
+      console.error(`Database add failed for ${key}:`, error);
       const newItem = { ...item, id: Date.now() };
       setData(prev => ({
         ...prev,
         [key]: [...(prev[key] || []), newItem]
       }));
-      console.log('Using fallback - item added locally:', newItem);
       return newItem;
     }
   };
 
   const updateItem = async (key, id, updatedItem) => {
     try {
-      await Api.put(`/${key}/${id}`, { body: updatedItem });
-
+      await fql[key].updateById(id, updatedItem, { useSession: true });
       setData(prev => ({
         ...prev,
         [key]: prev[key].map(item => item.id === id ? { ...item, ...updatedItem } : item)
       }));
     } catch (error) {
       console.error('Database update failed:', error);
-      // Fallback to local update
       setData(prev => ({
         ...prev,
         [key]: prev[key].map(item => item.id === id ? { ...item, ...updatedItem } : item)
@@ -206,15 +220,13 @@ export const AppProvider = ({ children }) => {
 
   const deleteItem = async (key, id) => {
     try {
-      await Api.delete(`/${key}/${id}`);
-
+      await fql[key].softDeleteById(id, { useSession: true });
       setData(prev => ({
         ...prev,
         [key]: prev[key].filter(item => item.id !== id)
       }));
     } catch (error) {
       console.error('Database delete failed:', error);
-      // Fallback to local delete
       setData(prev => ({
         ...prev,
         [key]: prev[key].filter(item => item.id !== id)

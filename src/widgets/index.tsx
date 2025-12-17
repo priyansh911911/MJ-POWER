@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import Customers from '../pages/Customers';
 import Products from '../pages/Products';
 import Services from '../pages/Services';
+import Orders from '../pages/Orders';
 import Tickets from '../pages/Tickets';
 import Reports from '../pages/Reports';
 import AddTechnician from '../pages/users/AddTechnician';
@@ -37,6 +38,11 @@ const Dashboard = () => {
       technician: [
         { key: 'tickets', label: 'My Tickets' },
         { key: 'reports', label: 'My Reports' }
+      ],
+      customer: [
+        { key: 'products', label: 'Solar Products' },
+        { key: 'services', label: 'Solar Services' },
+        { key: 'tickets', label: 'My Tickets' }
       ]
     };
 
@@ -48,6 +54,7 @@ const Dashboard = () => {
       case 'customers': return <Customers />;
       case 'products': return <Products />;
       case 'services': return <Services />;
+      case 'orders': return <Orders />;
       case 'tickets': return <Tickets />;
       case 'reports': return <Reports />;
       case 'add technician': return <AddTechnician />;
@@ -94,10 +101,10 @@ const Dashboard = () => {
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-gray-600 text-sm font-medium">Support Tickets</h3>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{data.tickets.length}</p>
+                  <h3 className="text-gray-600 text-sm font-medium">Orders</h3>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{(data.orders || []).length}</p>
                 </div>
-                <span className="text-3xl text-orange-500">🎫</span>
+                <span className="text-3xl text-orange-500">📦</span>
               </div>
             </div>
           </div>
@@ -109,13 +116,13 @@ const Dashboard = () => {
                 <span className="mr-2">🎫</span> Recent Support Tickets
               </h3>
               <div className="space-y-3">
-                {data.tickets.slice(0, 3).map((ticket, index) => (
+                {Array.isArray(data.tickets) ? data.tickets.slice(0, 3).map((ticket, index) => (
                   <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
                     <span className="text-gray-900 text-sm font-medium">Ticket #{index + 1}</span>
                     <span className="text-orange-600 text-xs font-semibold bg-orange-100 px-2 py-1 rounded">Open</span>
                   </div>
-                ))}
-                {data.tickets.length === 0 && (
+                )) : null}
+                {(!Array.isArray(data.tickets) || data.tickets.length === 0) && (
                   <p className="text-gray-500 text-sm">No tickets yet</p>
                 )}
               </div>

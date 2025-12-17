@@ -14,6 +14,7 @@ const Layout = ({ children }) => {
       { name: 'Customers', icon: '👥' },
       { name: 'Products', icon: '🔋' },
       { name: 'Services', icon: '⚡' },
+      { name: 'Orders', icon: '📦' },
       { name: 'Tickets', icon: '🎫' },
       { name: 'Add Technician', icon: '👨🔧' },
       { name: 'Add Partner', icon: '🤝' },

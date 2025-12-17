@@ -8,6 +8,7 @@ import CustomerPortal from './widgets/bottom-sheet/index';
 function AppContent() {
   const { currentUser } = useApp();
   const [mounted, setMounted] = useState(false);
+  const [showStaffLogin, setShowStaffLogin] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -17,13 +18,14 @@ function AppContent() {
     return <div className="min-h-screen bg-white flex items-center justify-center">Loading...</div>;
   }
 
-  if (!currentUser) {
-    return <Login />;
+  // Show staff login when requested
+  if (showStaffLogin && !currentUser) {
+    return <Login onBackToCustomer={() => setShowStaffLogin(false)} />;
   }
 
-  // Show customer portal for customers
-  if (currentUser.role === 'customer') {
-    return <CustomerPortal />;
+  // Show customer portal for customers or guest users
+  if (!currentUser || currentUser.role === 'customer') {
+    return <CustomerPortal onStaffLogin={() => setShowStaffLogin(true)} />;
   }
 
   // Show admin/staff dashboard for other users
