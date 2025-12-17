@@ -70,7 +70,7 @@ class FQLCollection {
     }
   }
 
-  async createOne<T>(data: Record<string, any>, options: CreateOptions = {}): Promise<FQLResponse<{ id: number }>> {
+  async createOne(data: Record<string, any>, _options: CreateOptions = {}): Promise<FQLResponse<{ id: number }>> {
     try {
       console.log(`FQL: Creating ${this.collection}:`, data);
       console.log(`FQL: API endpoint will be: /${this.collection}`);
@@ -91,7 +91,7 @@ class FQLCollection {
     }
   }
 
-  async createMany<T>(data: Record<string, any>[], options: CreateOptions = {}): Promise<FQLResponse<{ ids: number[] }>> {
+  async createMany(data: Record<string, any>[], options: CreateOptions = {}): Promise<FQLResponse<{ ids: number[] }>> {
     try {
       const result = await Api.post(`/${this.collection}/batch`, {
         body: data,

@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import storageData from '../assets/data/storage.json';
 import Api from '../services/Api';
 import { fql } from '../events/fqlClient';
 
-const AppContext = createContext();
+const AppContext = createContext<any>({});
 
 export const useApp = () => {
   const context = useContext(AppContext);
@@ -13,7 +13,7 @@ export const useApp = () => {
   return context;
 };
 
-export const AppProvider = ({ children }) => {
+export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [data, setData] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('mjpower-data');
@@ -101,14 +101,13 @@ export const AppProvider = ({ children }) => {
     }
   }, [currentUser]);
 
-  const login = (username, password, customUser = null) => {
+  const login = (username: string, password: string, customUser: any = null) => {
     if (customUser) {
-      // For customer login
       setCurrentUser(customUser);
       return true;
     }
 
-    const user = data.users?.find(u => u.username === username && u.password === password);
+    const user = data.users?.find((u: any) => u.username === username && u.password === password);
     if (user) {
       setCurrentUser(user);
       return true;
@@ -124,49 +123,46 @@ export const AppProvider = ({ children }) => {
   const fetchData = async (key: keyof typeof data, query: string) => {
     try {
       if (!query?.trim()) {
-        setData(prev => ({
+        setData((prev: any) => ({
           ...prev,
           [key]: [],
         }));
         return;
       }
 
-      const products = await fql.products.findAll();
+      const products = await fql.products.findMany({});
 
       const filtered = products.result?.filter((item: any) =>
         item.name.toLowerCase().includes(query.toLowerCase())
       ) || [];
 
-      setData(prev => ({
+      setData((prev: any) => ({
         ...prev,
         [key]: filtered,
       }));
     } catch (error) {
       console.error("fetchData error:", error);
-      setData(prev => ({
+      setData((prev: any) => ({
         ...prev,
         [key]: [],
       }));
     }
   };
 
-
-
-
-  const updateData = (key, newData) => {
-    setData(prev => ({
+  const updateData = (key: string, newData: any) => {
+    setData((prev: any) => ({
       ...prev,
       [key]: newData
     }));
   };
 
-  const addItem = async (key, item) => {
+  const addItem = async (key: string, item: any) => {
     try {
       console.log(`=== Adding item to ${key} ===`);
       console.log('Item data:', item);
-      console.log('FQL collection exists:', !!fql[key]);
+      console.log('FQL collection exists:', !!(fql as any)[key]);
       
-      const response = await fql[key].createOne(item, {});
+      const response = await (fql as any)[key].createOne(item, {});
       console.log('FQL response:', response);
       
       if (response.err) {
@@ -175,14 +171,13 @@ export const AppProvider = ({ children }) => {
       }
 
       const newItem = { ...item, id: response.result.id };
-      setData(prev => ({
+      setData((prev: any) => ({
         ...prev,
         [key]: [...(prev[key] || []), newItem]
       }));
       
       console.log(`Successfully added to ${key}:`, newItem);
       
-      // Debug: Fetch and log current products to verify correct storage
       if (key === 'products') {
         setTimeout(async () => {
           const currentProducts = await fql.products.findMany({});
@@ -194,7 +189,7 @@ export const AppProvider = ({ children }) => {
     } catch (error) {
       console.error(`Database add failed for ${key}:`, error);
       const newItem = { ...item, id: Date.now() };
-      setData(prev => ({
+      setData((prev: any) => ({
         ...prev,
         [key]: [...(prev[key] || []), newItem]
       }));
@@ -202,34 +197,34 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const updateItem = async (key, id, updatedItem) => {
+  const updateItem = async (key: string, id: any, updatedItem: any) => {
     try {
-      await fql[key].updateById(id, updatedItem, { useSession: true });
-      setData(prev => ({
+      await (fql as any)[key].updateById(id, updatedItem, { useSession: true });
+      setData((prev: any) => ({
         ...prev,
-        [key]: prev[key].map(item => item.id === id ? { ...item, ...updatedItem } : item)
+        [key]: prev[key].map((item: any) => item.id === id ? { ...item, ...updatedItem } : item)
       }));
     } catch (error) {
       console.error('Database update failed:', error);
-      setData(prev => ({
+      setData((prev: any) => ({
         ...prev,
-        [key]: prev[key].map(item => item.id === id ? { ...item, ...updatedItem } : item)
+        [key]: prev[key].map((item: any) => item.id === id ? { ...item, ...updatedItem } : item)
       }));
     }
   };
 
-  const deleteItem = async (key, id) => {
+  const deleteItem = async (key: string, id: any) => {
     try {
-      await fql[key].softDeleteById(id, { useSession: true });
-      setData(prev => ({
+      await (fql as any)[key].softDeleteById(id, { useSession: true });
+      setData((prev: any) => ({
         ...prev,
-        [key]: prev[key].filter(item => item.id !== id)
+        [key]: prev[key].filter((item: any) => item.id !== id)
       }));
     } catch (error) {
       console.error('Database delete failed:', error);
-      setData(prev => ({
+      setData((prev: any) => ({
         ...prev,
-        [key]: prev[key].filter(item => item.id !== id)
+        [key]: prev[key].filter((item: any) => item.id !== id)
       }));
     }
   };

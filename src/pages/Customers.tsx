@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 const Customers = () => {
@@ -16,7 +16,7 @@ const Customers = () => {
 
   const canManageCustomers = ['admin', 'partner'].includes(currentUser?.role);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (editingCustomer) {

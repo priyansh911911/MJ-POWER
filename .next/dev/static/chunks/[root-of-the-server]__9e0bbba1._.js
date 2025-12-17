@@ -718,7 +718,7 @@ class FQLCollection {
             };
         }
     }
-    async createOne(data, options = {}) {
+    async createOne(data, _options = {}) {
         try {
             console.log(`FQL: Creating ${this.collection}:`, data);
             console.log(`FQL: API endpoint will be: /${this.collection}`);
@@ -876,7 +876,7 @@ var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.sign
 ;
 ;
 ;
-const AppContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["createContext"])();
+const AppContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["createContext"])({});
 const useApp = ()=>{
     _s();
     const context = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useContext"])(AppContext);
@@ -986,7 +986,6 @@ const AppProvider = ({ children })=>{
     ]);
     const login = (username, password, customUser = null)=>{
         if (customUser) {
-            // For customer login
             setCurrentUser(customUser);
             return true;
         }
@@ -1010,7 +1009,7 @@ const AppProvider = ({ children })=>{
                     }));
                 return;
             }
-            const products = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$events$2f$fqlClient$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fql"].products.findAll();
+            const products = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$events$2f$fqlClient$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fql"].products.findMany({});
             const filtered = products.result?.filter((item)=>item.name.toLowerCase().includes(query.toLowerCase())) || [];
             setData((prev)=>({
                     ...prev,
@@ -1053,7 +1052,6 @@ const AppProvider = ({ children })=>{
                     ]
                 }));
             console.log(`Successfully added to ${key}:`, newItem);
-            // Debug: Fetch and log current products to verify correct storage
             if (key === 'products') {
                 setTimeout(async ()=>{
                     const currentProducts = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$events$2f$fqlClient$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fql"].products.findMany({});
@@ -1138,11 +1136,11 @@ const AppProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/src/context/AppContext.tsx",
-        lineNumber: 238,
+        lineNumber: 233,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s1(AppProvider, "6XOidU5cDeuiBB04cphZlfR/dRQ=");
+_s1(AppProvider, "pFbOLHAIWAEeh+OxJoKlEnLyEGE=");
 _c = AppProvider;
 var _c;
 __turbopack_context__.k.register(_c, "AppProvider");
