@@ -50,12 +50,12 @@ const Tickets = () => {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Support Tickets</h2>
+    <div className="p-2 sm:p-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Support Tickets</h2>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base"
         >
           Create Ticket
         </button>
@@ -125,16 +125,65 @@ const Tickets = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg border border-gray-200">
+      {/* Mobile Cards View */}
+      <div className="block sm:hidden space-y-3">
+        {data.tickets?.map((ticket: any) => {
+          const customer = data.customers?.find((c: any) => c.id == ticket.customerId);
+          return (
+            <div key={ticket.id} className="bg-white p-4 rounded-lg border border-gray-200">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-semibold text-gray-900 text-sm">{ticket.title}</h3>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => handleEdit(ticket)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteItem('tickets', ticket.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">{customer?.name || 'N/A'}</p>
+              <div className="flex gap-2 mb-2">
+                <span className={`px-2 py-1 rounded text-xs ${
+                  ticket.priority === 'urgent' ? 'bg-red-100 text-red-800' :
+                  ticket.priority === 'high' ? 'bg-orange-100 text-orange-800' :
+                  ticket.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-green-100 text-green-800'
+                }`}>
+                  {ticket.priority}
+                </span>
+                <span className={`px-2 py-1 rounded text-xs ${
+                  ticket.status === 'closed' ? 'bg-gray-100 text-gray-800' :
+                  ticket.status === 'resolved' ? 'bg-green-100 text-green-800' :
+                  ticket.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                  'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {ticket.status}
+                </span>
+              </div>
+              <p className="text-xs text-gray-500">{new Date(ticket.createdAt).toLocaleDateString()}</p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden sm:block bg-white rounded-lg border border-gray-200 overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="p-3 text-left">Title</th>
-              <th className="p-3 text-left">Customer</th>
-              <th className="p-3 text-left">Priority</th>
-              <th className="p-3 text-left">Status</th>
-              <th className="p-3 text-left">Created</th>
-              <th className="p-3 text-left">Actions</th>
+              <th className="p-3 text-left text-sm font-medium">Title</th>
+              <th className="p-3 text-left text-sm font-medium">Customer</th>
+              <th className="p-3 text-left text-sm font-medium">Priority</th>
+              <th className="p-3 text-left text-sm font-medium">Status</th>
+              <th className="p-3 text-left text-sm font-medium">Created</th>
+              <th className="p-3 text-left text-sm font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -142,10 +191,10 @@ const Tickets = () => {
               const customer = data.customers?.find((c: any) => c.id == ticket.customerId);
               return (
                 <tr key={ticket.id} className="border-t">
-                  <td className="p-3">{ticket.title}</td>
-                  <td className="p-3">{customer?.name || 'N/A'}</td>
+                  <td className="p-3 text-sm">{ticket.title}</td>
+                  <td className="p-3 text-sm">{customer?.name || 'N/A'}</td>
                   <td className="p-3">
-                    <span className={`px-2 py-1 rounded text-sm ${
+                    <span className={`px-2 py-1 rounded text-xs ${
                       ticket.priority === 'urgent' ? 'bg-red-100 text-red-800' :
                       ticket.priority === 'high' ? 'bg-orange-100 text-orange-800' :
                       ticket.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
@@ -155,7 +204,7 @@ const Tickets = () => {
                     </span>
                   </td>
                   <td className="p-3">
-                    <span className={`px-2 py-1 rounded text-sm ${
+                    <span className={`px-2 py-1 rounded text-xs ${
                       ticket.status === 'closed' ? 'bg-gray-100 text-gray-800' :
                       ticket.status === 'resolved' ? 'bg-green-100 text-green-800' :
                       ticket.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
@@ -164,17 +213,17 @@ const Tickets = () => {
                       {ticket.status}
                     </span>
                   </td>
-                  <td className="p-3">{new Date(ticket.createdAt).toLocaleDateString()}</td>
+                  <td className="p-3 text-sm">{new Date(ticket.createdAt).toLocaleDateString()}</td>
                   <td className="p-3">
                     <button
                       onClick={() => handleEdit(ticket)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2 text-sm"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => deleteItem('tickets', ticket.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
                     >
                       Delete
                     </button>

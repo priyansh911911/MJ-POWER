@@ -12,6 +12,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
   // };
   const [activeTab, setActiveTab] = useState('home');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [orderForm, setOrderForm] = useState({
     type: 'product',
     itemId: '',
@@ -84,16 +85,16 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Top Navigation Bar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b backdrop-blur-sm bg-opacity-95`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+      <nav className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b backdrop-blur-sm bg-opacity-95 pt-safe-top`}>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-2 rounded-lg">
-                <span className="text-white font-bold text-xl">MJ</span>
+              <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-1.5 sm:p-2 rounded-lg">
+                <span className="text-white font-bold text-lg sm:text-xl">MJ</span>
               </div>
-              <div className="ml-3">
-                <div className="text-teal-600 text-sm font-medium">SOLAR SOLUTIONS</div>
+              <div className="ml-2 sm:ml-3 hidden xs:block">
+                <div className="text-teal-600 text-xs sm:text-sm font-medium">SOLAR SOLUTIONS</div>
               </div>
             </div>
 
@@ -123,50 +124,79 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
             </div>
 
             {/* Right Side Actions */}
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                className={`p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
-              >
-                <span className="text-lg">{isDarkMode ? '☀️' : '🌙'}</span>
-              </button>
-              
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <button
                 onClick={() => setActiveTab('cart')}
-                className={`relative p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
+                className={`relative p-1.5 sm:p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
               >
-                <span className="text-lg">🛒</span>
+                <span className="text-base sm:text-lg">🛒</span>
                 {cart.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
                     {cart.length}
                   </span>
                 )}
               </button>
 
               {currentUser ? (
-                <div className="flex items-center space-x-3">
-                  <span className={`text-sm font-medium max-w-32 truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`} title={currentUser.name}>{currentUser.name}</span>
+                <div className="relative">
                   <button
-                    onClick={logout}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all flex-shrink-0"
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    className={`p-1.5 sm:p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white border border-gray-600' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
                   >
-                    Logout
+                    <span className={`text-base sm:text-lg ${isDarkMode ? 'filter brightness-0 invert' : ''}`}>👤</span>
                   </button>
+                  
+                  {showProfileMenu && (
+                    <div className={`absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg border z-50 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                      <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+                        <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{currentUser.name}</p>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{currentUser.email}</p>
+                      </div>
+                      <div className="p-2">
+                        <button
+                          onClick={() => {
+                            setIsDarkMode(!isDarkMode);
+                            setShowProfileMenu(false);
+                          }}
+                          className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-all ${isDarkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-100 text-gray-900'}`}
+                        >
+                          <span className="mr-2">{isDarkMode ? '☀️' : '🌙'}</span>
+                          {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                        </button>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setShowProfileMenu(false);
+                          }}
+                          className="w-full flex items-center px-3 py-2 text-sm rounded-lg transition-all text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        >
+                          <span className="mr-2">🚪</span>
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  <button
+                    onClick={() => setIsDarkMode(!isDarkMode)}
+                    className={`p-1.5 sm:p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
+                  >
+                    <span className="text-base sm:text-lg">{isDarkMode ? '☀️' : '🌙'}</span>
+                  </button>
                   <button
                     onClick={() => {
                       setLoginAction('login');
                       setShowLoginPrompt(true);
                     }}
-                    className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                    className="bg-teal-600 hover:bg-teal-700 text-white px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all"
                   >
                     Login
                   </button>
                   <button
                     onClick={onStaffLogin}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                    className="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all"
                   >
                     Staff
                   </button>
@@ -177,40 +207,75 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
         </div>
       </nav>
 
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 backdrop-blur-sm bg-opacity-95 pb-safe-bottom">
+        <div className="flex justify-around py-2">
+          {menuItems.slice(0, 5).map((item: any) => (
+            <button
+              key={item.id}
+              onClick={() => {
+                if (!currentUser && (item.id === 'my-orders' || item.id === 'my-tickets')) {
+                  setLoginAction('login');
+                  setShowLoginPrompt(true);
+                  return;
+                }
+                setActiveTab(item.id);
+              }}
+              className={`flex flex-col items-center px-2 py-1 rounded-lg text-xs font-medium transition-all ${
+                activeTab === item.id
+                  ? 'text-teal-600'
+                  : isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}
+            >
+              <span className="text-lg mb-1">{item.icon}</span>
+              <span className="text-xs">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      {/* Overlay to close profile menu */}
+      {showProfileMenu && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setShowProfileMenu(false)}
+        />
+      )}
+
       {/* Main Content */}
-      <div className="pt-16">
+      <div className="pt-16 pb-20 md:pb-0">
         {/* Content Area */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
           {activeTab === 'home' && (
             <div>
               {/* Hero Section */}
-              <div className={`relative rounded-3xl overflow-hidden mb-16 ${isDarkMode ? 'bg-gradient-to-r from-teal-600 to-blue-600' : 'bg-gradient-to-r from-teal-500 to-blue-500'}`}>
-                <div className="relative px-8 py-16 lg:px-16 lg:py-24">
+              <div className={`relative rounded-2xl sm:rounded-3xl overflow-hidden mb-8 sm:mb-12 lg:mb-16 ${isDarkMode ? 'bg-gradient-to-r from-teal-600 to-blue-600' : 'bg-gradient-to-r from-teal-500 to-blue-500'}`}>
+                <div className="relative px-4 py-8 sm:px-6 sm:py-12 lg:px-16 lg:py-24">
                   <div className="max-w-3xl">
-                    <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
                       Powering Tomorrow with
                       <span className="block text-yellow-300">Clean Energy</span>
                     </h1>
-                    <p className={`text-xl mb-8 leading-relaxed ${isDarkMode ? 'text-teal-100' : 'text-gray-700'}`}>
+                    <p className={`text-sm sm:text-base lg:text-xl mb-6 sm:mb-8 leading-relaxed text-white/90`}>
                       Transform your home or business with our premium solar solutions. 
                       Professional installation, maintenance, and support included.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                       <button 
                         onClick={() => setActiveTab('products')}
-                        className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg"
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-sm sm:text-base lg:text-lg transition-all transform hover:scale-105 shadow-lg"
                       >
                         Explore Products
                       </button>
                       <button 
                         onClick={() => setActiveTab('services')}
-                        className="border-2 border-white text-white hover:bg-white hover:text-teal-700 px-8 py-4 rounded-xl font-semibold text-lg transition-all"
+                        className="border-2 border-white text-white hover:bg-white hover:text-teal-700 px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-sm sm:text-base lg:text-lg transition-all"
                       >
                         Our Services
                       </button>
                     </div>
                   </div>
-                  <div className="absolute right-0 top-0 w-1/2 h-full opacity-10">
+                  <div className="absolute right-0 top-0 w-1/2 h-full opacity-10 hidden sm:block">
                     <div className="w-full h-full bg-gradient-to-l from-yellow-400/30 to-transparent"></div>
                   </div>
                 </div>
@@ -224,7 +289,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                     Comprehensive solar energy solutions tailored to your needs
                   </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                   {categories.slice(0, 4).map((category: any) => (
                     <button
                       key={category.name}
@@ -244,17 +309,17 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
               </div>
 
               {/* Featured Products */}
-              <div className="mb-16">
-                <div className="flex justify-between items-center mb-8">
-                  <h3 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Featured Products</h3>
+              <div className="mb-8 sm:mb-12 lg:mb-16">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-2">
+                  <h3 className={`text-xl sm:text-2xl lg:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Featured Products</h3>
                   <button 
                     onClick={() => setActiveTab('products')}
-                    className="text-teal-600 hover:text-teal-700 font-semibold flex items-center"
+                    className="text-teal-600 hover:text-teal-700 font-semibold flex items-center text-sm sm:text-base self-start sm:self-auto"
                   >
                     View All Products →
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                   {data.products?.slice(0, 3).map((product: any) => (
                     <div key={product.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
                       isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
@@ -369,9 +434,9 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
               </div>
               
               {/* Products Section */}
-              <div className="mb-16">
-                <h3 className={`text-3xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Products</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              <div className="mb-8 sm:mb-12 lg:mb-16">
+                <h3 className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Products</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                   {data.products?.map((item: any) => (
                     <div key={item.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
                       isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
@@ -435,8 +500,8 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
 
               {/* Services Section */}
               <div>
-                <h3 className={`text-3xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Services</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <h3 className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Services</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                   {data.services?.map((item: any) => (
                     <div key={item.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
                       isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
@@ -503,7 +568,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                   <div className="lg:col-span-2">
                     <div className={`rounded-2xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                       <div className={`p-6 border-b ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -511,10 +576,10 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                       </div>
                       <div className="p-6 space-y-6">
                         {cart.map((item: any) => (
-                          <div key={item.id} className={`flex items-center space-x-6 p-6 border rounded-2xl transition-all hover:shadow-md ${
+                          <div key={item.id} className={`flex items-center space-x-3 sm:space-x-4 lg:space-x-6 p-3 sm:p-4 lg:p-6 border rounded-xl sm:rounded-2xl transition-all hover:shadow-md ${
                             isDarkMode ? 'border-gray-700 hover:bg-gray-750' : 'border-gray-200 hover:bg-gray-50'
                           }`}>
-                            <div className={`w-20 h-20 rounded-xl flex items-center justify-center ${
+                            <div className={`w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-lg sm:rounded-xl flex items-center justify-center ${
                               isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
                             }`}>
                               {item.image ? (
@@ -524,9 +589,9 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                               )}
                             </div>
                             <div className="flex-1">
-                              <h4 className={`text-lg font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.name}</h4>
-                              <p className={`text-sm mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.category}</p>
-                              <p className="text-xl font-bold text-teal-600">₹{item.price?.toLocaleString()}</p>
+                              <h4 className={`text-sm sm:text-base lg:text-lg font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.name}</h4>
+                              <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.category}</p>
+                              <p className="text-base sm:text-lg lg:text-xl font-bold text-teal-600">₹{item.price?.toLocaleString()}</p>
                             </div>
                             <div className="flex items-center space-x-3">
                               <button
@@ -901,8 +966,8 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
 
           {/* Login Prompt Modal */}
           {showLoginPrompt && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className={`rounded-2xl p-8 max-w-md w-full mx-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className={`rounded-2xl p-4 sm:p-6 lg:p-8 max-w-md w-full ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
                 <h3 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   Customer Login
                 </h3>

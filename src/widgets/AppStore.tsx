@@ -69,7 +69,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       )}
 
       {/* Sidebar */}
-      <div className={`${'Fixed Text'} ${'Fixed Text'} fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col h-screen overflow-y-auto transition-transform duration-300 ease-in-out shadow-lg`}>
+      <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col h-screen overflow-y-auto transition-transform duration-300 ease-in-out shadow-lg ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:translate-x-0 ${sidebarCollapsed ? 'lg:-translate-x-full' : ''}`}>
         <div className="flex-1 p-1 lg:p-2">
           <div className="flex justify-center mb-2">
             <div className="bg-orange-500 p-2 rounded-xl flex items-center justify-center">
@@ -119,8 +121,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </div>
       
       {/* Main Content */}
-      <div className="flex-1 ml-64 overflow-y-auto">
-        <main className="p-6">
+      <div className={`flex-1 overflow-y-auto transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:ml-0' : 'lg:ml-64'
+      } ml-0`}>
+        <main className="p-3 sm:p-4 lg:p-6 pt-16 lg:pt-6">
           {children}
         </main>
       </div>

@@ -120,6 +120,27 @@ p {
   background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
 }
 
+/* Replace yellow with green colors */
+.text-yellow-300,
+.text-yellow-400,
+.text-yellow-500,
+.text-yellow-600 {
+  color: #059669 !important;
+}
+
+.bg-yellow-400,
+.bg-yellow-500 {
+  background-color: #10b981 !important;
+}
+
+.text-green-600 {
+  color: #059669 !important;
+}
+
+.text-teal-600 {
+  color: #0d9488 !important;
+}
+
 /* Animation Classes */
 .animate-fade-in {
   animation: fadeIn 0.5s ease-in-out;
@@ -182,16 +203,80 @@ p {
   @apply text-gray-300;
 }
 
+/* Ensure good contrast for form labels and text */
+label {
+  @apply text-gray-700 font-medium;
+}
+
+.dark label {
+  @apply text-gray-200;
+}
+
 /* Mobile responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .btn-primary,
   .btn-secondary,
   .btn-danger,
   .btn-success {
-    @apply px-4 py-2 text-sm;
+    @apply px-3 py-2 text-sm;
   }
   
-  .modern-card {
-    @apply p-4;
+  .modern-card,
+  .glass-card,
+  .glass-form,
+  .glass-table,
+  .mobile-card {
+    @apply p-3 rounded-xl;
   }
+  
+  /* Mobile-specific typography */
+  h1 {
+    @apply text-2xl leading-tight;
+  }
+  
+  h2 {
+    @apply text-xl leading-tight;
+  }
+  
+  h3 {
+    @apply text-lg;
+  }
+  
+  /* Mobile form elements */
+  input,
+  select,
+  textarea {
+    @apply px-3 py-2 text-sm;
+  }
+}
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger,
+  .btn-success {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  button {
+    @apply min-h-[44px];
+  }
+}
+
+/* Safe area support for mobile devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
 }

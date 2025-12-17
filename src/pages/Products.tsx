@@ -286,8 +286,7 @@ const Products = () => {
               <div className="space-y-2">
                 {product.image && <img src={getImageUrl(product.image)} alt={product.name} className="h-32 w-full object-cover rounded" />}
                 <div>
-                  <span className="text-gray-700 font-semibold">Product: </span>
-                  <span className="text-gray-900">{product.name}</span>
+                  <span className="text-gray-700 font-semibold">{product.name}</span>
                 </div>
                 <div>
                   <span className="text-gray-700 font-semibold">Category: </span>
