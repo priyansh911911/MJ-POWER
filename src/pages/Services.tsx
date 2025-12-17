@@ -79,7 +79,7 @@ const Services = () => {
       {showForm && canManageServices && (
         <div className="glass-form p-3 sm:p-4 rounded-lg mb-4 relative z-10">
           <h3 className="text-base font-semibold text-green-400 mb-3">
-            {'Fixed Text'}
+            {editingService ? 'Edit Service' : 'Add Service'}
           </h3>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
@@ -133,7 +133,7 @@ const Services = () => {
             />
             <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
               <button type="submit" className="btn-primary px-3 py-1.5 rounded text-sm">
-                {'Fixed Text'}
+                {editingService ? 'Update Service' : 'Add Service'}
               </button>
               <button type="button" onClick={resetForm} className="btn-secondary px-3 py-1.5 rounded text-sm">
                 Cancel

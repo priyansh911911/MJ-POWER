@@ -67,7 +67,7 @@ const Customers = () => {
       {showForm && canManageCustomers && (
         <div className="bg-white p-6 rounded-lg border border-gray-200 mb-6">
           <h3 className="text-lg font-semibold mb-4">
-            {'Fixed Text'}
+            {editingCustomer ? 'Edit Customer' : 'Add Customer'}
           </h3>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
@@ -111,7 +111,7 @@ const Customers = () => {
             />
             <div className="md:col-span-2 flex gap-2">
               <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-                {'Fixed Text'} Customer
+                {editingCustomer ? 'Update Customer' : 'Add Customer'}
               </button>
               <button type="button" onClick={resetForm} className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
                 Cancel

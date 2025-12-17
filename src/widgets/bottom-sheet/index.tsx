@@ -82,9 +82,9 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
   ];
 
   return (
-    <div className={`min-h-screen ${'Fixed Text'}`}>
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Top Navigation Bar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 ${'Fixed Text'} border-b backdrop-blur-sm bg-opacity-95`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b backdrop-blur-sm bg-opacity-95`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -126,14 +126,14 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className={`p-2 rounded-lg transition-all ${'Fixed Text'}`}
+                className={`p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
               >
-                <span className="text-lg">{'Fixed Text'}</span>
+                <span className="text-lg">{isDarkMode ? '☀️' : '🌙'}</span>
               </button>
               
               <button
                 onClick={() => setActiveTab('cart')}
-                className={`relative p-2 rounded-lg transition-all ${'Fixed Text'}`}
+                className={`relative p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
               >
                 <span className="text-lg">🛒</span>
                 {cart.length > 0 && (
@@ -145,7 +145,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
 
               {currentUser ? (
                 <div className="flex items-center space-x-3">
-                  <span className={`text-sm font-medium max-w-32 truncate ${'Fixed Text'}`} title={currentUser.name}>{currentUser.name}</span>
+                  <span className={`text-sm font-medium max-w-32 truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`} title={currentUser.name}>{currentUser.name}</span>
                   <button
                     onClick={logout}
                     className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all flex-shrink-0"
@@ -184,14 +184,14 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
           {activeTab === 'home' && (
             <div>
               {/* Hero Section */}
-              <div className={`relative rounded-3xl overflow-hidden mb-16 ${'Fixed Text'}`}>
+              <div className={`relative rounded-3xl overflow-hidden mb-16 ${isDarkMode ? 'bg-gradient-to-r from-teal-600 to-blue-600' : 'bg-gradient-to-r from-teal-500 to-blue-500'}`}>
                 <div className="relative px-8 py-16 lg:px-16 lg:py-24">
                   <div className="max-w-3xl">
                     <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                       Powering Tomorrow with
-                      <span className="block text-yellow-400">Clean Energy</span>
+                      <span className="block text-yellow-300">Clean Energy</span>
                     </h1>
-                    <p className="text-xl text-teal-100 mb-8 leading-relaxed">
+                    <p className={`text-xl mb-8 leading-relaxed ${isDarkMode ? 'text-teal-100' : 'text-gray-700'}`}>
                       Transform your home or business with our premium solar solutions. 
                       Professional installation, maintenance, and support included.
                     </p>
@@ -219,8 +219,8 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
               {/* Services Overview */}
               <div className="mb-16">
                 <div className="text-center mb-12">
-                  <h2 className={`text-4xl font-bold mb-4 ${'Fixed Text'}`}>Our Solar Solutions</h2>
-                  <p className={`text-xl ${'Fixed Text'} max-w-2xl mx-auto`}>
+                  <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Our Solar Solutions</h2>
+                  <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-2xl mx-auto`}>
                     Comprehensive solar energy solutions tailored to your needs
                   </p>
                 </div>
@@ -236,8 +236,8 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                       <div className="w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:bg-teal-200 transition-colors">
                         <span className="text-3xl">{category.icon}</span>
                       </div>
-                      <h3 className={`text-lg font-semibold mb-2 ${'Fixed Text'}`}>{category.name}</h3>
-                      <p className={`text-sm ${'Fixed Text'}`}>Professional {category.name.toLowerCase()} solutions</p>
+                      <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{category.name}</h3>
+                      <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Professional {category.name.toLowerCase()} solutions</p>
                     </button>
                   ))}
                 </div>
@@ -246,7 +246,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
               {/* Featured Products */}
               <div className="mb-16">
                 <div className="flex justify-between items-center mb-8">
-                  <h3 className={`text-3xl font-bold ${'Fixed Text'}`}>Featured Products</h3>
+                  <h3 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Featured Products</h3>
                   <button 
                     onClick={() => setActiveTab('products')}
                     className="text-teal-600 hover:text-teal-700 font-semibold flex items-center"
@@ -265,8 +265,8 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                         <span className="text-6xl">⚡</span>
                       </div>
                       <div className="p-6">
-                        <h4 className={`text-xl font-semibold mb-2 ${'Fixed Text'}`}>{product.name}</h4>
-                        <p className={`text-sm mb-4 ${'Fixed Text'}`}>{product.category}</p>
+                        <h4 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{product.name}</h4>
+                        <p className={`text-sm mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{product.category}</p>
                         <div className="flex justify-between items-center">
                           <span className="text-2xl font-bold text-teal-600">₹{product.price?.toLocaleString()}</span>
                           <button 
@@ -283,32 +283,32 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
               </div>
 
               {/* Why Choose Us */}
-              <div className={`rounded-3xl p-8 lg:p-12 ${'Fixed Text'}`}>
+              <div className={`rounded-3xl p-8 lg:p-12 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 <div className="text-center mb-12">
-                  <h3 className={`text-3xl font-bold mb-4 ${'Fixed Text'}`}>Why Choose MJPOWER Solar?</h3>
-                  <p className={`text-lg ${'Fixed Text'}`}>Leading the way in sustainable energy solutions</p>
+                  <h3 className={`text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Why Choose MJPOWER Solar?</h3>
+                  <p className={`text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Leading the way in sustainable energy solutions</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="text-center">
                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <span className="text-2xl">🏆</span>
                     </div>
-                    <h4 className={`text-lg font-semibold mb-2 ${'Fixed Text'}`}>Expert Installation</h4>
-                    <p className={`${'Fixed Text'}`}>Professional installation by certified technicians</p>
+                    <h4 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Expert Installation</h4>
+                    <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Professional installation by certified technicians</p>
                   </div>
                   <div className="text-center">
                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <span className="text-2xl">⚡</span>
                     </div>
-                    <h4 className={`text-lg font-semibold mb-2 ${'Fixed Text'}`}>Premium Quality</h4>
-                    <p className={`${'Fixed Text'}`}>High-efficiency solar panels and components</p>
+                    <h4 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Premium Quality</h4>
+                    <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>High-efficiency solar panels and components</p>
                   </div>
                   <div className="text-center">
                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <span className="text-2xl">🛠️</span>
                     </div>
-                    <h4 className={`text-lg font-semibold mb-2 ${'Fixed Text'}`}>24/7 Support</h4>
-                    <p className={`${'Fixed Text'}`}>Round-the-clock maintenance and support</p>
+                    <h4 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>24/7 Support</h4>
+                    <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Round-the-clock maintenance and support</p>
                   </div>
                 </div>
               </div>
@@ -318,8 +318,8 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
           {activeTab === 'services' && (
             <div>
               <div className="text-center mb-12">
-                <h2 className={`text-4xl font-bold mb-4 ${'Fixed Text'}`}>Solar Services</h2>
-                <p className={`text-xl ${'Fixed Text'} max-w-2xl mx-auto`}>
+                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Services</h2>
+                <p className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-2xl mx-auto`}>
                   Professional solar services to maximize your energy efficiency
                 </p>
               </div>
@@ -334,11 +334,11 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                       <span className="text-6xl">🔧</span>
                     </div>
                     <div className="p-6">
-                      <h3 className={`text-xl font-semibold mb-3 ${'Fixed Text'}`}>{service.name}</h3>
-                      <p className={`mb-6 ${'Fixed Text'} leading-relaxed`}>{service.description}</p>
+                      <h3 className={`text-xl font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{service.name}</h3>
+                      <p className={`mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'} leading-relaxed`}>{service.description}</p>
                       <div className="flex justify-between items-center mb-4">
                         <span className="text-2xl font-bold text-teal-600">₹{service.price?.toLocaleString()}</span>
-                        <span className={`text-sm px-3 py-1 rounded-full ${'Fixed Text'}`}>Service</span>
+                        <span className={`text-sm px-3 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Service</span>
                       </div>
                       <button
                         onClick={() => {
@@ -362,15 +362,15 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
           {activeTab === 'products' && (
             <div>
               <div className="text-center mb-12">
-                <h2 className={`text-4xl font-bold mb-4 ${'Fixed Text'}`}>Products & Services</h2>
-                <p className={`text-xl ${'Fixed Text'} max-w-2xl mx-auto`}>
+                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Products & Services</h2>
+                <p className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-2xl mx-auto`}>
                   Complete solar solutions for your energy needs
                 </p>
               </div>
               
               {/* Products Section */}
               <div className="mb-16">
-                <h3 className={`text-3xl font-bold mb-8 ${'Fixed Text'}`}>Solar Products</h3>
+                <h3 className={`text-3xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Products</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {data.products?.map((item: any) => (
                     <div key={item.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
@@ -387,12 +387,12 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                       </div>
                       <div className="p-6">
                         <div className="flex justify-between items-start mb-3">
-                          <h4 className={`text-lg font-semibold ${'Fixed Text'}`}>{item.name}</h4>
-                          <span className={`text-xs px-2 py-1 rounded-full ${'Fixed Text'}`}>
+                          <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.name}</h4>
+                          <span className={`text-xs px-2 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                             {item.category}
                           </span>
                         </div>
-                        <p className={`text-sm mb-4 ${'Fixed Text'} line-clamp-2`}>{item.description}</p>
+                        <p className={`text-sm mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'} line-clamp-2`}>{item.description}</p>
                         <div className="flex items-center justify-between mb-4">
                           <span className="text-2xl font-bold text-teal-600">₹{item.price?.toLocaleString()}</span>
                           <select 
@@ -435,7 +435,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
 
               {/* Services Section */}
               <div>
-                <h3 className={`text-3xl font-bold mb-8 ${'Fixed Text'}`}>Solar Services</h3>
+                <h3 className={`text-3xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Services</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {data.services?.map((item: any) => (
                     <div key={item.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
@@ -448,12 +448,12 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                       </div>
                       <div className="p-6">
                         <div className="flex justify-between items-start mb-3">
-                          <h4 className={`text-lg font-semibold ${'Fixed Text'}`}>{item.name}</h4>
-                          <span className={`text-xs px-2 py-1 rounded-full ${'Fixed Text'}`}>
+                          <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.name}</h4>
+                          <span className={`text-xs px-2 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                             Service
                           </span>
                         </div>
-                        <p className={`text-sm mb-4 ${'Fixed Text'} line-clamp-2`}>{item.description}</p>
+                        <p className={`text-sm mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'} line-clamp-2`}>{item.description}</p>
                         <div className="mb-4">
                           <span className="text-2xl font-bold text-teal-600">₹{item.price?.toLocaleString()}</span>
                         </div>
@@ -486,15 +486,15 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
           {activeTab === 'cart' && (
             <div>
               <div className="text-center mb-12">
-                <h2 className={`text-4xl font-bold mb-4 ${'Fixed Text'}`}>Shopping Cart</h2>
-                <p className={`text-xl ${'Fixed Text'}`}>Review your selected items</p>
+                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Shopping Cart</h2>
+                <p className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Review your selected items</p>
               </div>
               
               {cart.length === 0 ? (
                 <div className="text-center py-16">
                   <div className="text-8xl mb-6">🛒</div>
-                  <h3 className={`text-2xl font-semibold mb-4 ${'Fixed Text'}`}>Your cart is empty</h3>
-                  <p className={`text-lg mb-8 ${'Fixed Text'}`}>Add some solar products to get started!</p>
+                  <h3 className={`text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Your cart is empty</h3>
+                  <p className={`text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Add some solar products to get started!</p>
                   <button
                     onClick={() => setActiveTab('products')}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
@@ -505,9 +505,9 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <div className="lg:col-span-2">
-                    <div className={`rounded-2xl ${'Fixed Text'}`}>
-                      <div className={`p-6 border-b ${'Fixed Text'}`}>
-                        <h3 className={`text-xl font-semibold ${'Fixed Text'}`}>Cart Items ({cart.length})</h3>
+                    <div className={`rounded-2xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <div className={`p-6 border-b ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Cart Items ({cart.length})</h3>
                       </div>
                       <div className="p-6 space-y-6">
                         {cart.map((item: any) => (
@@ -524,8 +524,8 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                               )}
                             </div>
                             <div className="flex-1">
-                              <h4 className={`text-lg font-semibold mb-1 ${'Fixed Text'}`}>{item.name}</h4>
-                              <p className={`text-sm mb-2 ${'Fixed Text'}`}>{item.category}</p>
+                              <h4 className={`text-lg font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.name}</h4>
+                              <p className={`text-sm mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.category}</p>
                               <p className="text-xl font-bold text-teal-600">₹{item.price?.toLocaleString()}</p>
                             </div>
                             <div className="flex items-center space-x-3">
@@ -543,7 +543,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                               >
                                 -
                               </button>
-                              <span className={`w-12 text-center font-semibold ${'Fixed Text'}`}>{item.quantity}</span>
+                              <span className={`w-12 text-center font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.quantity}</span>
                               <button
                                 onClick={() => {
                                   setCart(cart.map((cartItem: any) => 
@@ -563,7 +563,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                               onClick={() => {
                                 setCart(cart.filter((cartItem: any) => cartItem.id !== item.id));
                               }}
-                              className={`p-3 rounded-lg transition-all ${'Fixed Text'}`}
+                              className={`p-3 rounded-lg transition-all ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                             >
                               🗑️
                             </button>
@@ -574,21 +574,21 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                   </div>
                   
                   <div className="lg:col-span-1">
-                    <div className={`rounded-2xl sticky top-24 ${'Fixed Text'}`}>
-                      <div className={`p-6 border-b ${'Fixed Text'}`}>
-                        <h3 className={`text-xl font-semibold ${'Fixed Text'}`}>Order Summary</h3>
+                    <div className={`rounded-2xl sticky top-24 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <div className={`p-6 border-b ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Order Summary</h3>
                       </div>
                       <div className="p-6 space-y-4">
-                        <div className={`flex justify-between text-lg ${'Fixed Text'}`}>
+                        <div className={`flex justify-between text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           <span>Subtotal:</span>
                           <span>₹{cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0).toLocaleString()}</span>
                         </div>
-                        <div className={`flex justify-between text-lg ${'Fixed Text'}`}>
+                        <div className={`flex justify-between text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           <span>Tax (18%):</span>
                           <span>₹{Math.round(cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0) * 0.18).toLocaleString()}</span>
                         </div>
-                        <div className={`border-t pt-4 ${'Fixed Text'}`}>
-                          <div className={`flex justify-between text-xl font-bold ${'Fixed Text'}`}>
+                        <div className={`border-t pt-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                          <div className={`flex justify-between text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                             <span>Total:</span>
                             <span>₹{Math.round(cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0) * 1.18).toLocaleString()}</span>
                           </div>
@@ -636,16 +636,16 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
           {activeTab === 'raise-ticket' && (
             <div className="max-w-2xl mx-auto">
               <div className="text-center mb-12">
-                <h2 className={`text-4xl font-bold mb-4 ${'Fixed Text'}`}>Support Center</h2>
-                <p className={`text-xl ${'Fixed Text'}`}>Get help with your solar solutions</p>
+                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Support Center</h2>
+                <p className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Get help with your solar solutions</p>
               </div>
               
-              <div className={`p-8 rounded-2xl ${'Fixed Text'}`}>
+              <div className={`p-8 rounded-2xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 {!currentUser ? (
                   <div className="text-center py-12">
                     <div className="text-6xl mb-6">🔒</div>
-                    <h3 className={`text-2xl font-semibold mb-4 ${'Fixed Text'}`}>Login Required</h3>
-                    <p className={`text-lg mb-8 ${'Fixed Text'}`}>Please login to raise a support ticket</p>
+                    <h3 className={`text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Login Required</h3>
+                    <p className={`text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Please login to raise a support ticket</p>
                     <button
                       onClick={() => {
                         setLoginAction('ticket');
@@ -658,10 +658,10 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                   </div>
                 ) : (
                   <div>
-                    <h3 className={`text-2xl font-semibold mb-6 ${'Fixed Text'}`}>Create Support Ticket</h3>
+                    <h3 className={`text-2xl font-semibold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Create Support Ticket</h3>
                     <form onSubmit={handleRaiseTicket} className="space-y-6">
                       <div>
-                        <label className={`block text-sm font-medium mb-2 ${'Fixed Text'}`}>Category</label>
+                        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Category</label>
                         <select
                           value={ticketForm.type}
                           onChange={(e: any) => setTicketForm({...ticketForm, type: e.target.value, itemId: ''})}
@@ -675,7 +675,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                       </div>
                       
                       <div>
-                        <label className={`block text-sm font-medium mb-2 ${'Fixed Text'}`}>Select Item</label>
+                        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Select Item</label>
                         <select
                           value={ticketForm.itemId}
                           onChange={(e: any) => setTicketForm({...ticketForm, itemId: e.target.value})}
@@ -692,7 +692,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                       </div>
                       
                       <div>
-                        <label className={`block text-sm font-medium mb-2 ${'Fixed Text'}`}>Issue Description</label>
+                        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Issue Description</label>
                         <textarea
                           placeholder="Describe your issue in detail..."
                           value={ticketForm.issue}
@@ -706,7 +706,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                       </div>
                       
                       <div>
-                        <label className={`block text-sm font-medium mb-2 ${'Fixed Text'}`}>Additional Notes (Optional)</label>
+                        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Additional Notes (Optional)</label>
                         <textarea
                           placeholder="Any additional information..."
                           value={ticketForm.notes}
@@ -734,20 +734,20 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
           {activeTab === 'my-orders' && (
             <div>
               <div className="text-center mb-12">
-                <h2 className={`text-4xl font-bold mb-4 ${'Fixed Text'}`}>My Orders</h2>
-                <p className={`text-xl ${'Fixed Text'}`}>Track your solar product orders</p>
+                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>My Orders</h2>
+                <p className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Track your solar product orders</p>
               </div>
               
-              <div className={`rounded-2xl ${'Fixed Text'}`}>
-                <div className={`p-6 border-b ${'Fixed Text'}`}>
-                  <h3 className={`text-xl font-semibold ${'Fixed Text'}`}>Order History</h3>
+              <div className={`rounded-2xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`p-6 border-b ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Order History</h3>
                 </div>
                 <div className="p-6">
                   {!currentUser ? (
                     <div className="text-center py-12">
                       <div className="text-6xl mb-6">🔒</div>
-                      <h3 className={`text-2xl font-semibold mb-4 ${'Fixed Text'}`}>Login Required</h3>
-                      <p className={`text-lg mb-8 ${'Fixed Text'}`}>Please login to view your orders</p>
+                      <h3 className={`text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Login Required</h3>
+                      <p className={`text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Please login to view your orders</p>
                       <button
                         onClick={() => {
                           setLoginAction('login');
@@ -761,8 +761,8 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                   ) : myOrders.length === 0 ? (
                     <div className="text-center py-12">
                       <div className="text-6xl mb-6">📦</div>
-                      <h3 className={`text-2xl font-semibold mb-4 ${'Fixed Text'}`}>No Orders Yet</h3>
-                      <p className={`text-lg mb-8 ${'Fixed Text'}`}>Start shopping for solar products</p>
+                      <h3 className={`text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>No Orders Yet</h3>
+                      <p className={`text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Start shopping for solar products</p>
                       <button
                         onClick={() => setActiveTab('products')}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
@@ -778,17 +778,17 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                         }`}>
                           <div className="flex justify-between items-start mb-4">
                             <div className="flex-1">
-                              <h4 className={`text-lg font-semibold mb-2 ${'Fixed Text'}`}>{order.itemName}</h4>
+                              <h4 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{order.itemName}</h4>
                               <div className="flex items-center space-x-4 mb-3">
-                                <span className={`text-sm px-3 py-1 rounded-full ${'Fixed Text'}`}>
+                                <span className={`text-sm px-3 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                                   {order.type}
                                 </span>
                                 {order.type === 'product' && (
-                                  <span className={`text-sm ${'Fixed Text'}`}>Qty: {order.quantity}</span>
+                                  <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Qty: {order.quantity}</span>
                                 )}
                               </div>
                               <p className="text-xl font-bold text-teal-600 mb-2">₹{(order.totalPrice || order.itemPrice)?.toLocaleString()}</p>
-                              {order.description && <p className={`text-sm mb-2 ${'Fixed Text'}`}>{order.description}</p>}
+                              {order.description && <p className={`text-sm mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{order.description}</p>}
                               <div className="flex items-center space-x-4 text-sm text-gray-500">
                                 <span>Preferred: {order.preferredDate}</span>
                                 <span>Ordered: {order.createdAt}</span>
@@ -814,20 +814,20 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
           {activeTab === 'my-tickets' && (
             <div>
               <div className="text-center mb-12">
-                <h2 className={`text-4xl font-bold mb-4 ${'Fixed Text'}`}>Support Tickets</h2>
-                <p className={`text-xl ${'Fixed Text'}`}>Track your support requests</p>
+                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Support Tickets</h2>
+                <p className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Track your support requests</p>
               </div>
               
-              <div className={`rounded-2xl ${'Fixed Text'}`}>
-                <div className={`p-6 border-b ${'Fixed Text'}`}>
-                  <h3 className={`text-xl font-semibold ${'Fixed Text'}`}>Ticket History</h3>
+              <div className={`rounded-2xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`p-6 border-b ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Ticket History</h3>
                 </div>
                 <div className="p-6">
                   {!currentUser ? (
                     <div className="text-center py-12">
                       <div className="text-6xl mb-6">🔒</div>
-                      <h3 className={`text-2xl font-semibold mb-4 ${'Fixed Text'}`}>Login Required</h3>
-                      <p className={`text-lg mb-8 ${'Fixed Text'}`}>Please login to view your support tickets</p>
+                      <h3 className={`text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Login Required</h3>
+                      <p className={`text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Please login to view your support tickets</p>
                       <button
                         onClick={() => {
                           setLoginAction('login');
@@ -841,8 +841,8 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                   ) : myTickets.length === 0 ? (
                     <div className="text-center py-12">
                       <div className="text-6xl mb-6">🎟️</div>
-                      <h3 className={`text-2xl font-semibold mb-4 ${'Fixed Text'}`}>No Support Tickets</h3>
-                      <p className={`text-lg mb-8 ${'Fixed Text'}`}>Need help? Create a support ticket</p>
+                      <h3 className={`text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>No Support Tickets</h3>
+                      <p className={`text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Need help? Create a support ticket</p>
                       <button
                         onClick={() => setActiveTab('raise-ticket')}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
@@ -862,17 +862,17 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                             <div className="flex justify-between items-start mb-4">
                               <div className="flex-1">
                                 <div className="flex items-center space-x-3 mb-3">
-                                  <h4 className={`text-lg font-semibold ${'Fixed Text'}`}>Ticket #{ticket.id}</h4>
-                                  <span className={`text-sm px-3 py-1 rounded-full ${'Fixed Text'}`}>
+                                  <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Ticket #{ticket.id}</h4>
+                                  <span className={`text-sm px-3 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                                     {ticket.type}
                                   </span>
                                 </div>
-                                <p className={`text-sm mb-2 ${'Fixed Text'}`}>
+                                <p className={`text-sm mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                                   Related to: {item?.name}
                                 </p>
-                                <p className={`mb-3 ${'Fixed Text'}`}>{ticket.issue}</p>
+                                <p className={`mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{ticket.issue}</p>
                                 {ticket.notes && (
-                                  <p className={`text-sm mb-3 ${'Fixed Text'}`}>
+                                  <p className={`text-sm mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                                     <span className="font-medium">Notes:</span> {ticket.notes}
                                   </p>
                                 )}
@@ -902,11 +902,11 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
           {/* Login Prompt Modal */}
           {showLoginPrompt && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className={`rounded-2xl p-8 max-w-md w-full mx-4 ${'Fixed Text'}`}>
-                <h3 className={`text-2xl font-bold mb-2 ${'Fixed Text'}`}>
+              <div className={`rounded-2xl p-8 max-w-md w-full mx-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   Customer Login
                 </h3>
-                <p className={`mb-6 ${'Fixed Text'}`}>
+                <p className={`mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   {loginAction === 'checkout' ? 'Please login to complete your purchase.' :
                    loginAction === 'ticket' ? 'Please login to raise a support ticket.' :
                    'Please login to access your account.'}
@@ -926,22 +926,22 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                   }
                 }} className="space-y-4">
                   <div>
-                    <label className={`block text-sm font-medium mb-2 ${'Fixed Text'}`}>Email</label>
+                    <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Email</label>
                     <input
                       name="email"
                       type="email"
                       required
-                      className={`w-full p-3 rounded-lg border ${'Fixed Text'}`}
+                      className={`w-full p-3 rounded-lg border ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                       placeholder="Enter your email"
                     />
                   </div>
                   <div>
-                    <label className={`block text-sm font-medium mb-2 ${'Fixed Text'}`}>Password</label>
+                    <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Password</label>
                     <input
                       name="password"
                       type="password"
                       required
-                      className={`w-full p-3 rounded-lg border ${'Fixed Text'}`}
+                      className={`w-full p-3 rounded-lg border ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                       placeholder="Enter your password"
                     />
                   </div>
@@ -952,7 +952,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                         setShowLoginPrompt(false);
                         setActiveTab('home');
                       }}
-                      className={`flex-1 py-3 px-4 rounded-lg font-semibold ${'Fixed Text'}`}
+                      className={`flex-1 py-3 px-4 rounded-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                     >
                       Cancel
                     </button>

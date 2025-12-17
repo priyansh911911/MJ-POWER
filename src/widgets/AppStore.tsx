@@ -119,8 +119,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </div>
       
       {/* Main Content */}
-      <div className={`overflow-y-auto scrollbar-hide pt-12 lg:pt-0 lg:h-screen transition-all duration-300 ${'Fixed Text'}`}>
-        <main className={`p-4 lg:p-8 transition-all duration-300 ${'Fixed Text'}`}>
+      <div className="flex-1 ml-64 overflow-y-auto">
+        <main className="p-6">
           {children}
         </main>
       </div>
