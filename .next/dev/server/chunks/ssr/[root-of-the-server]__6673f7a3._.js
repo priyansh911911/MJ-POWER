@@ -6924,7 +6924,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                className: "hidden md:flex items-center space-x-8",
+                                className: "hidden md:flex items-center space-x-8 ml-8",
                                 children: menuItems.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
                                         onClick: ()=>{
                                             if (!currentUser && (item.id === 'my-orders' || item.id === 'my-tickets')) {

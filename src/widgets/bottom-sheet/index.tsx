@@ -98,7 +98,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
             </div>
 
             {/* Navigation Menu */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-8 ml-8">
               {menuItems.map((item: any) => (
                 <button
                   key={item.id}
