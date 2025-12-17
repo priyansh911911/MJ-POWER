@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 
 const AddPartner = () => {
@@ -13,7 +13,7 @@ const AddPartner = () => {
     territory: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     addItem('users', { ...formData, role: 'partner' });
     setFormData({ name: '', email: '', phone: '', username: '', password: '', company: '', territory: '' });
@@ -39,7 +39,7 @@ const AddPartner = () => {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, name: e.target.value})}
               className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               required
             />
@@ -50,7 +50,7 @@ const AddPartner = () => {
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, email: e.target.value})}
               className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               required
             />
@@ -61,7 +61,7 @@ const AddPartner = () => {
             <input
               type="tel"
               value={formData.phone}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, phone: e.target.value})}
               className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               required
             />
@@ -72,7 +72,7 @@ const AddPartner = () => {
             <input
               type="text"
               value={formData.username}
-              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, username: e.target.value})}
               className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               required
             />
@@ -83,7 +83,7 @@ const AddPartner = () => {
             <input
               type="password"
               value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, password: e.target.value})}
               className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               required
             />
@@ -94,7 +94,7 @@ const AddPartner = () => {
             <input
               type="text"
               value={formData.company}
-              onChange={(e) => setFormData({...formData, company: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, company: e.target.value})}
               className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               placeholder="Partner company name"
             />
@@ -105,7 +105,7 @@ const AddPartner = () => {
             <input
               type="text"
               value={formData.territory}
-              onChange={(e) => setFormData({...formData, territory: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, territory: e.target.value})}
               className="glass-input w-full px-3 py-2 rounded placeholder-green-300/50"
               placeholder="Assigned territory or region"
             />

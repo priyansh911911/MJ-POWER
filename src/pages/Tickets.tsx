@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 const Tickets = () => {
   const { data, addItem, updateItem, deleteItem, currentUser } = useApp();
   const [showForm, setShowForm] = useState(false);
-  const [editingTicket, setEditingTicket] = useState(null);
+  const [editingTicket, setEditingTicket] = useState<any>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -14,7 +14,7 @@ const Tickets = () => {
     customerId: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     const ticketData = {
       ...formData,
@@ -43,7 +43,7 @@ const Tickets = () => {
     setEditingTicket(null);
   };
 
-  const handleEdit = (ticket) => {
+  const handleEdit = (ticket: any) => {
     setFormData(ticket);
     setEditingTicket(ticket);
     setShowForm(true);
@@ -71,13 +71,13 @@ const Tickets = () => {
               type="text"
               placeholder="Ticket Title"
               value={formData.title}
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, title: e.target.value})}
               className="p-3 border border-gray-300 rounded-lg"
               required
             />
             <select
               value={formData.priority}
-              onChange={(e) => setFormData({...formData, priority: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, priority: e.target.value})}
               className="p-3 border border-gray-300 rounded-lg"
             >
               <option value="low">Low</option>
@@ -87,17 +87,17 @@ const Tickets = () => {
             </select>
             <select
               value={formData.customerId}
-              onChange={(e) => setFormData({...formData, customerId: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, customerId: e.target.value})}
               className="p-3 border border-gray-300 rounded-lg"
             >
               <option value="">Select Customer</option>
-              {data.customers?.map(customer => (
+              {data.customers?.map((customer: any) => (
                 <option key={customer.id} value={customer.id}>{customer.name}</option>
               ))}
             </select>
             <select
               value={formData.status}
-              onChange={(e) => setFormData({...formData, status: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, status: e.target.value})}
               className="p-3 border border-gray-300 rounded-lg"
             >
               <option value="open">Open</option>
@@ -108,9 +108,9 @@ const Tickets = () => {
             <textarea
               placeholder="Description"
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, description: e.target.value})}
               className="md:col-span-2 p-3 border border-gray-300 rounded-lg"
-              rows="4"
+              rows={4}
               required
             />
             <div className="md:col-span-2 flex gap-2">
@@ -138,8 +138,8 @@ const Tickets = () => {
             </tr>
           </thead>
           <tbody>
-            {data.tickets?.map(ticket => {
-              const customer = data.customers?.find(c => c.id == ticket.customerId);
+            {data.tickets?.map((ticket: any) => {
+              const customer = data.customers?.find((c: any) => c.id == ticket.customerId);
               return (
                 <tr key={ticket.id} className="border-t">
                   <td className="p-3">{ticket.title}</td>

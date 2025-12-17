@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import Customers from '../pages/Customers';
 import Products from '../pages/Products';

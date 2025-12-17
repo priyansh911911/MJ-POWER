@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 
 const AddTechnician = () => {
@@ -12,7 +12,7 @@ const AddTechnician = () => {
     specialization: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     addItem('users', { ...formData, role: 'technician' });
     setFormData({ name: '', email: '', phone: '', username: '', password: '', specialization: '' });
@@ -38,7 +38,7 @@ const AddTechnician = () => {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, name: e.target.value})}
               className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
@@ -49,7 +49,7 @@ const AddTechnician = () => {
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, email: e.target.value})}
               className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
@@ -60,7 +60,7 @@ const AddTechnician = () => {
             <input
               type="tel"
               value={formData.phone}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, phone: e.target.value})}
               className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
@@ -71,7 +71,7 @@ const AddTechnician = () => {
             <input
               type="text"
               value={formData.username}
-              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, username: e.target.value})}
               className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
@@ -82,7 +82,7 @@ const AddTechnician = () => {
             <input
               type="password"
               value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, password: e.target.value})}
               className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               required
             />
@@ -93,7 +93,7 @@ const AddTechnician = () => {
             <input
               type="text"
               value={formData.specialization}
-              onChange={(e) => setFormData({...formData, specialization: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, specialization: e.target.value})}
               className="w-full px-3 py-2 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               placeholder="e.g., Electrical, Plumbing"
             />

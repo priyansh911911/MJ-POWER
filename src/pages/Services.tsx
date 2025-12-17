@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 const Services = () => {
   const { data, addItem, updateItem, deleteItem, currentUser } = useApp();
   const [showForm, setShowForm] = useState(false);
-  const [editingService, setEditingService] = useState(null);
+  const [editingService, setEditingService] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -15,9 +15,9 @@ const Services = () => {
   });
 
   const canManageServices = ['admin', 'manager'].includes(currentUser?.role);
-  const serviceCategories = data.categories.filter(c => c.type === 'service');
+  const serviceCategories = data.categories.filter((c: any) => c.type === 'service');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     const serviceData = {
       name: formData.name,
@@ -49,7 +49,7 @@ const Services = () => {
     setEditingService(null);
   };
 
-  const handleEdit = (service) => {
+  const handleEdit = (service: any) => {
     setFormData({
       name: service.name || '',
       category: service.category || '',
@@ -86,18 +86,18 @@ const Services = () => {
               type="text"
               placeholder="Service Name"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, name: e.target.value})}
               className="p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm"
               required
             />
             <select
               value={formData.category}
-              onChange={(e) => setFormData({...formData, category: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, category: e.target.value})}
               className="p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm"
               required
             >
               <option value="" className="bg-gray-700 text-green-100">Select Category</option>
-              {serviceCategories.map(cat => (
+              {serviceCategories.map((cat: any) => (
                 <option key={cat.id} value={cat.name} className="bg-gray-700 text-green-100">{cat.name}</option>
               ))}
             </select>
@@ -106,7 +106,7 @@ const Services = () => {
               step="0.01"
               placeholder="Price"
               value={formData.price}
-              onChange={(e) => setFormData({...formData, price: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, price: e.target.value})}
               className="p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm"
               required
             />
@@ -114,22 +114,22 @@ const Services = () => {
               type="text"
               placeholder="Duration (e.g., 2-3 hours)"
               value={formData.duration}
-              onChange={(e) => setFormData({...formData, duration: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, duration: e.target.value})}
               className="p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm"
             />
             <textarea
               placeholder="Description"
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, description: e.target.value})}
               className="p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm"
-              rows="2"
+              rows={2}
             />
             <textarea
               placeholder="What's included"
               value={formData.includes}
-              onChange={(e) => setFormData({...formData, includes: e.target.value})}
+              onChange={(e: any) => setFormData({...formData, includes: e.target.value})}
               className="p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm"
-              rows="2"
+              rows={2}
             />
             <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
               <button type="submit" className="btn-primary px-3 py-1.5 rounded text-sm">
@@ -157,7 +157,7 @@ const Services = () => {
             </tr>
           </thead>
           <tbody>
-            {data.services?.map(service => (
+            {data.services?.map((service: any) => (
               <tr key={service.id} className="border-t border-gray-200">
                 <td className="p-2 text-gray-900 text-sm">{service.name}</td>
                 <td className="p-2 text-gray-700 text-sm">{service.category}</td>
@@ -188,7 +188,7 @@ const Services = () => {
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-2">
-        {data.services?.map(service => (
+        {data.services?.map((service: any) => (
           <div key={service.id} className="bg-white border border-gray-200 p-3 rounded-lg">
             <div className="space-y-2">
               <div>

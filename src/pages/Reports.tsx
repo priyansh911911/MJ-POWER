@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 const Reports = () => {
@@ -13,16 +13,16 @@ const Reports = () => {
   const canManageBonuses = ['admin', 'manager'].includes(currentUser?.role);
 
   const calculateCommissions = () => {
-    const commissions = {};
+    const commissions: any = {};
     
-    data.tickets.filter(t => t.status === 'completed').forEach(ticket => {
+    data.tickets.filter((t: any) => t.status === 'completed').forEach((ticket: any) => {
       const item = (ticket.type === 'product' ? data.products : data.services)
-        .find(i => i.id == ticket.itemId);
+        .find((i: any) => i.id == ticket.itemId);
       
       if (item) {
-        const customer = data.customers.find(c => c.id == ticket.customerId);
-        const partner = customer ? data.users.find(u => u.id == customer.assignedTo && u.role === 'partner') : null;
-        const technician = data.users.find(u => u.id == ticket.assignedTo);
+        const customer = data.customers.find((c: any) => c.id == ticket.customerId);
+        const partner = customer ? data.users.find((u: any) => u.id == customer.assignedTo && u.role === 'partner') : null;
+        const technician = data.users.find((u: any) => u.id == ticket.assignedTo);
         
         if (partner) {
           if (!commissions[partner.id]) {
@@ -51,7 +51,7 @@ const Reports = () => {
     return data.bonuses || [];
   };
 
-  const handleBonusSubmit = (e) => {
+  const handleBonusSubmit = (e: any) => {
     e.preventDefault();
     addItem('bonuses', {
       ...bonusData,
@@ -68,12 +68,12 @@ const Reports = () => {
 
   const getMyData = () => {
     if (currentUser?.role === 'partner') {
-      const myCustomers = data.customers.filter(c => c.assignedTo == currentUser.id);
-      const myTickets = data.tickets.filter(t => 
-        myCustomers.some(c => c.id == t.customerId)
+      const myCustomers = data.customers.filter((c: any) => c.assignedTo == currentUser.id);
+      const myTickets = data.tickets.filter((t: any) => 
+        myCustomers.some((c: any) => c.id == t.customerId)
       );
       const myCommission = commissions[currentUser.id]?.total || 0;
-      const myBonuses = bonuses.filter(b => b.userId == currentUser.id);
+      const myBonuses = bonuses.filter((b: any) => b.userId == currentUser.id);
       const totalBonuses = myBonuses.reduce((sum, b) => sum + b.amount, 0);
       
       return {
@@ -86,10 +86,10 @@ const Reports = () => {
     }
     
     if (currentUser?.role === 'technician') {
-      const myTickets = data.tickets.filter(t => t.assignedTo == currentUser.id);
-      const completedTickets = myTickets.filter(t => t.status === 'completed');
+      const myTickets = data.tickets.filter((t: any) => t.assignedTo == currentUser.id);
+      const completedTickets = myTickets.filter((t: any) => t.status === 'completed');
       const myCommission = commissions[currentUser.id]?.total || 0;
-      const myBonuses = bonuses.filter(b => b.userId == currentUser.id);
+      const myBonuses = bonuses.filter((b: any) => b.userId == currentUser.id);
       const totalBonuses = myBonuses.reduce((sum, b) => sum + b.amount, 0);
       
       return {
@@ -175,12 +175,12 @@ const Reports = () => {
           <form onSubmit={handleBonusSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <select
               value={bonusData.userId}
-              onChange={(e) => setBonusData({...bonusData, userId: e.target.value})}
+              onChange={(e: any) => setBonusData({...bonusData, userId: e.target.value})}
               className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
               required
             >
               <option value="">Select User</option>
-              {data.users.filter(u => ['partner', 'technician'].includes(u.role)).map(user => (
+              {data.users.filter((u: any) => ['partner', 'technician'].includes(u.role)).map((user: any) => (
                 <option key={user.id} value={user.id}>{user.name} ({user.role})</option>
               ))}
             </select>
@@ -189,7 +189,7 @@ const Reports = () => {
               step="0.01"
               placeholder="Bonus Amount"
               value={bonusData.amount}
-              onChange={(e) => setBonusData({...bonusData, amount: e.target.value})}
+              onChange={(e: any) => setBonusData({...bonusData, amount: e.target.value})}
               className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
               required
             />
@@ -197,7 +197,7 @@ const Reports = () => {
               type="text"
               placeholder="Reason"
               value={bonusData.reason}
-              onChange={(e) => setBonusData({...bonusData, reason: e.target.value})}
+              onChange={(e: any) => setBonusData({...bonusData, reason: e.target.value})}
               className="p-3 bg-gray-700 text-green-100 rounded border border-green-600"
               required
             />
@@ -225,7 +225,7 @@ const Reports = () => {
         <div className="bg-white p-4 lg:p-6 rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-gray-600 text-sm lg:text-lg font-semibold">Completed Tickets</h3>
           <p className="text-xl lg:text-3xl font-bold text-black mt-1 lg:mt-2">
-            {data.tickets.filter(t => t.status === 'completed').length}
+            {data.tickets.filter((t: any) => t.status === 'completed').length}
           </p>
         </div>
         <div className="bg-white p-4 lg:p-6 rounded-lg border border-gray-200 shadow-sm">
@@ -256,8 +256,8 @@ const Reports = () => {
             Recent Bonuses
           </h3>
           <div className="p-4">
-            {bonuses.slice(-10).map(bonus => {
-              const user = data.users.find(u => u.id == bonus.userId);
+            {bonuses.slice(-10).map((bonus: any) => {
+              const user = data.users.find((u: any) => u.id == bonus.userId);
               return (
                 <div key={bonus.id} className="flex justify-between items-center py-2 border-b border-gray-200">
                   <div>

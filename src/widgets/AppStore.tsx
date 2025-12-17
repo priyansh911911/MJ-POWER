@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 // import logo from '../assets/images/Logo.png';
 
@@ -78,7 +78,7 @@ const Layout = ({ children }) => {
           </div>
           <nav>
             <ul className="space-y-0.5 lg:space-y-1">
-              {menuItems[currentUser?.role]?.map(item => (
+              {menuItems[currentUser?.role]?.map((item: any) => (
                 <li key={item.name}>
                   <button
                     onClick={() => { 

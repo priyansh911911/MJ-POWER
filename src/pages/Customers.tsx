@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext';
 const Customers = () => {
   const { data, addItem, updateItem, deleteItem, currentUser } = useApp();
   const [showForm, setShowForm] = useState(false);
-  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [editingCustomer, setEditingCustomer] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -44,7 +44,7 @@ const Customers = () => {
     setEditingCustomer(null);
   };
 
-  const handleEdit = (customer) => {
+  const handleEdit = (customer: any) => {
     setFormData(customer);
     setEditingCustomer(customer);
     setShowForm(true);
@@ -107,7 +107,7 @@ const Customers = () => {
               value={formData.address}
               onChange={(e) => setFormData({...formData, address: e.target.value})}
               className="md:col-span-2 p-3 border border-gray-300 rounded-lg"
-              rows="3"
+              rows={3}
             />
             <div className="md:col-span-2 flex gap-2">
               <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
@@ -133,7 +133,7 @@ const Customers = () => {
             </tr>
           </thead>
           <tbody>
-            {data.customers?.map(customer => (
+            {data.customers?.map((customer: any) => (
               <tr key={customer.id} className="border-t">
                 <td className="p-3">{customer.name}</td>
                 <td className="p-3">{customer.email}</td>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getImageUrl } from '../../lib/images';
 import logo from '../../assets/images/Logo.png';
@@ -36,7 +36,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
     }
   }, [currentUser, activeTab]);
 
-  const handleRaiseTicket = (e) => {
+  const handleRaiseTicket = (e: any) => {
     e.preventDefault();
     if (!currentUser) {
       setLoginAction('ticket');
@@ -57,8 +57,8 @@ const CustomerPortal = ({ onStaffLogin }) => {
     alert('Ticket raised successfully!');
   };
 
-  const myOrders = currentUser ? data.orders?.filter(order => order.customerId === currentUser.id) || [] : [];
-  const myTickets = currentUser ? data.tickets?.filter(ticket => ticket.customerId === currentUser.id) || [] : [];
+  const myOrders = currentUser ? data.orders?.filter((order: any) => order.customerId === currentUser.id) || [] : [];
+  const myTickets = currentUser ? data.tickets?.filter((ticket: any) => ticket.customerId === currentUser.id) || [] : [];
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: '🏠' },
@@ -99,7 +99,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
 
             {/* Navigation Menu */}
             <div className="hidden md:flex items-center space-x-8">
-              {menuItems.map(item => (
+              {menuItems.map((item: any) => (
                 <button
                   key={item.id}
                   onClick={() => {
@@ -225,7 +225,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {categories.slice(0, 4).map((category) => (
+                  {categories.slice(0, 4).map((category: any) => (
                     <button
                       key={category.name}
                       onClick={() => setActiveTab('products')}
@@ -255,7 +255,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                   </button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {data.products?.slice(0, 3).map(product => (
+                  {data.products?.slice(0, 3).map((product: any) => (
                     <div key={product.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
                       isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
                     }`}>
@@ -324,7 +324,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {data.services?.map(service => (
+                {data.services?.map((service: any) => (
                   <div key={service.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
                     isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
                   }`}>
@@ -342,7 +342,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                       </div>
                       <button
                         onClick={() => {
-                          const existingItem = cart.find(cartItem => cartItem.id === service.id);
+                          const existingItem = cart.find((cartItem: any) => cartItem.id === service.id);
                           if (!existingItem) {
                             setCart([...cart, { ...service, quantity: 1 }]);
                             alert('Added to cart!');
@@ -372,7 +372,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
               <div className="mb-16">
                 <h3 className={`text-3xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Products</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {data.products?.map(item => (
+                  {data.products?.map((item: any) => (
                     <div key={item.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
                       isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
                     }`}>
@@ -399,7 +399,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                             className={`rounded-lg px-3 py-1 text-sm border ${
                               isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-50 text-gray-900 border-gray-300'
                             }`}
-                            onChange={(e) => setOrderForm({...orderForm, quantity: parseInt(e.target.value), itemId: item.id})}
+                            onChange={(e: any) => setOrderForm({...orderForm, quantity: parseInt(e.target.value), itemId: item.id})}
                           >
                             <option value="1">Qty: 1</option>
                             <option value="2">Qty: 2</option>
@@ -410,7 +410,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                         </div>
                         <button
                           onClick={() => {
-                            const existingItem = cart.find(cartItem => cartItem.id === item.id);
+                            const existingItem = cart.find((cartItem: any) => cartItem.id === item.id);
                             if (existingItem) {
                               setActiveTab('cart');
                             } else {
@@ -420,12 +420,12 @@ const CustomerPortal = ({ onStaffLogin }) => {
                             }
                           }}
                           className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
-                            cart.find(cartItem => cartItem.id === item.id)
+                            cart.find((cartItem: any) => cartItem.id === item.id)
                               ? 'bg-green-600 hover:bg-green-700 text-white'
                               : 'bg-teal-600 hover:bg-teal-700 text-white'
                           }`}
                         >
-                          {cart.find(cartItem => cartItem.id === item.id) ? '✓ In Cart' : 'Add to Cart'}
+                          {cart.find((cartItem: any) => cartItem.id === item.id) ? '✓ In Cart' : 'Add to Cart'}
                         </button>
                       </div>
                     </div>
@@ -437,7 +437,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
               <div>
                 <h3 className={`text-3xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Services</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {data.services?.map(item => (
+                  {data.services?.map((item: any) => (
                     <div key={item.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
                       isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
                     }`}>
@@ -459,7 +459,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                         </div>
                         <button
                           onClick={() => {
-                            const existingItem = cart.find(cartItem => cartItem.id === item.id);
+                            const existingItem = cart.find((cartItem: any) => cartItem.id === item.id);
                             if (!existingItem) {
                               setCart([...cart, { ...item, quantity: 1 }]);
                               alert('Service added to cart!');
@@ -468,12 +468,12 @@ const CustomerPortal = ({ onStaffLogin }) => {
                             }
                           }}
                           className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
-                            cart.find(cartItem => cartItem.id === item.id)
+                            cart.find((cartItem: any) => cartItem.id === item.id)
                               ? 'bg-green-600 hover:bg-green-700 text-white'
                               : 'bg-orange-500 hover:bg-orange-600 text-white'
                           }`}
                         >
-                          {cart.find(cartItem => cartItem.id === item.id) ? '✓ In Cart' : 'Book Service'}
+                          {cart.find((cartItem: any) => cartItem.id === item.id) ? '✓ In Cart' : 'Book Service'}
                         </button>
                       </div>
                     </div>
@@ -510,7 +510,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                         <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Cart Items ({cart.length})</h3>
                       </div>
                       <div className="p-6 space-y-6">
-                        {cart.map(item => (
+                        {cart.map((item: any) => (
                           <div key={item.id} className={`flex items-center space-x-6 p-6 border rounded-2xl transition-all hover:shadow-md ${
                             isDarkMode ? 'border-gray-700 hover:bg-gray-750' : 'border-gray-200 hover:bg-gray-50'
                           }`}>
@@ -531,7 +531,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                             <div className="flex items-center space-x-3">
                               <button
                                 onClick={() => {
-                                  setCart(cart.map(cartItem => 
+                                  setCart(cart.map((cartItem: any) => 
                                     cartItem.id === item.id && cartItem.quantity > 1
                                       ? { ...cartItem, quantity: cartItem.quantity - 1 }
                                       : cartItem
@@ -546,7 +546,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                               <span className={`w-12 text-center font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.quantity}</span>
                               <button
                                 onClick={() => {
-                                  setCart(cart.map(cartItem => 
+                                  setCart(cart.map((cartItem: any) => 
                                     cartItem.id === item.id
                                       ? { ...cartItem, quantity: cartItem.quantity + 1 }
                                       : cartItem
@@ -561,7 +561,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                             </div>
                             <button
                               onClick={() => {
-                                setCart(cart.filter(cartItem => cartItem.id !== item.id));
+                                setCart(cart.filter((cartItem: any) => cartItem.id !== item.id));
                               }}
                               className={`p-3 rounded-lg transition-all ${isDarkMode ? 'text-red-400 hover:text-red-300 hover:bg-gray-700' : 'text-red-500 hover:text-red-700 hover:bg-red-50'}`}
                             >
@@ -664,7 +664,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                         <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Category</label>
                         <select
                           value={ticketForm.type}
-                          onChange={(e) => setTicketForm({...ticketForm, type: e.target.value, itemId: ''})}
+                          onChange={(e: any) => setTicketForm({...ticketForm, type: e.target.value, itemId: ''})}
                           className={`w-full p-4 rounded-xl border transition-all ${
                             isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
                           }`}
@@ -678,14 +678,14 @@ const CustomerPortal = ({ onStaffLogin }) => {
                         <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Select Item</label>
                         <select
                           value={ticketForm.itemId}
-                          onChange={(e) => setTicketForm({...ticketForm, itemId: e.target.value})}
+                          onChange={(e: any) => setTicketForm({...ticketForm, itemId: e.target.value})}
                           className={`w-full p-4 rounded-xl border transition-all ${
                             isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
                           }`}
                           required
                         >
                           <option value="">Select {ticketForm.type}</option>
-                          {(ticketForm.type === 'product' ? data.products : data.services)?.map(item => (
+                          {(ticketForm.type === 'product' ? data.products : data.services)?.map((item: any) => (
                             <option key={item.id} value={item.id}>{item.name}</option>
                           ))}
                         </select>
@@ -696,11 +696,11 @@ const CustomerPortal = ({ onStaffLogin }) => {
                         <textarea
                           placeholder="Describe your issue in detail..."
                           value={ticketForm.issue}
-                          onChange={(e) => setTicketForm({...ticketForm, issue: e.target.value})}
+                          onChange={(e: any) => setTicketForm({...ticketForm, issue: e.target.value})}
                           className={`w-full p-4 rounded-xl border transition-all ${
                             isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
                           }`}
-                          rows="4"
+                          rows={4}
                           required
                         />
                       </div>
@@ -710,11 +710,11 @@ const CustomerPortal = ({ onStaffLogin }) => {
                         <textarea
                           placeholder="Any additional information..."
                           value={ticketForm.notes}
-                          onChange={(e) => setTicketForm({...ticketForm, notes: e.target.value})}
+                          onChange={(e: any) => setTicketForm({...ticketForm, notes: e.target.value})}
                           className={`w-full p-4 rounded-xl border transition-all ${
                             isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
                           }`}
-                          rows="3"
+                          rows={3}
                         />
                       </div>
                       
@@ -772,7 +772,7 @@ const CustomerPortal = ({ onStaffLogin }) => {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {myOrders.map(order => (
+                      {myOrders.map((order: any) => (
                         <div key={order.id} className={`p-6 rounded-2xl border transition-all hover:shadow-md ${
                           isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-gray-650' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
                         }`}>
@@ -852,9 +852,9 @@ const CustomerPortal = ({ onStaffLogin }) => {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {myTickets.map(ticket => {
+                      {myTickets.map((ticket: any) => {
                         const item = (ticket.type === 'product' ? data.products : data.services)
-                          ?.find(i => i.id == ticket.itemId);
+                          ?.find((i: any) => i.id == ticket.itemId);
                         return (
                           <div key={ticket.id} className={`p-6 rounded-2xl border transition-all hover:shadow-md ${
                             isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-gray-650' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
@@ -911,12 +911,12 @@ const CustomerPortal = ({ onStaffLogin }) => {
                    loginAction === 'ticket' ? 'Please login to raise a support ticket.' :
                    'Please login to access your account.'}
                 </p>
-                <form onSubmit={(e) => {
+                <form onSubmit={(e: any) => {
                   e.preventDefault();
                   const formData = new FormData(e.target);
                   const email = formData.get('email');
                   const password = formData.get('password');
-                  const customer = data.customers?.find(c => c.email === email && c.password === password);
+                  const customer = data.customers?.find((c: any) => c.email === email && c.password === password);
                   if (customer) {
                     const customerUser = { ...customer, role: 'customer' };
                     login(email, password, customerUser);

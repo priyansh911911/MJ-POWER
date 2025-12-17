@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import logo from '../assets/images/Logo.png';
 
@@ -13,11 +13,11 @@ const Login = ({ onBackToCustomer }) => {
   const [address, setAddress] = useState('');
   const { login, addItem, data } = useApp();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     if (isCustomerMode) {
       // Customer login - check against customers data
-      const customer = data.customers.find(c => c.email === username && c.password === password);
+      const customer = data.customers.find((c: any) => c.email === username && c.password === password);
       if (customer) {
         // Set customer as current user with customer role
         const customerUser = { ...customer, role: 'customer' };
@@ -35,10 +35,10 @@ const Login = ({ onBackToCustomer }) => {
     }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = (e: any) => {
     e.preventDefault();
     // Check if customer already exists
-    const existingCustomer = data.customers.find(c => c.email === username);
+    const existingCustomer = data.customers.find((c: any) => c.email === username);
     if (existingCustomer) {
       setError('Customer with this email already exists');
       return;
@@ -122,7 +122,7 @@ const Login = ({ onBackToCustomer }) => {
                     type="text"
                     placeholder="Enter your full name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e: any) => setName(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   />
@@ -138,7 +138,7 @@ const Login = ({ onBackToCustomer }) => {
                     type="tel"
                     placeholder="Enter your phone number"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e: any) => setPhone(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   />
@@ -153,7 +153,7 @@ const Login = ({ onBackToCustomer }) => {
                   type="email"
                   placeholder="Enter your email"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e: any) => setUsername(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   required
                 />
@@ -167,7 +167,7 @@ const Login = ({ onBackToCustomer }) => {
                   type="password"
                   placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e: any) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   required
                 />
@@ -187,9 +187,9 @@ const Login = ({ onBackToCustomer }) => {
                   <textarea
                     placeholder="Enter your address for solar installation"
                     value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    onChange={(e: any) => setAddress(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    rows="3"
+                    rows={3}
                   />
                 </div>
               )}
@@ -291,7 +291,7 @@ const Login = ({ onBackToCustomer }) => {
               type="text"
               placeholder="Enter your username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e: any) => setUsername(e.target.value)}
               className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-blue-50 border-2 border-blue-200 rounded-lg text-gray-800 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 text-sm sm:text-base transition-all"
               required
             />
@@ -305,7 +305,7 @@ const Login = ({ onBackToCustomer }) => {
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: any) => setPassword(e.target.value)}
               className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-blue-50 border-2 border-blue-200 rounded-lg text-gray-800 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 text-sm sm:text-base transition-all"
               required
             />

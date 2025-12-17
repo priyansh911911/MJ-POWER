@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getImageUrl } from '../lib/images';
 import { uploadImage } from '../lib/uploads';
 
 const Products = () => {
-  const { data, fetchData, addItem, updateItem, deleteItem, currentUser } = useApp();
+  const { data, addItem, updateItem, deleteItem, currentUser } = useApp();
   const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -21,16 +21,16 @@ const Products = () => {
   const [uploading, setUploading] = useState(false);
 
   const canManageProducts = ['admin', 'manager'].includes(currentUser?.role);
-  const productCategories = data.categories?.filter(c => c.type === 'product') || [];
+  const productCategories = data.categories?.filter((c: any) => c.type === 'product') || [];
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = async (e: any) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setUploading(true);
     try {
       const imageUrl = await uploadImage(file);
-      setFormData({ ...formData, image: imageUrl });
+      setFormData({ ...formData, image: imageUrl || '' });
     } catch (error) {
       alert('Image upload failed');
     }
@@ -41,7 +41,7 @@ const Products = () => {
     // Products are already loaded from AppContext, no need to fetch
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     const productData = {
       name: formData.name,
@@ -88,7 +88,7 @@ const Products = () => {
     setEditingProduct(null);
   };
 
-  const handleEdit = (product) => {
+  const handleEdit = (product: any) => {
     setFormData(product);
     setEditingProduct(product);
     setShowForm(true);
@@ -120,7 +120,7 @@ const Products = () => {
               type="text"
               placeholder="Product Name (e.g., Solar Panel 500W)"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e: any) => setFormData({ ...formData, name: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
               required
             />
@@ -136,12 +136,12 @@ const Products = () => {
             </div>
             <select
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              onChange={(e: any) => setFormData({ ...formData, category: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
               required
             >
               <option value="">Select Category</option>
-              {productCategories.map((cat, index) => (
+              {productCategories.map((cat: any, index: number) => (
                 <option key={cat.id || index} value={cat.name}>{cat.name}</option>
               ))}
             </select>
@@ -150,30 +150,30 @@ const Products = () => {
               step="0.01"
               placeholder="Price (₹)"
               value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              onChange={(e: any) => setFormData({ ...formData, price: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
               required
             />
             <textarea
               placeholder="Product Description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e: any) => setFormData({ ...formData, description: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
-              rows="3"
+              rows={3}
             />
             <textarea
               placeholder="Technical Specifications"
               value={formData.specifications}
-              onChange={(e) => setFormData({ ...formData, specifications: e.target.value })}
+              onChange={(e: any) => setFormData({ ...formData, specifications: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
-              rows="2"
+              rows={2}
             />
             <input
               type="number"
               step="0.01"
               placeholder="GST %"
               value={formData.gstPercent}
-              onChange={(e) => setFormData({ ...formData, gstPercent: e.target.value })}
+              onChange={(e: any) => setFormData({ ...formData, gstPercent: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
             />
             <input
@@ -181,7 +181,7 @@ const Products = () => {
               step="0.01"
               placeholder="Partner Commission %"
               value={formData.partnerCommissionPercent}
-              onChange={(e) => setFormData({ ...formData, partnerCommissionPercent: e.target.value })}
+              onChange={(e: any) => setFormData({ ...formData, partnerCommissionPercent: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
             />
             <input
@@ -189,7 +189,7 @@ const Products = () => {
               step="0.01"
               placeholder="Technician Commission %"
               value={formData.technicianCommissionPercent}
-              onChange={(e) => setFormData({ ...formData, technicianCommissionPercent: e.target.value })}
+              onChange={(e: any) => setFormData({ ...formData, technicianCommissionPercent: e.target.value })}
               className="p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
             />
             <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
@@ -220,7 +220,7 @@ const Products = () => {
           </thead>
           <tbody>
             {data.products?.length > 0 ? (
-              data.products.map(product => {
+              data.products.map((product: any) => {
                 const hasImage = product.image && product.image.trim() !== "";
 
                 return (
@@ -281,7 +281,7 @@ const Products = () => {
       {/* Mobile Cards */}
       <div className="md:hidden space-y-3">
         {data.products?.length > 0 ? (
-          data.products.map(product => (
+          data.products.map((product: any) => (
             <div key={product.id} className="bg-white border border-gray-200 p-4 rounded-xl shadow-lg">
               <div className="space-y-2">
                 {product.image && <img src={getImageUrl(product.image)} alt={product.name} className="h-32 w-full object-cover rounded" />}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 const Orders = () => {
@@ -7,15 +7,15 @@ const Orders = () => {
 
   const canManageOrders = ['admin', 'manager'].includes(currentUser?.role);
 
-  const filteredOrders = data.orders?.filter(order => 
+  const filteredOrders = data.orders?.filter((order: any) => 
     statusFilter === 'all' || order.status === statusFilter
   ) || [];
 
-  const handleStatusUpdate = (orderId, newStatus) => {
+  const handleStatusUpdate = (orderId: any, newStatus: string) => {
     updateItem('orders', orderId, { status: newStatus });
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'bg-green-100 text-green-800';
       case 'in-progress': return 'bg-blue-100 text-blue-800';
@@ -62,7 +62,7 @@ const Orders = () => {
           </thead>
           <tbody>
             {filteredOrders.length > 0 ? (
-              filteredOrders.map(order => (
+              filteredOrders.map((order: any) => (
                 <tr key={order.id} className="border-t border-gray-200 hover:bg-gray-50 transition-all">
                   <td className="p-3 text-gray-900 font-medium">#{order.id}</td>
                   <td className="p-3 text-gray-700">{order.customerName}</td>
@@ -112,7 +112,7 @@ const Orders = () => {
       {/* Mobile Cards */}
       <div className="md:hidden space-y-3">
         {filteredOrders.length > 0 ? (
-          filteredOrders.map(order => (
+          filteredOrders.map((order: any) => (
             <div key={order.id} className="bg-white border border-gray-200 p-4 rounded-xl shadow-lg">
               <div className="space-y-2">
                 <div className="flex justify-between items-start">

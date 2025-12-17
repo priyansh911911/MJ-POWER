@@ -1593,7 +1593,7 @@ const Login = ({ onBackToCustomer })=>{
                                                 value: address,
                                                 onChange: (e)=>setAddress(e.target.value),
                                                 className: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900",
-                                                rows: "3"
+                                                rows: 3
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/App.tsx",
                                                 lineNumber: 187,
@@ -2468,7 +2468,7 @@ const Customers = ()=>{
                                         address: e.target.value
                                     }),
                                 className: "md:col-span-2 p-3 border border-gray-300 rounded-lg",
-                                rows: "3"
+                                rows: 3
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/Customers.tsx",
                                 lineNumber: 105,
@@ -2779,7 +2779,7 @@ var _s = __turbopack_context__.k.signature();
 ;
 const Products = ()=>{
     _s();
-    const { data, fetchData, addItem, updateItem, deleteItem, currentUser } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useApp"])();
+    const { data, addItem, updateItem, deleteItem, currentUser } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useApp"])();
     const [showForm, setShowForm] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [editingProduct, setEditingProduct] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [formData, setFormData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
@@ -2807,7 +2807,7 @@ const Products = ()=>{
             const imageUrl = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$uploads$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["uploadImage"])(file);
             setFormData({
                 ...formData,
-                image: imageUrl
+                image: imageUrl || ''
             });
         } catch (error) {
             alert('Image upload failed');
@@ -3026,7 +3026,7 @@ const Products = ()=>{
                                         description: e.target.value
                                     }),
                                 className: "p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all",
-                                rows: "3"
+                                rows: 3
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/Products.tsx",
                                 lineNumber: 157,
@@ -3040,7 +3040,7 @@ const Products = ()=>{
                                         specifications: e.target.value
                                     }),
                                 className: "p-3 bg-white/10 text-white rounded-lg border border-blue-300/30 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all",
-                                rows: "2"
+                                rows: 2
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/Products.tsx",
                                 lineNumber: 164,
@@ -3600,7 +3600,7 @@ const Products = ()=>{
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(Products, "BhNnfzqgOs8c1C69/F/Uasx+ioY=", false, function() {
+_s(Products, "7w0wtV6TS/aeIsImV71i65O3yIM=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useApp"]
     ];
@@ -3816,7 +3816,7 @@ const Services = ()=>{
                                         description: e.target.value
                                     }),
                                 className: "p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm",
-                                rows: "2"
+                                rows: 2
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/Services.tsx",
                                 lineNumber: 120,
@@ -3830,7 +3830,7 @@ const Services = ()=>{
                                         includes: e.target.value
                                     }),
                                 className: "p-2 bg-gray-700 text-green-100 rounded border border-green-600 text-sm",
-                                rows: "2"
+                                rows: 2
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/Services.tsx",
                                 lineNumber: 127,
@@ -5192,7 +5192,7 @@ const Tickets = ()=>{
                                         description: e.target.value
                                     }),
                                 className: "md:col-span-2 p-3 border border-gray-300 rounded-lg",
-                                rows: "4",
+                                rows: 4,
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/Tickets.tsx",
@@ -7487,7 +7487,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
     const [showLoginPrompt, setShowLoginPrompt] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [loginAction, setLoginAction] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('');
     const [searchQuery, setSearchQuery] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('');
-    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].useEffect({
+    React.useEffect({
         "CustomerPortal.useEffect": ()=>{
             if (!currentUser && (activeTab === 'my-orders' || activeTab === 'my-tickets')) {
                 setActiveTab('home');
@@ -9383,7 +9383,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                         issue: e.target.value
                                                                     }),
                                                                 className: `w-full p-4 rounded-xl border transition-all ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'}`,
-                                                                rows: "4",
+                                                                rows: 4,
                                                                 required: true
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
@@ -9414,7 +9414,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                         notes: e.target.value
                                                                     }),
                                                                 className: `w-full p-4 rounded-xl border transition-all ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'}`,
-                                                                rows: "3"
+                                                                rows: 3
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
                                                                 lineNumber: 710,

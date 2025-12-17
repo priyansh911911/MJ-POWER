@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useApp } from '../context/AppContext';
+import { useState } from 'react';
+import { useApp } from '../../context/AppContext';
 
 const Customers = () => {
   const { data, addItem, updateItem, deleteItem, currentUser } = useApp();
   const [showForm, setShowForm] = useState(false);
-  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [editingCustomer, setEditingCustomer] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -14,10 +14,10 @@ const Customers = () => {
     assignedType: 'partner'
   });
 
-  const partners = data.users.filter(u => u.role === 'partner');
-  const technicians = data.users.filter(u => u.role === 'technician');
+  const partners = data.users.filter((u: any) => u.role === 'partner');
+  const technicians = data.users.filter((u: any) => u.role === 'technician');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingCustomer) {
       updateItem('customers', editingCustomer.id, formData);
@@ -33,7 +33,7 @@ const Customers = () => {
     setEditingCustomer(null);
   };
 
-  const handleEdit = (customer) => {
+  const handleEdit = (customer: any) => {
     setFormData(customer);
     setEditingCustomer(customer);
     setShowForm(true);
@@ -93,7 +93,7 @@ const Customers = () => {
               value={formData.address}
               onChange={(e) => setFormData({...formData, address: e.target.value})}
               className="p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none sm:col-span-2"
-              rows="3"
+              rows={3}
             />
             <div>
               <label className="block text-green-300 text-sm mb-1">Assign Type</label>
@@ -114,7 +114,7 @@ const Customers = () => {
                 className="w-full p-3 bg-white/5 backdrop-blur-sm text-green-100 focus:bg-white/10 transition-all duration-200 rounded border-0 outline-none"
               >
                 <option value="">Select {formData.assignedType}</option>
-                {(formData.assignedType === 'partner' ? partners : technicians).map(user => (
+                {(formData.assignedType === 'partner' ? partners : technicians).map((user: any) => (
                   <option key={user.id} value={user.id}>{user.name}</option>
                 ))}
               </select>
@@ -145,8 +145,8 @@ const Customers = () => {
             </tr>
           </thead>
           <tbody>
-            {data.customers.map(customer => {
-              const assignedUser = data.users.find(u => u.id == customer.assignedTo);
+            {data.customers.map((customer: any) => {
+              const assignedUser = data.users.find((u: any) => u.id == customer.assignedTo);
               return (
                 <tr key={customer.id} className="border-t border-white/10">
                   <td className="p-2 text-green-100 text-sm">{customer.name}</td>
@@ -181,8 +181,8 @@ const Customers = () => {
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-2">
-        {data.customers.map(customer => {
-          const assignedUser = data.users.find(u => u.id == customer.assignedTo);
+        {data.customers.map((customer: any) => {
+          const assignedUser = data.users.find((u: any) => u.id == customer.assignedTo);
           return (
             <div key={customer.id} className="mobile-card p-3 rounded-lg">
               <div className="space-y-2">
