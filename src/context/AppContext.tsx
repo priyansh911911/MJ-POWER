@@ -44,28 +44,53 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const loadFromDatabase = async () => {
     try {
       const [customers, products, services, tickets, quotes] = await Promise.all([
-        fql.customers.findMany({}),
-        fql.products.findMany({}),
-        fql.services.findMany({}),
-        fql.tickets.findMany({}),
-        fql.quotes.findMany({})
+        fql.customers.findMany({ fields: '*' }),
+        fql.products.findMany({ fields: '*' }),
+        fql.services.findMany({ fields: '*' }),
+        fql.tickets.findMany({ fields: '*' }),
+        fql.quotes.findMany({ fields: '*' })
       ]);
 
+      console.log('Raw FQL responses:', { customers, products, services, tickets, quotes });
+      
+      // Handle token-based responses by making additional calls if needed
+      let productsData = products?.result || [];
+      let servicesData = services?.result || [];
+      
+      // If we got tokens instead of data, try to fetch using the tokens
+      if (products?.token && !products?.result) {
+        try {
+          const tokenResponse = await Api.get(`/products?token=${products.token}`);
+          productsData = tokenResponse?.result || [];
+        } catch (e) {
+          console.log('Token fetch failed for products, using empty array');
+        }
+      }
+      
+      if (services?.token && !services?.result) {
+        try {
+          const tokenResponse = await Api.get(`/services?token=${services.token}`);
+          servicesData = tokenResponse?.result || [];
+        } catch (e) {
+          console.log('Token fetch failed for services, using empty array');
+        }
+      }
+
       console.log('Setting data from FQL:', {
-        customers: customers?.result || [],
-        products: products?.result || [],
-        services: services?.result || [],
-        tickets: tickets?.result || [],
-        quotes: quotes?.result || []
+        customers: customers?.result || customers || [],
+        products: productsData,
+        services: servicesData,
+        tickets: tickets?.result || tickets || [],
+        quotes: quotes?.result || quotes || []
       });
       
       setData({
         ...storageData,
-        customers: customers?.result || [],
-        products: products?.result || [],
-        services: services?.result || [],
-        tickets: tickets?.result || [],
-        quotes: quotes?.result || [],
+        customers: customers?.result || customers || [],
+        products: productsData,
+        services: servicesData,
+        tickets: tickets?.result || tickets || [],
+        quotes: quotes?.result || quotes || [],
         orders: [] // Use empty array until table is created
       });
     } catch (error) {

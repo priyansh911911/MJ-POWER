@@ -6,6 +6,6 @@ export const fqConfig = {
     },
     prod: {
         appName: process.env.NEXT_PUBLIC_DATABASE || 's3_mjpower_solar',
-        serverUrl: '/.netlify/functions',
+        serverUrl: 'http://localhost:4466',
     },
 };

@@ -7,6 +7,11 @@ import { fql } from '../../api/fqlClient';
 const CustomerPortal = () => {
   const { currentUser, data, addItem, login } = useApp();
   
+  // Debug: Check what's in data
+  console.log('CustomerPortal data:', data);
+  console.log('Products:', data.products);
+  console.log('Services:', data.services);
+  
   // const refreshData = () => {
   //   localStorage.removeItem('mjpower-data');
   //   window.location.reload();
@@ -260,15 +265,15 @@ const CustomerPortal = () => {
                   <div className="relative">
                     <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6 shadow-2xl shadow-black/40">
                       {(() => {
-                        let maxDiscountProduct = data.products?.reduce((max: any, product: any) => {
+                        let maxDiscountProduct = (data.products && data.products.length > 0) ? data.products.reduce((max: any, product: any) => {
                           const discount = product.originalPrice ? ((product.originalPrice - product.price) / product.originalPrice) * 100 : 0;
                           const maxDiscount = max?.originalPrice ? ((max.originalPrice - max.price) / max.originalPrice) * 100 : 0;
                           return discount > maxDiscount ? product : max;
-                        }, null);
+                        }, null) : null;
                         
                         // Fallback to first product if no discounted products
                         if (!maxDiscountProduct || !maxDiscountProduct.originalPrice) {
-                          maxDiscountProduct = data.products?.[0];
+                          maxDiscountProduct = (data.products && data.products.length > 0) ? data.products[0] : null;
                         }
                         
                         if (!maxDiscountProduct) return null;
@@ -928,9 +933,9 @@ const CustomerPortal = () => {
                           required
                         >
                           <option value="">Select {ticketForm.type}</option>
-                          {(ticketForm.type === 'product' ? data.products : data.services)?.map((item: any) => (
+                          {(ticketForm.type === 'product' ? data.products : data.services) && Array.isArray(ticketForm.type === 'product' ? data.products : data.services) ? (ticketForm.type === 'product' ? data.products : data.services).map((item: any) => (
                             <option key={item.id} value={item.id}>{item.name}</option>
-                          ))}
+                          )) : null}
                         </select>
                       </div>
                       
@@ -1079,8 +1084,10 @@ const CustomerPortal = () => {
                   ) : (
                     <div className="space-y-6">
                       {myTickets.map((ticket: any) => {
-                        const item = (ticket.type === 'product' ? data.products : data.services)
-                          ?.find((i: any) => i.id == ticket.itemId);
+                        const item = (ticket.type === 'product' ? 
+                          (data.products && Array.isArray(data.products) ? data.products : []) : 
+                          (data.services && Array.isArray(data.services) ? data.services : []))
+                          .find((i: any) => i.id == ticket.itemId);
                         return (
                           <div key={ticket.id} className={`p-6 rounded-2xl border transition-all hover:shadow-md ${
                             isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-gray-650' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
