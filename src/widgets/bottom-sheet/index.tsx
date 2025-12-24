@@ -12,9 +12,8 @@ const CustomerPortal = () => {
   //   window.location.reload();
   // };
   const [activeTab, setActiveTab] = useState('home');
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [orderForm, setOrderForm] = useState({
+  const [isDarkMode] = useState(false);
+  const [orderForm] = useState({
     type: 'product',
     itemId: '',
     quantity: 1,
@@ -38,9 +37,7 @@ const CustomerPortal = () => {
     notes: ''
   });
   const [cart, setCart] = useState<any>([]);
-  const [quotes, setQuotes] = useState<any>([]);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [loginAction, setLoginAction] = useState<string>('');
   // const [, setSearchQuery] = useState('');
   
   useEffect(() => {
@@ -52,7 +49,6 @@ const CustomerPortal = () => {
   const handleRaiseTicket = (e: any) => {
     e.preventDefault();
     if (!currentUser) {
-      setLoginAction('ticket');
       setShowLoginPrompt(true);
       return;
     }
@@ -82,17 +78,7 @@ const CustomerPortal = () => {
   
   const fetchQuotes = async () => {
     if (!currentUser) return;
-    try {
-      const response = await fql.quotes.findMany({
-        filter: `customerId=${currentUser.id}`,
-        sort: '-created_at'
-      });
-      if (!response.err && response.result) {
-        setQuotes(response.result);
-      }
-    } catch (error) {
-      console.error('Error fetching quotes:', error);
-    }
+    // Quotes functionality removed
   };
 
   const menuItems = [
@@ -151,7 +137,6 @@ const CustomerPortal = () => {
                 key={item.id}
                 onClick={() => {
                   if (!currentUser && (item.id === 'my-orders' || item.id === 'my-tickets')) {
-                    setLoginAction('login');
                     setShowLoginPrompt(true);
                     return;
                   }
@@ -182,7 +167,6 @@ const CustomerPortal = () => {
               key={item.id}
               onClick={() => {
                 if (!currentUser && (item.id === 'my-orders' || item.id === 'my-tickets')) {
-                  setLoginAction('login');
                   setShowLoginPrompt(true);
                   return;
                 }
@@ -610,7 +594,7 @@ const CustomerPortal = () => {
                         alert('Quote request submitted successfully! We will contact you soon.');
                         setQuoteForm({ name: '', phone: '', email: '', address: '', propertyType: 'residential', roofArea: '', monthlyBill: '', requirements: '' });
                         setCart([]);
-                        setActiveTab('my-quotes');
+                        setActiveTab('home');
                       }
                     } catch (error: any) {
                       console.error('Error submitting quote:', error);
@@ -912,7 +896,6 @@ const CustomerPortal = () => {
                     <p className="text-sm mb-6 text-slate-400">Please login to raise a support ticket</p>
                     <button
                       onClick={() => {
-                        setLoginAction('ticket');
                         setShowLoginPrompt(true);
                       }}
                       className="rounded-2xl bg-green-500 px-6 py-2.5 text-sm font-semibold text-black hover:brightness-110"
@@ -995,7 +978,6 @@ const CustomerPortal = () => {
                       <p className={`text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Please login to view your orders</p>
                       <button
                         onClick={() => {
-                          setLoginAction('login');
                           setShowLoginPrompt(true);
                         }}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
@@ -1075,7 +1057,6 @@ const CustomerPortal = () => {
                       <p className={`text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Please login to view your support tickets</p>
                       <button
                         onClick={() => {
-                          setLoginAction('login');
                           setShowLoginPrompt(true);
                         }}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
