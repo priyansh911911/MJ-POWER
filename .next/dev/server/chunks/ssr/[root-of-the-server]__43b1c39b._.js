@@ -16,11 +16,11 @@ const fqConfig = {
     tokenPath: ("TURBOPACK compile-time value", "C:\\Users\\priya\\OneDrive\\Documents\\GitHub\\MJ-POWER\\src\\services\\tokens.json") || 'src/services/tokens.json',
     dev: {
         appName: ("TURBOPACK compile-time value", "s3_mjpower_solar") || 's3_mjpower_solar',
-        serverUrl: 'http://localhost:4466'
+        serverUrl: ("TURBOPACK compile-time falsy", 0) ? "TURBOPACK unreachable" : ("TURBOPACK compile-time value", "http://localhost:4466") || 'http://localhost:4466'
     },
     prod: {
         appName: ("TURBOPACK compile-time value", "s3_mjpower_solar") || 's3_mjpower_solar',
-        serverUrl: 'http://localhost:4466'
+        serverUrl: ("TURBOPACK compile-time falsy", 0) ? "TURBOPACK unreachable" : ("TURBOPACK compile-time value", "http://localhost:4466") || 'http://localhost:4466'
     }
 };
 }),
