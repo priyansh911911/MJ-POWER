@@ -7400,7 +7400,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$api$2f$fqlClient$2e$t
 ;
 // import logo from '../../assets/images/Logo.png';
 const CustomerPortal = ()=>{
-    const { currentUser, logout, data, addItem, login } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useApp"])();
+    const { currentUser, data, addItem, login } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useApp"])();
     // const refreshData = () => {
     //   localStorage.removeItem('mjpower-data');
     //   window.location.reload();

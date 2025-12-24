@@ -8113,7 +8113,7 @@ var _s = __turbopack_context__.k.signature();
 // import logo from '../../assets/images/Logo.png';
 const CustomerPortal = ()=>{
     _s();
-    const { currentUser, logout, data, addItem, login } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useApp"])();
+    const { currentUser, data, addItem, login } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useApp"])();
     // const refreshData = () => {
     //   localStorage.removeItem('mjpower-data');
     //   window.location.reload();
@@ -11752,7 +11752,7 @@ const CustomerPortal = ()=>{
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(CustomerPortal, "0jeJfhCt4POJdMknEHpSOfTUFec=", false, function() {
+_s(CustomerPortal, "KbWzkMgjDBa74u7B4Q7fZ0LvdXQ=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useApp"]
     ];

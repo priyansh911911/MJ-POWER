@@ -5,7 +5,7 @@ import { fql } from '../../api/fqlClient';
 // import logo from '../../assets/images/Logo.png';
 
 const CustomerPortal = () => {
-  const { currentUser, logout, data, addItem, login } = useApp();
+  const { currentUser, data, addItem, login } = useApp();
   
   // const refreshData = () => {
   //   localStorage.removeItem('mjpower-data');
