@@ -4,7 +4,7 @@ import { getImageUrl } from '../../lib/images';
 import { fql } from '../../api/fqlClient';
 // import logo from '../../assets/images/Logo.png';
 
-const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
+const CustomerPortal = () => {
   const { currentUser, logout, data, addItem, login } = useApp();
   
   // const refreshData = () => {

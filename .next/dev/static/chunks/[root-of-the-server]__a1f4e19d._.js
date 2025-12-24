@@ -8111,7 +8111,7 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 // import logo from '../../assets/images/Logo.png';
-const CustomerPortal = ({ onStaffLogin })=>{
+const CustomerPortal = ()=>{
     _s();
     const { currentUser, logout, data, addItem, login } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useApp"])();
     // const refreshData = () => {
@@ -11819,9 +11819,7 @@ function AppContent() {
     }
     // Show customer portal for customers or guest users
     if (!currentUser || currentUser.role === 'customer') {
-        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$widgets$2f$bottom$2d$sheet$2f$index$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-            onStaffLogin: ()=>setShowStaffLogin(true)
-        }, void 0, false, {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$widgets$2f$bottom$2d$sheet$2f$index$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
             fileName: "[project]/src/App.tsx",
             lineNumber: 28,
             columnNumber: 12

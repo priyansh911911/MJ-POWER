@@ -7399,7 +7399,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$api$2f$fqlClient$2e$t
 ;
 ;
 // import logo from '../../assets/images/Logo.png';
-const CustomerPortal = ({ onStaffLogin })=>{
+const CustomerPortal = ()=>{
     const { currentUser, logout, data, addItem, login } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useApp"])();
     // const refreshData = () => {
     //   localStorage.removeItem('mjpower-data');
@@ -11087,9 +11087,7 @@ function AppContent() {
     }
     // Show customer portal for customers or guest users
     if (!currentUser || currentUser.role === 'customer') {
-        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$widgets$2f$bottom$2d$sheet$2f$index$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
-            onStaffLogin: ()=>setShowStaffLogin(true)
-        }, void 0, false, {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$widgets$2f$bottom$2d$sheet$2f$index$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
             fileName: "[project]/src/App.tsx",
             lineNumber: 28,
             columnNumber: 12

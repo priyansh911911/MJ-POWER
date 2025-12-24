@@ -25,7 +25,7 @@ function AppContent() {
 
   // Show customer portal for customers or guest users
   if (!currentUser || currentUser.role === 'customer') {
-    return <CustomerPortal onStaffLogin={() => setShowStaffLogin(true)} />;
+    return <CustomerPortal />;
   }
 
   // Show admin/staff dashboard for other users
