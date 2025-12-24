@@ -17,6 +17,7 @@ interface CreateOptions {
 interface FQLResponse<T> {
   result: T;
   err?: Error;
+  token?: string;
 }
 
 class FQLCollection {
