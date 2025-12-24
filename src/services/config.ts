@@ -6,6 +6,6 @@ export const fqConfig = {
     },
     prod: {
         appName: 's3_mjpower_solar',
-        serverUrl: 'https://v6.frontql.dev',
+        serverUrl: '/.netlify/functions',
     },
 };

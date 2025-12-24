@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getImageUrl } from '../../lib/images';
+import { fql } from '../../api/fqlClient';
 // import logo from '../../assets/images/Logo.png';
 
 const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
@@ -20,6 +21,16 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
     description: '',
     preferredDate: ''
   });
+  const [quoteForm, setQuoteForm] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    address: '',
+    propertyType: 'residential',
+    roofArea: '',
+    monthlyBill: '',
+    requirements: ''
+  });
   const [ticketForm, setTicketForm] = useState({
     type: 'product',
     itemId: '',
@@ -27,6 +38,7 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
     notes: ''
   });
   const [cart, setCart] = useState<any>([]);
+  const [quotes, setQuotes] = useState<any>([]);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [loginAction, setLoginAction] = useState<string>('');
   // const [, setSearchQuery] = useState('');
@@ -60,6 +72,28 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
 
   const myOrders = currentUser ? data.orders?.filter((order: any) => order.customerId === currentUser.id) || [] : [];
   const myTickets = currentUser ? data.tickets?.filter((ticket: any) => ticket.customerId === currentUser.id) || [] : [];
+  
+  // Fetch quotes when user logs in or tab changes to my-quotes
+  useEffect(() => {
+    if (currentUser && activeTab === 'my-quotes') {
+      fetchQuotes();
+    }
+  }, [currentUser, activeTab]);
+  
+  const fetchQuotes = async () => {
+    if (!currentUser) return;
+    try {
+      const response = await fql.quotes.findMany({
+        filter: `customerId=${currentUser.id}`,
+        sort: '-created_at'
+      });
+      if (!response.err && response.result) {
+        setQuotes(response.result);
+      }
+    } catch (error) {
+      console.error('Error fetching quotes:', error);
+    }
+  };
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: '🏠' },
@@ -83,134 +117,67 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
   ];
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className="min-h-screen bg-slate-900 text-slate-100">
       {/* Top Navigation Bar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b backdrop-blur-sm bg-opacity-95 pt-safe-top`}>
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-1.5 sm:p-2 rounded-lg">
-                <span className="text-white font-bold text-lg sm:text-xl">MJ</span>
-              </div>
-              <div className="ml-2 sm:ml-3 hidden xs:block">
-                <div className="text-teal-600 text-xs sm:text-sm font-medium">SOLAR SOLUTIONS</div>
-              </div>
+      <nav className="sticky top-0 z-40 border-b border-gray-700/60 bg-slate-900/80 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4">
+          <a href="#" className="flex items-center gap-3">
+            <div className="h-11 w-11 rounded-xl bg-blue-600 flex items-center justify-center ring-1 ring-white/10">
+              <span className="text-white font-bold text-lg">MJ</span>
             </div>
-
-            {/* Navigation Menu */}
-            <div className="hidden md:flex items-center space-x-8 ml-8">
-              {menuItems.map((item: any) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    if (!currentUser && (item.id === 'my-orders' || item.id === 'my-tickets')) {
-                      setLoginAction('login');
-                      setShowLoginPrompt(true);
-                      return;
-                    }
-                    setActiveTab(item.id);
-                  }}
-                  className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeTab === item.id
-                      ? 'bg-teal-600 text-white'
-                      : isDarkMode ? 'text-gray-300 hover:bg-gray-800 hover:text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                  }`}
-                >
-                  <span className="mr-2">{item.icon}</span>
-                  {item.label}
-                </button>
-              ))}
+            <div className="leading-tight hidden sm:block">
+              <div className="font-semibold tracking-wide">MJ Power</div>
+              <div className="text-xs text-slate-400">Products • Services • Support</div>
             </div>
+          </a>
 
-            {/* Right Side Actions */}
-            <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="hidden lg:flex w-full max-w-xl items-center gap-2">
+            <div className="relative w-full">
+              <input
+                type="search"
+                placeholder="Search products (Inverters, Batteries, Panels...)"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 pr-10 text-sm text-slate-100 placeholder:text-slate-400 outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+              />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">⌕</span>
+            </div>
+            <a onClick={() => setActiveTab('get-quote')} className="rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110 cursor-pointer whitespace-nowrap">
+              Get Quote
+            </a>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {menuItems.map((item: any) => (
               <button
-                onClick={() => setActiveTab('cart')}
-                className={`relative p-1.5 sm:p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
+                key={item.id}
+                onClick={() => {
+                  if (!currentUser && (item.id === 'my-orders' || item.id === 'my-tickets')) {
+                    setLoginAction('login');
+                    setShowLoginPrompt(true);
+                    return;
+                  }
+                  setActiveTab(item.id);
+                }}
+                className="hidden lg:inline rounded-xl px-3 py-2 text-sm text-slate-200 hover:bg-white/5"
               >
-                <span className="text-base sm:text-lg">🛒</span>
-                {cart.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
-                    {cart.length}
-                  </span>
-                )}
+                {item.label}
               </button>
+            ))}
 
-              {currentUser ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setShowProfileMenu(!showProfileMenu)}
-                    className={`p-1.5 sm:p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white border border-gray-600' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
-                  >
-                    <span className={`text-base sm:text-lg ${isDarkMode ? 'filter brightness-0 invert' : ''}`}>👤</span>
-                  </button>
-                  
-                  {showProfileMenu && (
-                    <div className={`absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg border z-50 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-                      <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-                        <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{currentUser.name}</p>
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{currentUser.email}</p>
-                      </div>
-                      <div className="p-2">
-                        <button
-                          onClick={() => {
-                            setIsDarkMode(!isDarkMode);
-                            setShowProfileMenu(false);
-                          }}
-                          className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-all ${isDarkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-100 text-gray-900'}`}
-                        >
-                          <span className="mr-2">{isDarkMode ? '☀️' : '🌙'}</span>
-                          {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-                        </button>
-                        <button
-                          onClick={() => {
-                            logout();
-                            setShowProfileMenu(false);
-                          }}
-                          className="w-full flex items-center px-3 py-2 text-sm rounded-lg transition-all text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        >
-                          <span className="mr-2">🚪</span>
-                          Logout
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-center space-x-1 sm:space-x-2">
-                  <button
-                    onClick={() => setIsDarkMode(!isDarkMode)}
-                    className={`p-1.5 sm:p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
-                  >
-                    <span className="text-base sm:text-lg">{isDarkMode ? '☀️' : '🌙'}</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setLoginAction('login');
-                      setShowLoginPrompt(true);
-                    }}
-                    className="bg-teal-600 hover:bg-teal-700 text-white px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all"
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={onStaffLogin}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all"
-                  >
-                    Staff
-                  </button>
-                </div>
-              )}
-            </div>
+            <button 
+              onClick={() => setActiveTab('cart')}
+              className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm hover:bg-white/10" 
+              type="button"
+            >
+              🛒 <span className="ml-1 text-slate-300">({cart.length})</span>
+            </button>
           </div>
         </div>
       </nav>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 backdrop-blur-sm bg-opacity-95 pb-safe-bottom">
-        <div className="flex justify-around py-2">
-          {menuItems.slice(0, 5).map((item: any) => (
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur border-t border-gray-700/60 lg:hidden">
+        <div className="grid grid-cols-5 gap-1 px-2 py-2">
+          {menuItems.slice(0, 4).map((item: any) => (
             <button
               key={item.id}
               onClick={() => {
@@ -221,159 +188,285 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                 }
                 setActiveTab(item.id);
               }}
-              className={`flex flex-col items-center px-2 py-1 rounded-lg text-xs font-medium transition-all ${
-                activeTab === item.id
-                  ? 'text-teal-600'
-                  : isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              className={`flex flex-col items-center py-2 px-1 rounded-lg text-xs transition-colors ${
+                activeTab === item.id ? 'text-green-500 bg-white/10' : 'text-slate-400'
               }`}
             >
               <span className="text-lg mb-1">{item.icon}</span>
-              <span className="text-xs">{item.label}</span>
+              <span className="truncate">{item.label}</span>
             </button>
           ))}
+          <button
+            onClick={() => setActiveTab('get-quote')}
+            className={`flex flex-col items-center py-2 px-1 rounded-lg text-xs transition-colors ${
+              activeTab === 'get-quote' ? 'text-green-500 bg-white/10' : 'text-slate-400'
+            }`}
+          >
+            <span className="text-lg mb-1">💰</span>
+            <span className="truncate">Quote</span>
+          </button>
         </div>
-      </nav>
-
-      {/* Overlay to close profile menu */}
-      {showProfileMenu && (
-        <div 
-          className="fixed inset-0 z-40" 
-          onClick={() => setShowProfileMenu(false)}
-        />
-      )}
+      </div>
 
       {/* Main Content */}
-      <div className="pt-16 pb-20 md:pb-0">
+      <div className="pb-20 lg:pb-0">
         {/* Content Area */}
-        <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <main className="mx-auto max-w-7xl px-4 py-6 lg:py-10">
           {activeTab === 'home' && (
             <div>
               {/* Hero Section */}
-              <div className={`relative rounded-2xl sm:rounded-3xl overflow-hidden mb-8 sm:mb-12 lg:mb-16 ${isDarkMode ? 'bg-gradient-to-r from-teal-600 to-blue-600' : 'bg-gradient-to-r from-teal-500 to-blue-500'}`}>
-                <div className="relative px-4 py-8 sm:px-6 sm:py-12 lg:px-16 lg:py-24">
-                  <div className="max-w-3xl">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
-                      Powering Tomorrow with
-                      <span className="block text-yellow-300">Clean Energy</span>
+              <div className="relative overflow-hidden mb-8">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/15 via-transparent to-white/5"></div>
+                <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 md:grid-cols-2 md:py-16">
+                  <div className="relative">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-slate-200">
+                      <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                      Power solutions for homes, businesses & industry
+                    </div>
+
+                    <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
+                      Reliable <span className="text-green-500">Electrical</span> Products
+                      <br className="hidden sm:block" />
+                      + Expert Services
                     </h1>
-                    <p className={`text-sm sm:text-base lg:text-xl mb-6 sm:mb-8 leading-relaxed text-white/90`}>
-                      Transform your home or business with our premium solar solutions. 
-                      Professional installation, maintenance, and support included.
+
+                    <p className="mt-4 max-w-xl text-slate-300">
+                      Buy authentic power products (inverters, batteries, solar, wiring) and book installation,
+                      maintenance, AMC, and audits — all in one place.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+
+                    <div className="mt-6 flex flex-wrap gap-3">
                       <button 
                         onClick={() => setActiveTab('products')}
-                        className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-sm sm:text-base lg:text-lg transition-all transform hover:scale-105 shadow-lg"
+                        className="rounded-2xl bg-green-500 px-5 py-3 text-sm font-semibold text-black hover:brightness-110"
                       >
-                        Explore Products
+                        Shop Products
                       </button>
                       <button 
                         onClick={() => setActiveTab('services')}
-                        className="border-2 border-white text-white hover:bg-white hover:text-teal-700 px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-sm sm:text-base lg:text-lg transition-all"
+                        className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-100 hover:bg-white/10"
                       >
-                        Our Services
+                        Explore Services
+                      </button>
+                      <button 
+                        onClick={() => setActiveTab('get-quote')}
+                        className="rounded-2xl border border-green-500/40 bg-black/20 px-5 py-3 text-sm font-semibold text-green-500 hover:border-green-500/70"
+                      >
+                        Request a Quote
                       </button>
                     </div>
+
+                    <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <div className="text-sm font-semibold">Warranty-backed</div>
+                        <div className="mt-1 text-xs text-slate-400">Genuine products only</div>
+                      </div>
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <div className="text-sm font-semibold">Fast Support</div>
+                        <div className="mt-1 text-xs text-slate-400">Phone + onsite</div>
+                      </div>
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <div className="text-sm font-semibold">Professional Install</div>
+                        <div className="mt-1 text-xs text-slate-400">Certified team</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="absolute right-0 top-0 w-1/2 h-full opacity-10 hidden sm:block">
-                    <div className="w-full h-full bg-gradient-to-l from-yellow-400/30 to-transparent"></div>
+
+                  {/* Hero card */}
+                  <div className="relative">
+                    <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6 shadow-2xl shadow-black/40">
+                      {(() => {
+                        let maxDiscountProduct = data.products?.reduce((max: any, product: any) => {
+                          const discount = product.originalPrice ? ((product.originalPrice - product.price) / product.originalPrice) * 100 : 0;
+                          const maxDiscount = max?.originalPrice ? ((max.originalPrice - max.price) / max.originalPrice) * 100 : 0;
+                          return discount > maxDiscount ? product : max;
+                        }, null);
+                        
+                        // Fallback to first product if no discounted products
+                        if (!maxDiscountProduct || !maxDiscountProduct.originalPrice) {
+                          maxDiscountProduct = data.products?.[0];
+                        }
+                        
+                        if (!maxDiscountProduct) return null;
+                        
+                        const discountPercent = maxDiscountProduct.originalPrice ? 
+                          Math.round(((maxDiscountProduct.originalPrice - maxDiscountProduct.price) / maxDiscountProduct.originalPrice) * 100) : 15;
+                        
+                        return (
+                          <>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="text-sm font-semibold text-slate-100">Today's Deal</div>
+                                <div className="mt-1 text-xs text-slate-400">Limited stock • Best price</div>
+                              </div>
+                              <span className="rounded-full bg-green-500/20 px-3 py-1 text-xs font-semibold text-green-500">-{discountPercent}%</span>
+                            </div>
+
+                            <div className="mt-6 space-y-3">
+                              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                                <div className="flex items-start justify-between gap-4">
+                                  <div>
+                                    <div className="text-sm font-semibold">{maxDiscountProduct.name}</div>
+                                    <div className="mt-1 text-xs text-slate-400">{maxDiscountProduct.category} • {maxDiscountProduct.description}</div>
+                                    <div className="mt-3 flex items-center gap-2">
+                                      <span className="text-lg font-semibold text-green-500">₹{maxDiscountProduct.price?.toLocaleString()}</span>
+                                      {maxDiscountProduct.originalPrice && (
+                                        <span className="text-sm text-slate-500 line-through">₹{maxDiscountProduct.originalPrice?.toLocaleString()}</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="h-14 w-14 rounded-2xl bg-green-500/15 ring-1 ring-green-500/20 grid place-items-center">
+                                    ⚡
+                                  </div>
+                                </div>
+                                <div className="mt-4 flex gap-2">
+                                  <button 
+                                    onClick={() => {
+                                      const existingItem = cart.find((cartItem: any) => cartItem.id === maxDiscountProduct.id);
+                                      if (!existingItem) {
+                                        setCart([...cart, { ...maxDiscountProduct, quantity: 1 }]);
+                                      }
+                                    }}
+                                    className="w-full rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110" 
+                                    type="button"
+                                  >
+                                    Add to Cart
+                                  </button>
+                                  <button className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-center text-sm font-semibold hover:bg-white/10">
+                                    Install +
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                                  <div className="text-xs text-slate-400">Avg dispatch</div>
+                                  <div className="mt-1 text-lg font-semibold">24–48 hrs</div>
+                                </div>
+                                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                                  <div className="text-xs text-slate-400">Service coverage</div>
+                                  <div className="mt-1 text-lg font-semibold">Onsite</div>
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Services Overview */}
-              <div className="mb-16">
-                <div className="text-center mb-12">
-                  <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Our Solar Solutions</h2>
-                  <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-2xl mx-auto`}>
-                    Comprehensive solar energy solutions tailored to your needs
-                  </p>
+              {/* Categories */}
+              <div className="mb-10">
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <h2 className="text-2xl font-semibold">Shop by Category</h2>
+                    <p className="mt-1 text-sm text-slate-400">Quickly find what you need.</p>
+                  </div>
+                  <button onClick={() => setActiveTab('products')} className="text-sm font-semibold text-green-500 hover:underline">View all →</button>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {categories.slice(0, 4).map((category: any) => (
                     <button
                       key={category.name}
                       onClick={() => setActiveTab('products')}
-                      className={`group p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
-                        isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
-                      }`}
+                      className="group rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 text-left"
                     >
-                      <div className="w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:bg-teal-200 transition-colors">
-                        <span className="text-3xl">{category.icon}</span>
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-semibold">{category.name}</div>
+                        <div className="rounded-2xl bg-green-500/15 px-3 py-2 text-green-500 ring-1 ring-green-500/20">
+                          {category.icon}
+                        </div>
                       </div>
-                      <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{category.name}</h3>
-                      <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Professional {category.name.toLowerCase()} solutions</p>
+                      <p className="mt-3 text-sm text-slate-400">Professional {category.name.toLowerCase()} solutions</p>
+                      <p className="mt-4 text-xs text-slate-500 group-hover:text-slate-300">Explore →</p>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Featured Products */}
-              <div className="mb-8 sm:mb-12 lg:mb-16">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-2">
-                  <h3 className={`text-xl sm:text-2xl lg:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Featured Products</h3>
-                  <button 
-                    onClick={() => setActiveTab('products')}
-                    className="text-teal-600 hover:text-teal-700 font-semibold flex items-center text-sm sm:text-base self-start sm:self-auto"
-                  >
-                    View All Products →
-                  </button>
+              <div className="mb-10">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h2 className="text-2xl font-semibold">Featured Products</h2>
+                    <p className="mt-1 text-sm text-slate-400">Add to cart or request installation.</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10" type="button">All</button>
+                    <button className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10" type="button">Inverters</button>
+                    <button className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10" type="button">Batteries</button>
+                    <button className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10" type="button">Solar</button>
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {data.products?.slice(0, 3).map((product: any) => (
-                    <div key={product.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
-                      isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
-                    }`}>
-                      <div className={`h-48 flex items-center justify-center ${
-                        isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-                      }`}>
-                        <span className="text-6xl">⚡</span>
-                      </div>
-                      <div className="p-6">
-                        <h4 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{product.name}</h4>
-                        <p className={`text-sm mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{product.category}</p>
-                        <div className="flex justify-between items-center">
-                          <span className="text-2xl font-bold text-teal-600">₹{product.price?.toLocaleString()}</span>
-                          <button 
-                            onClick={() => setActiveTab('products')}
-                            className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-all"
-                          >
-                            View Details
-                          </button>
+                    <article key={product.id} className="rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <h3 className="text-base font-semibold">{product.name}</h3>
+                          <p className="mt-1 text-sm text-slate-400">{product.category}</p>
+                          <div className="mt-3 flex items-center gap-2">
+                            <span className="text-lg font-semibold text-green-500">₹{product.price?.toLocaleString()}</span>
+                          </div>
+                          <p className="mt-2 text-xs text-slate-500">⭐ 4.5 • Reviews</p>
+                        </div>
+                        <div className="grid h-14 w-14 place-items-center rounded-2xl bg-green-500/15 ring-1 ring-green-500/20">
+                          ⚡
                         </div>
                       </div>
-                    </div>
+                      <div className="mt-4 flex gap-2">
+                        <button 
+                          onClick={() => {
+                            const existingItem = cart.find((cartItem: any) => cartItem.id === product.id);
+                            if (!existingItem) {
+                              setCart([...cart, { ...product, quantity: 1 }]);
+                            }
+                          }}
+                          className="w-full rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110" 
+                          type="button"
+                        >
+                          Add to Cart
+                        </button>
+                        <button className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-center text-sm font-semibold hover:bg-white/10">
+                          Install +
+                        </button>
+                      </div>
+                    </article>
                   ))}
                 </div>
               </div>
 
               {/* Why Choose Us */}
-              <div className={`rounded-3xl p-8 lg:p-12 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              <div className="rounded-3xl p-8 lg:p-12 text-white">
                 <div className="text-center mb-12">
-                  <h3 className={`text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Why Choose MJPOWER Solar?</h3>
-                  <p className={`text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Leading the way in sustainable energy solutions</p>
+                  <h3 className="text-3xl font-bold mb-4 text-white">Why Choose MJPOWER Solar?</h3>
+                  <p className="text-lg text-gray-300">Leading the way in sustainable energy solutions</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                       <span className="text-2xl">🏆</span>
                     </div>
-                    <h4 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Expert Installation</h4>
-                    <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Professional installation by certified technicians</p>
+                    <h4 className="text-lg font-semibold mb-2 text-white">Expert Installation</h4>
+                    <p className="text-gray-300">Professional installation by certified technicians</p>
                   </div>
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                       <span className="text-2xl">⚡</span>
                     </div>
-                    <h4 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Premium Quality</h4>
-                    <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>High-efficiency solar panels and components</p>
+                    <h4 className="text-lg font-semibold mb-2 text-white">Premium Quality</h4>
+                    <p className="text-gray-300">High-efficiency solar panels and components</p>
                   </div>
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                       <span className="text-2xl">🛠️</span>
                     </div>
-                    <h4 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>24/7 Support</h4>
-                    <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Round-the-clock maintenance and support</p>
+                    <h4 className="text-lg font-semibold mb-2 text-white">24/7 Support</h4>
+                    <p className="text-gray-300">Round-the-clock maintenance and support</p>
                   </div>
                 </div>
               </div>
@@ -382,43 +475,36 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
 
           {activeTab === 'services' && (
             <div>
-              <div className="text-center mb-12">
-                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Services</h2>
-                <p className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-2xl mx-auto`}>
-                  Professional solar services to maximize your energy efficiency
-                </p>
+              <div className="flex items-end justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-2xl font-semibold">Services</h2>
+                  <p className="mt-1 text-sm text-slate-400">Book onsite work, AMC, and audits.</p>
+                </div>
+                <button className="text-sm font-semibold text-green-500 hover:underline">Request service →</button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {data.services?.map((service: any) => (
-                  <div key={service.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
-                    isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
-                  }`}>
-                    <div className={`h-48 flex items-center justify-center ${
-                      isDarkMode ? 'bg-gray-700' : 'bg-gradient-to-br from-blue-50 to-blue-100'
-                    }`}>
-                      <span className="text-6xl">🔧</span>
+                  <article key={service.id} className="rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-semibold">{service.name}</h3>
+                      <span className="rounded-2xl bg-green-500/15 px-3 py-2 text-green-500 ring-1 ring-green-500/20">🔧</span>
                     </div>
-                    <div className="p-6">
-                      <h3 className={`text-xl font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{service.name}</h3>
-                      <p className={`mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'} leading-relaxed`}>{service.description}</p>
-                      <div className="flex justify-between items-center mb-4">
-                        <span className="text-2xl font-bold text-teal-600">₹{service.price?.toLocaleString()}</span>
-                        <span className={`text-sm px-3 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Service</span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          const existingItem = cart.find((cartItem: any) => cartItem.id === service.id);
-                          if (!existingItem) {
-                            setCart([...cart, { ...service, quantity: 1 }]);
-                            alert('Added to cart!');
-                          }
-                        }}
-                        className="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105"
-                      >
-                        Book Service
-                      </button>
+                    <p className="mt-3 text-sm text-slate-400">{service.description}</p>
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="text-lg font-semibold text-green-500">₹{service.price?.toLocaleString()}</span>
                     </div>
-                  </div>
+                    <button
+                      onClick={() => {
+                        const existingItem = cart.find((cartItem: any) => cartItem.id === service.id);
+                        if (!existingItem) {
+                          setCart([...cart, { ...service, quantity: 1 }]);
+                        }
+                      }}
+                      className="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110"
+                    >
+                      Book Service
+                    </button>
+                  </article>
                 ))}
               </div>
             </div>
@@ -426,123 +512,268 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
 
           {activeTab === 'products' && (
             <div>
-              <div className="text-center mb-12">
-                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Products & Services</h2>
-                <p className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-2xl mx-auto`}>
-                  Complete solar solutions for your energy needs
-                </p>
-              </div>
-              
-              {/* Products Section */}
-              <div className="mb-8 sm:mb-12 lg:mb-16">
-                <h3 className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Products</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-                  {data.products?.map((item: any) => (
-                    <div key={item.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
-                      isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
-                    }`}>
-                      <div className={`h-48 flex items-center justify-center ${
-                        isDarkMode ? 'bg-gray-700' : 'bg-gradient-to-br from-teal-50 to-teal-100'
-                      }`}>
-                        {item.image ? (
-                          <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="text-6xl">⚡</span>
-                        )}
-                      </div>
-                      <div className="p-6">
-                        <div className="flex justify-between items-start mb-3">
-                          <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.name}</h4>
-                          <span className={`text-xs px-2 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {item.category}
-                          </span>
-                        </div>
-                        <p className={`text-sm mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'} line-clamp-2`}>{item.description}</p>
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-2xl font-bold text-teal-600">₹{item.price?.toLocaleString()}</span>
-                          <select 
-                            className={`rounded-lg px-3 py-1 text-sm border ${
-                              isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-50 text-gray-900 border-gray-300'
-                            }`}
-                            onChange={(e: any) => setOrderForm({...orderForm, quantity: parseInt(e.target.value), itemId: item.id})}
-                          >
-                            <option value="1">Qty: 1</option>
-                            <option value="2">Qty: 2</option>
-                            <option value="3">Qty: 3</option>
-                            <option value="5">Qty: 5</option>
-                            <option value="10">Qty: 10</option>
-                          </select>
-                        </div>
-                        <button
-                          onClick={() => {
-                            const existingItem = cart.find((cartItem: any) => cartItem.id === item.id);
-                            if (existingItem) {
-                              setActiveTab('cart');
-                            } else {
-                              const quantity = orderForm.quantity || 1;
-                              setCart([...cart, { ...item, quantity }]);
-                              alert('Added to cart!');
-                            }
-                          }}
-                          className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
-                            cart.find((cartItem: any) => cartItem.id === item.id)
-                              ? 'bg-green-600 hover:bg-green-700 text-white'
-                              : 'bg-teal-600 hover:bg-teal-700 text-white'
-                          }`}
-                        >
-                          {cart.find((cartItem: any) => cartItem.id === item.id) ? '✓ In Cart' : 'Add to Cart'}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-semibold">Featured Products</h2>
+                  <p className="mt-1 text-sm text-slate-400">Add to cart or request installation.</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10" type="button">All</button>
+                  <button className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10" type="button">Inverters</button>
+                  <button className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10" type="button">Batteries</button>
+                  <button className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10" type="button">Solar</button>
                 </div>
               </div>
 
-              {/* Services Section */}
-              <div>
-                <h3 className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solar Services</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-                  {data.services?.map((item: any) => (
-                    <div key={item.id} className={`group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${
-                      isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'
-                    }`}>
-                      <div className={`h-48 flex items-center justify-center ${
-                        isDarkMode ? 'bg-gray-700' : 'bg-gradient-to-br from-orange-50 to-orange-100'
-                      }`}>
-                        <span className="text-6xl">🔧</span>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {data.products?.map((item: any) => (
+                  <article key={item.id} className="rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 className="text-base font-semibold">{item.name}</h3>
+                        <p className="mt-1 text-sm text-slate-400">{item.description}</p>
+                        <div className="mt-3 flex items-center gap-2">
+                          <span className="text-lg font-semibold text-green-500">₹{item.price?.toLocaleString()}</span>
+                        </div>
+                        <p className="mt-2 text-xs text-slate-500">⭐ 4.5 • Reviews</p>
                       </div>
-                      <div className="p-6">
-                        <div className="flex justify-between items-start mb-3">
-                          <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.name}</h4>
-                          <span className={`text-xs px-2 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                            Service
-                          </span>
-                        </div>
-                        <p className={`text-sm mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'} line-clamp-2`}>{item.description}</p>
-                        <div className="mb-4">
-                          <span className="text-2xl font-bold text-teal-600">₹{item.price?.toLocaleString()}</span>
-                        </div>
-                        <button
-                          onClick={() => {
-                            const existingItem = cart.find((cartItem: any) => cartItem.id === item.id);
-                            if (!existingItem) {
-                              setCart([...cart, { ...item, quantity: 1 }]);
-                              alert('Service added to cart!');
-                            } else {
-                              setActiveTab('cart');
-                            }
-                          }}
-                          className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
-                            cart.find((cartItem: any) => cartItem.id === item.id)
-                              ? 'bg-green-600 hover:bg-green-700 text-white'
-                              : 'bg-orange-500 hover:bg-orange-600 text-white'
-                          }`}
-                        >
-                          {cart.find((cartItem: any) => cartItem.id === item.id) ? '✓ In Cart' : 'Book Service'}
-                        </button>
+                      <div className="grid h-14 w-14 place-items-center rounded-2xl bg-green-500/15 ring-1 ring-green-500/20">
+                        ⚡
                       </div>
                     </div>
-                  ))}
+                    <div className="mt-4 flex gap-2">
+                      <button
+                        onClick={() => {
+                          const existingItem = cart.find((cartItem: any) => cartItem.id === item.id);
+                          if (existingItem) {
+                            setActiveTab('cart');
+                          } else {
+                            const quantity = orderForm.quantity || 1;
+                            setCart([...cart, { ...item, quantity }]);
+                          }
+                        }}
+                        className="w-full rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110"
+                      >
+                        {cart.find((cartItem: any) => cartItem.id === item.id) ? '✓ In Cart' : 'Add to Cart'}
+                      </button>
+                      <button className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-center text-sm font-semibold hover:bg-white/10">
+                        Install +
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'get-quote' && (
+            <div>
+              <div className="flex items-end justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-2xl font-semibold">Get Solar Quote</h2>
+                  <p className="mt-1 text-sm text-slate-400">Get a personalized solar solution estimate</p>
+                </div>
+              </div>
+              
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                  <h3 className="text-base font-semibold mb-4">Request Quote</h3>
+                  <form onSubmit={async (e: any) => {
+                    e.preventDefault();
+                    const newQuote = {
+                      ...quoteForm,
+                      customerId: currentUser?.id,
+                      customerName: currentUser?.name || quoteForm.name,
+                      status: 'pending',
+                      estimatedCost: Math.round((parseInt(quoteForm.monthlyBill) || 0) * 12 * 8),
+                      estimatedSavings: Math.round((parseInt(quoteForm.monthlyBill) || 0) * 12 * 0.8),
+                      type: cart.length > 0 ? 'cart-quote' : 'form-quote',
+                      ...(cart.length > 0 && {
+                        items: cart.map((item: any) => ({
+                          id: item.id,
+                          name: item.name,
+                          price: item.price,
+                          quantity: item.quantity,
+                          total: item.price * item.quantity
+                        })),
+                        subtotal: cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0),
+                        tax: Math.round(cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0) * 0.18),
+                        totalAmount: Math.round(cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0) * 1.18)
+                      })
+                    };
+                    
+                    try {
+                      const response = await fql.quotes.createOne(newQuote);
+                      if (response.err) {
+                        alert('Error submitting quote: ' + response.message);
+                      } else {
+                        alert('Quote request submitted successfully! We will contact you soon.');
+                        setQuoteForm({ name: '', phone: '', email: '', address: '', propertyType: 'residential', roofArea: '', monthlyBill: '', requirements: '' });
+                        setCart([]);
+                        setActiveTab('my-quotes');
+                      }
+                    } catch (error: any) {
+                      console.error('Error submitting quote:', error);
+                      if (error.message.includes('Network error')) {
+                        alert('Connection failed. Please check if the server is running and try again.');
+                      } else {
+                        alert('Error submitting quote: ' + error.message);
+                      }
+                    }
+                  }} className="space-y-3">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <input
+                        type="text"
+                        placeholder="Full Name"
+                        value={quoteForm.name}
+                        onChange={(e: any) => setQuoteForm({...quoteForm, name: e.target.value})}
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+                        required
+                      />
+                      <input
+                        type="tel"
+                        placeholder="Phone Number"
+                        value={quoteForm.phone}
+                        onChange={(e: any) => setQuoteForm({...quoteForm, phone: e.target.value})}
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+                        required
+                      />
+                    </div>
+                    <input
+                      type="email"
+                      placeholder="Email Address"
+                      value={quoteForm.email}
+                      onChange={(e: any) => setQuoteForm({...quoteForm, email: e.target.value})}
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+                      required
+                    />
+                    <textarea
+                      placeholder="Installation Address"
+                      value={quoteForm.address}
+                      onChange={(e: any) => setQuoteForm({...quoteForm, address: e.target.value})}
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+                      rows={2}
+                      required
+                    />
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <select
+                        value={quoteForm.propertyType}
+                        onChange={(e: any) => setQuoteForm({...quoteForm, propertyType: e.target.value})}
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+                      >
+                        <option value="residential">Residential</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="industrial">Industrial</option>
+                      </select>
+                      <input
+                        type="number"
+                        placeholder="Roof Area (sq ft)"
+                        value={quoteForm.roofArea}
+                        onChange={(e: any) => setQuoteForm({...quoteForm, roofArea: e.target.value})}
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+                      />
+                    </div>
+                    <input
+                      type="number"
+                      placeholder="Monthly Electricity Bill (₹)"
+                      value={quoteForm.monthlyBill}
+                      onChange={(e: any) => setQuoteForm({...quoteForm, monthlyBill: e.target.value})}
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+                      required
+                    />
+                    <textarea
+                      placeholder="Special Requirements or Questions"
+                      value={quoteForm.requirements}
+                      onChange={(e: any) => setQuoteForm({...quoteForm, requirements: e.target.value})}
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+                      rows={2}
+                    />
+                    
+                    {cart.length > 0 && (
+                      <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-4">
+                        <h4 className="text-sm font-semibold text-green-500 mb-3">Selected Items</h4>
+                        <div className="space-y-2">
+                          {cart.map((item: any) => (
+                            <div key={item.id} className="flex justify-between text-sm">
+                              <span>{item.name} x{item.quantity}</span>
+                              <span>₹{(item.price * item.quantity).toLocaleString()}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="border-t border-green-500/20 mt-3 pt-3">
+                          <div className="flex justify-between text-sm font-semibold text-green-500">
+                            <span>Total (incl. tax):</span>
+                            <span>₹{Math.round(cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0) * 1.18).toLocaleString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <button
+                      type="submit"
+                      className="w-full rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110"
+                    >
+                      {cart.length > 0 ? 'Submit Quote Request' : 'Get Free Quote'}
+                    </button>
+                  </form>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                    <h3 className="text-sm font-semibold mb-3">Why Choose Solar?</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-xs">
+                          💰
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold">Save Money</div>
+                          <div className="text-xs text-slate-400">Reduce electricity bills by 80%</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-xs">
+                          🌱
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold">Go Green</div>
+                          <div className="text-xs text-slate-400">Reduce carbon footprint</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-xs">
+                          📈
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold">Increase Value</div>
+                          <div className="text-xs text-slate-400">Boost property value</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                    <h3 className="text-sm font-semibold mb-3">Quick Estimate</h3>
+                    {quoteForm.monthlyBill && (
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-xs">
+                          <span>Annual Bill:</span>
+                          <span>₹{(parseInt(quoteForm.monthlyBill) * 12).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span>Estimated System Cost:</span>
+                          <span>₹{(parseInt(quoteForm.monthlyBill) * 12 * 8).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-xs text-green-500">
+                          <span>Annual Savings:</span>
+                          <span>₹{(parseInt(quoteForm.monthlyBill) * 12 * 0.8).toLocaleString()}</span>
+                        </div>
+                      </div>
+                    )}
+                    {!quoteForm.monthlyBill && (
+                      <p className="text-xs text-slate-400">Enter your monthly bill to see estimate</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -550,149 +781,117 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
 
           {activeTab === 'cart' && (
             <div>
-              <div className="text-center mb-12">
-                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Shopping Cart</h2>
-                <p className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Review your selected items</p>
+              <div className="flex items-end justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-2xl font-semibold">Shopping Cart</h2>
+                  <p className="mt-1 text-sm text-slate-400">Review your selected items</p>
+                </div>
               </div>
               
               {cart.length === 0 ? (
-                <div className="text-center py-16">
-                  <div className="text-8xl mb-6">🛒</div>
-                  <h3 className={`text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Your cart is empty</h3>
-                  <p className={`text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Add some solar products to get started!</p>
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-3">🛒</div>
+                  <h3 className="text-lg font-semibold mb-2">Your cart is empty</h3>
+                  <p className="text-sm text-slate-400 mb-4">Add some solar products to get started!</p>
                   <button
                     onClick={() => setActiveTab('products')}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
+                    className="rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110"
                   >
                     Browse Products
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-                  <div className="lg:col-span-2">
-                    <div className={`rounded-2xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                      <div className={`p-6 border-b ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Cart Items ({cart.length})</h3>
-                      </div>
-                      <div className="p-6 space-y-6">
-                        {cart.map((item: any) => (
-                          <div key={item.id} className={`flex items-center space-x-3 sm:space-x-4 lg:space-x-6 p-3 sm:p-4 lg:p-6 border rounded-xl sm:rounded-2xl transition-all hover:shadow-md ${
-                            isDarkMode ? 'border-gray-700 hover:bg-gray-750' : 'border-gray-200 hover:bg-gray-50'
-                          }`}>
-                            <div className={`w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-lg sm:rounded-xl flex items-center justify-center ${
-                              isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-                            }`}>
-                              {item.image ? (
-                                <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover rounded-xl" />
-                              ) : (
-                                <span className="text-2xl">⚡</span>
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <h4 className={`text-sm sm:text-base lg:text-lg font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.name}</h4>
-                              <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.category}</p>
-                              <p className="text-base sm:text-lg lg:text-xl font-bold text-teal-600">₹{item.price?.toLocaleString()}</p>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                              <button
-                                onClick={() => {
-                                  setCart(cart.map((cartItem: any) => 
-                                    cartItem.id === item.id && cartItem.quantity > 1
-                                      ? { ...cartItem, quantity: cartItem.quantity - 1 }
-                                      : cartItem
-                                  ));
-                                }}
-                                className={`w-10 h-10 rounded-lg flex items-center justify-center font-semibold transition-all ${
-                                  isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
-                                }`}
-                              >
-                                -
-                              </button>
-                              <span className={`w-12 text-center font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.quantity}</span>
-                              <button
-                                onClick={() => {
-                                  setCart(cart.map((cartItem: any) => 
-                                    cartItem.id === item.id
-                                      ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                                      : cartItem
-                                  ));
-                                }}
-                                className={`w-10 h-10 rounded-lg flex items-center justify-center font-semibold transition-all ${
-                                  isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
-                                }`}
-                              >
-                                +
-                              </button>
-                            </div>
-                            <button
-                              onClick={() => {
-                                setCart(cart.filter((cartItem: any) => cartItem.id !== item.id));
-                              }}
-                              className={`p-3 rounded-lg transition-all ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-                            >
-                              🗑️
-                            </button>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {cart.map((item: any) => (
+                    <article key={item.id} className="rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <h3 className="text-base font-semibold">{item.name}</h3>
+                          <p className="mt-1 text-sm text-slate-400">{item.category}</p>
+                          <div className="mt-3 flex items-center gap-2">
+                            <span className="text-lg font-semibold text-green-500">₹{item.price?.toLocaleString()}</span>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="lg:col-span-1">
-                    <div className={`rounded-2xl sticky top-24 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                      <div className={`p-6 border-b ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Order Summary</h3>
-                      </div>
-                      <div className="p-6 space-y-4">
-                        <div className={`flex justify-between text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                          <span>Subtotal:</span>
-                          <span>₹{cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0).toLocaleString()}</span>
                         </div>
-                        <div className={`flex justify-between text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                          <span>Tax (18%):</span>
-                          <span>₹{Math.round(cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0) * 0.18).toLocaleString()}</span>
+                        <div className="grid h-14 w-14 place-items-center rounded-2xl bg-green-500/15 ring-1 ring-green-500/20">
+                          {item.image ? (
+                            <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover rounded-2xl" />
+                          ) : (
+                            <span>⚡</span>
+                          )}
                         </div>
-                        <div className={`border-t pt-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                          <div className={`flex justify-between text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                            <span>Total:</span>
-                            <span>₹{Math.round(cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0) * 1.18).toLocaleString()}</span>
-                          </div>
+                      </div>
+                      <div className="mt-4 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setCart(cart.map((cartItem: any) => 
+                                cartItem.id === item.id && cartItem.quantity > 1
+                                  ? { ...cartItem, quantity: cartItem.quantity - 1 }
+                                  : cartItem
+                              ));
+                            }}
+                            className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-sm font-semibold hover:bg-white/10 transition-all"
+                          >
+                            -
+                          </button>
+                          <span className="w-8 text-center text-sm font-semibold">{item.quantity}</span>
+                          <button
+                            onClick={() => {
+                              setCart(cart.map((cartItem: any) => 
+                                cartItem.id === item.id
+                                  ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                                  : cartItem
+                              ));
+                            }}
+                            className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-sm font-semibold hover:bg-white/10 transition-all"
+                          >
+                            +
+                          </button>
                         </div>
                         <button
                           onClick={() => {
-                            if (!currentUser) {
-                              setLoginAction('checkout');
-                              setShowLoginPrompt(true);
-                              return;
-                            }
-                            cart.forEach((item: any) => {
-                              const newOrder = {
-                                type: 'product',
-                                itemId: item.id,
-                                quantity: item.quantity,
-                                description: '',
-                                preferredDate: new Date().toISOString().split('T')[0],
-                                customerId: currentUser.id,
-                                customerName: currentUser.name,
-                                itemName: item.name,
-                                itemPrice: item.price,
-                                totalPrice: item.price * item.quantity,
-                                status: 'pending',
-                                createdAt: new Date().toISOString().split('T')[0]
-                              };
-                              addItem('orders', newOrder);
-                            });
-                            setCart([]);
-                            alert('Order placed successfully!');
-                            setActiveTab('my-orders');
+                            setCart(cart.filter((cartItem: any) => cartItem.id !== item.id));
                           }}
-                          className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
+                          className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold hover:bg-white/10"
                         >
-                          💳 Proceed to Checkout
+                          Remove
                         </button>
                       </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+              
+              {cart.length > 0 && (
+                <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm font-semibold">Order Summary</div>
+                      <div className="mt-1 text-xs text-slate-400">{cart.length} items • Tax included</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-semibold text-green-500">₹{Math.round(cart.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0) * 1.18).toLocaleString()}</div>
+                      <div className="text-xs text-slate-400">Total with 18% tax</div>
                     </div>
                   </div>
+                  <button
+                    onClick={() => {
+                      // Autofill quote form with user data if logged in
+                      if (currentUser) {
+                        setQuoteForm({
+                          ...quoteForm,
+                          name: currentUser.name || '',
+                          email: currentUser.email || '',
+                          phone: currentUser.phone || '',
+                          address: currentUser.address || ''
+                        });
+                      }
+                      setActiveTab('get-quote');
+                    }}
+                    className="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110"
+                  >
+                    💰 Generate Quote
+                  </button>
                 </div>
               )}
             </div>
@@ -700,39 +899,37 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
 
           {activeTab === 'raise-ticket' && (
             <div className="max-w-2xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Support Center</h2>
-                <p className={`text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Get help with your solar solutions</p>
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold">Support Center</h2>
+                <p className="mt-1 text-sm text-slate-400">Get help with your solar solutions</p>
               </div>
               
-              <div className={`p-8 rounded-2xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
                 {!currentUser ? (
-                  <div className="text-center py-12">
-                    <div className="text-6xl mb-6">🔒</div>
-                    <h3 className={`text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Login Required</h3>
-                    <p className={`text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Please login to raise a support ticket</p>
+                  <div className="text-center py-8">
+                    <div className="text-4xl mb-4">🔒</div>
+                    <h3 className="text-lg font-semibold mb-2">Login Required</h3>
+                    <p className="text-sm mb-6 text-slate-400">Please login to raise a support ticket</p>
                     <button
                       onClick={() => {
                         setLoginAction('ticket');
                         setShowLoginPrompt(true);
                       }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
+                      className="rounded-2xl bg-green-500 px-6 py-2.5 text-sm font-semibold text-black hover:brightness-110"
                     >
                       Login to Continue
                     </button>
                   </div>
                 ) : (
                   <div>
-                    <h3 className={`text-2xl font-semibold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Create Support Ticket</h3>
-                    <form onSubmit={handleRaiseTicket} className="space-y-6">
+                    <h3 className="text-lg font-semibold mb-4">Create Support Ticket</h3>
+                    <form onSubmit={handleRaiseTicket} className="space-y-4">
                       <div>
-                        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Category</label>
+                        <label className="block text-sm font-medium mb-2">Category</label>
                         <select
                           value={ticketForm.type}
                           onChange={(e: any) => setTicketForm({...ticketForm, type: e.target.value, itemId: ''})}
-                          className={`w-full p-4 rounded-xl border transition-all ${
-                            isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-                          }`}
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
                         >
                           <option value="product">Solar Product</option>
                           <option value="service">Solar Service</option>
@@ -740,13 +937,11 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                       </div>
                       
                       <div>
-                        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Select Item</label>
+                        <label className="block text-sm font-medium mb-2">Select Item</label>
                         <select
                           value={ticketForm.itemId}
                           onChange={(e: any) => setTicketForm({...ticketForm, itemId: e.target.value})}
-                          className={`w-full p-4 rounded-xl border transition-all ${
-                            isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-                          }`}
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
                           required
                         >
                           <option value="">Select {ticketForm.type}</option>
@@ -757,35 +952,20 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                       </div>
                       
                       <div>
-                        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Issue Description</label>
+                        <label className="block text-sm font-medium mb-2">Issue Description</label>
                         <textarea
                           placeholder="Describe your issue in detail..."
                           value={ticketForm.issue}
                           onChange={(e: any) => setTicketForm({...ticketForm, issue: e.target.value})}
-                          className={`w-full p-4 rounded-xl border transition-all ${
-                            isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-                          }`}
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
                           rows={4}
                           required
                         />
                       </div>
                       
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Additional Notes (Optional)</label>
-                        <textarea
-                          placeholder="Any additional information..."
-                          value={ticketForm.notes}
-                          onChange={(e: any) => setTicketForm({...ticketForm, notes: e.target.value})}
-                          className={`w-full p-4 rounded-xl border transition-all ${
-                            isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
-                          }`}
-                          rows={3}
-                        />
-                      </div>
-                      
                       <button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105"
+                        className="w-full rounded-2xl bg-green-500 px-5 py-3 text-sm font-semibold text-black hover:brightness-110"
                       >
                         Submit Support Ticket
                       </button>
@@ -967,15 +1147,8 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
           {/* Login Prompt Modal */}
           {showLoginPrompt && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className={`rounded-2xl p-4 sm:p-6 lg:p-8 max-w-md w-full ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                <h3 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Customer Login
-                </h3>
-                <p className={`mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {loginAction === 'checkout' ? 'Please login to complete your purchase.' :
-                   loginAction === 'ticket' ? 'Please login to raise a support ticket.' :
-                   'Please login to access your account.'}
-                </p>
+              <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+                <h3 className="text-xl font-bold text-white mb-4">Customer Login</h3>
                 <form onSubmit={(e: any) => {
                   e.preventDefault();
                   const formData = new FormData(e.target);
@@ -991,55 +1164,41 @@ const CustomerPortal = ({ onStaffLogin }: { onStaffLogin: () => void }) => {
                   }
                 }} className="space-y-4">
                   <div>
-                    <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Email</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
                     <input
                       name="email"
                       type="email"
                       required
-                      className={`w-full p-3 rounded-lg border ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                      className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-green-500 focus:outline-none"
                       placeholder="Enter your email"
                     />
                   </div>
                   <div>
-                    <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Password</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
                     <input
                       name="password"
                       type="password"
                       required
-                      className={`w-full p-3 rounded-lg border ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                      className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-green-500 focus:outline-none"
                       placeholder="Enter your password"
                     />
                   </div>
                   <div className="flex space-x-3 pt-4">
                     <button
                       type="button"
-                      onClick={() => {
-                        setShowLoginPrompt(false);
-                        setActiveTab('home');
-                      }}
-                      className={`flex-1 py-3 px-4 rounded-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                      onClick={() => setShowLoginPrompt(false)}
+                      className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 px-4 rounded-lg font-semibold"
+                      className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg transition-colors"
                     >
                       Login
                     </button>
                   </div>
                 </form>
-                <div className="mt-4 text-center">
-                  <button
-                    onClick={() => {
-                      setShowLoginPrompt(false);
-                      onStaffLogin();
-                    }}
-                    className="text-teal-600 hover:text-teal-700 text-sm font-medium"
-                  >
-                    Staff Login
-                  </button>
-                </div>
               </div>
             </div>
           )}

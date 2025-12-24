@@ -503,7 +503,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2e
 ;
 ;
 const FQ_APP_NAME = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fqConfig"].prod.appName;
-// const FQ_DEV_SERVER_URL = fqConfig.dev.serverUrl;
+const FQ_DEV_SERVER_URL = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fqConfig"].dev.serverUrl;
 const FQ_PROD_SERVER_URL = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fqConfig"].prod.serverUrl;
 const FQ_FULL_TOKEN_PATH = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$config$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["fqConfig"].tokenPath;
 function uniqueKey(input) {
@@ -546,23 +546,9 @@ function getKey(method, url, options) {
     for(let key in request){
         tokenStr += key + ":" + request[key];
     }
-    const finalKey = method + ":" + _url + ">" + uniqueKey(tokenStr);
-    console.log('🔑 TOKEN GENERATION DEBUG:');
-    console.log('Method:', method);
-    console.log('Original URL:', url);
-    console.log('Cleaned URL:', _url);
-    console.log('Token String:', tokenStr);
-    console.log('Generated Key:', finalKey);
-    console.log('Unique Hash:', uniqueKey(tokenStr));
-    return finalKey;
+    return method + ":" + _url + ">" + uniqueKey(tokenStr);
 }
 const makeRequest = async (method, endpoint, options = {})=>{
-    // Debug: Log all API calls to detect duplicate requests
-    console.log(`🔍 API CALL: ${method.toUpperCase()} ${endpoint}`);
-    if (endpoint.includes('products')) {
-        console.log('⚠️ PRODUCTS API CALL DETECTED');
-        console.trace('Call stack for products API');
-    }
     const { body, page, sort, joins, hidden, fields, filter, search, nearby, session, validation, permissions, loading = true } = options;
     const headers = {};
     if (hidden) headers.hidden = hidden;
@@ -575,18 +561,11 @@ const makeRequest = async (method, endpoint, options = {})=>{
     if (permissions) headers.permissions = permissions;
     const key = getKey(method, endpoint, options);
     const token = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$tokens$2e$json__$28$json$29$__["default"][key] || false;
-    console.log('🔐 TOKEN LOOKUP DEBUG:');
-    console.log('Looking for key:', key);
-    console.log('Available tokens:', Object.keys(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$tokens$2e$json__$28$json$29$__["default"]));
-    console.log('Token found:', !!token);
-    console.log('Token value:', token);
     if (token) {
         headers["token"] = token;
-        console.log('✅ Using existing token');
     } else {
         headers["token-key"] = key;
         headers["token-path"] = FQ_FULL_TOKEN_PATH;
-        console.log('⚠️ No token found, sending token-key for generation');
     }
     const params = {
         page: page,
@@ -611,13 +590,8 @@ const makeRequest = async (method, endpoint, options = {})=>{
             const query = new URLSearchParams(params);
             url += `?${query.toString()}`;
         }
-        const final_url = FQ_PROD_SERVER_URL + url;
-        console.log('=== API Request Details ===');
-        console.log('URL:', final_url);
-        console.log('Method:', requestConfig.method);
-        console.log('Headers:', requestConfig.headers);
-        console.log('Body (parsed):', requestConfig.body ? JSON.parse(requestConfig.body) : {});
-        console.log('========================');
+        const final_url = token ? FQ_PROD_SERVER_URL + url : FQ_DEV_SERVER_URL + url;
+        console.log(final_url, requestConfig);
         const response = await fetch(final_url, requestConfig);
         if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);
@@ -7606,6 +7580,16 @@ const CustomerPortal = ({ onStaffLogin })=>{
         description: '',
         preferredDate: ''
     });
+    const [quoteForm, setQuoteForm] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
+        name: '',
+        phone: '',
+        email: '',
+        address: '',
+        propertyType: 'residential',
+        roofArea: '',
+        monthlyBill: '',
+        requirements: ''
+    });
     const [ticketForm, setTicketForm] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
         type: 'product',
         itemId: '',
@@ -7653,6 +7637,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
     };
     const myOrders = currentUser ? data.orders?.filter((order)=>order.customerId === currentUser.id) || [] : [];
     const myTickets = currentUser ? data.tickets?.filter((ticket)=>ticket.customerId === currentUser.id) || [] : [];
+    const myQuotes = currentUser ? data.quotes?.filter((quote)=>quote.customerId === currentUser.id) || [] : [];
     const menuItems = [
         {
             id: 'home',
@@ -7675,6 +7660,11 @@ const CustomerPortal = ({ onStaffLogin })=>{
             icon: '🎫'
         },
         ...currentUser ? [
+            {
+                id: 'my-quotes',
+                label: 'My Quotes',
+                icon: '💰'
+            },
             {
                 id: 'my-orders',
                 label: 'My Orders',
@@ -7725,375 +7715,656 @@ const CustomerPortal = ({ onStaffLogin })=>{
         }
     ];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: `min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`,
+        className: "min-h-screen bg-slate-900 text-slate-100",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
-                className: `fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b backdrop-blur-sm bg-opacity-95 pt-safe-top`,
+                className: "sticky top-0 z-40 border-b border-gray-700/60 bg-slate-900/80 backdrop-blur",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "max-w-7xl mx-auto px-3 sm:px-4 lg:px-8",
-                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex items-center justify-between h-14 sm:h-16",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "bg-gradient-to-r from-teal-500 to-cyan-600 p-1.5 sm:p-2 rounded-lg",
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                            className: "text-white font-bold text-lg sm:text-xl",
-                                            children: "MJ"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 94,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0))
+                    className: "mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                            href: "#",
+                            className: "flex items-center gap-3",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "h-11 w-11 rounded-xl bg-blue-600 flex items-center justify-center ring-1 ring-white/10",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "text-white font-bold text-lg",
+                                        children: "MJ"
                                     }, void 0, false, {
                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 93,
-                                        columnNumber: 15
-                                    }, ("TURBOPACK compile-time value", void 0)),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "ml-2 sm:ml-3 hidden xs:block",
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-teal-600 text-xs sm:text-sm font-medium",
-                                            children: "SOLAR SOLUTIONS"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 97,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 96,
+                                        lineNumber: 104,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                lineNumber: 92,
-                                columnNumber: 13
-                            }, ("TURBOPACK compile-time value", void 0)),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "hidden md:flex items-center space-x-8 ml-8",
-                                children: menuItems.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                }, void 0, false, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 103,
+                                    columnNumber: 13
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "leading-tight hidden sm:block",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "font-semibold tracking-wide",
+                                            children: "MJ Power"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 107,
+                                            columnNumber: 15
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "text-xs text-slate-400",
+                                            children: "Products • Services • Support"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 108,
+                                            columnNumber: 15
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 106,
+                                    columnNumber: 13
+                                }, ("TURBOPACK compile-time value", void 0))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                            lineNumber: 102,
+                            columnNumber: 11
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "hidden lg:flex w-full max-w-xl items-center gap-2",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "relative w-full",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "search",
+                                            placeholder: "Search products (Inverters, Batteries, Panels...)",
+                                            className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 pr-10 text-sm text-slate-100 placeholder:text-slate-400 outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 114,
+                                            columnNumber: 15
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400",
+                                            children: "⌕"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 119,
+                                            columnNumber: 15
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 113,
+                                    columnNumber: 13
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                    onClick: ()=>setActiveTab('get-quote'),
+                                    className: "rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110 cursor-pointer whitespace-nowrap",
+                                    children: "Get Quote"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 121,
+                                    columnNumber: 13
+                                }, ("TURBOPACK compile-time value", void 0))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                            lineNumber: 112,
+                            columnNumber: 11
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex items-center gap-2",
+                            children: [
+                                menuItems.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: ()=>{
-                                            if (!currentUser && (item.id === 'my-orders' || item.id === 'my-tickets')) {
+                                            if (!currentUser && (item.id === 'my-orders' || item.id === 'my-tickets' || item.id === 'my-quotes')) {
                                                 setLoginAction('login');
                                                 setShowLoginPrompt(true);
                                                 return;
                                             }
                                             setActiveTab(item.id);
                                         },
-                                        className: `flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === item.id ? 'bg-teal-600 text-white' : isDarkMode ? 'text-gray-300 hover:bg-gray-800 hover:text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`,
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "mr-2",
-                                                children: item.icon
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 120,
-                                                columnNumber: 19
-                                            }, ("TURBOPACK compile-time value", void 0)),
-                                            item.label
-                                        ]
-                                    }, item.id, true, {
-                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 104,
-                                        columnNumber: 17
-                                    }, ("TURBOPACK compile-time value", void 0)))
-                            }, void 0, false, {
-                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                lineNumber: 102,
-                                columnNumber: 13
-                            }, ("TURBOPACK compile-time value", void 0)),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center space-x-2 sm:space-x-4",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                        onClick: ()=>setActiveTab('cart'),
-                                        className: `relative p-1.5 sm:p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`,
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "text-base sm:text-lg",
-                                                children: "🛒"
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 132,
-                                                columnNumber: 17
-                                            }, ("TURBOPACK compile-time value", void 0)),
-                                            cart.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center",
-                                                children: cart.length
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 134,
-                                                columnNumber: 19
-                                            }, ("TURBOPACK compile-time value", void 0))
-                                        ]
-                                    }, void 0, true, {
+                                        className: "hidden lg:inline rounded-xl px-3 py-2 text-sm text-slate-200 hover:bg-white/5",
+                                        children: item.label
+                                    }, item.id, false, {
                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
                                         lineNumber: 128,
                                         columnNumber: 15
-                                    }, ("TURBOPACK compile-time value", void 0)),
-                                    currentUser ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "relative",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>setShowProfileMenu(!showProfileMenu),
-                                                className: `p-1.5 sm:p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white border border-gray-600' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`,
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: `text-base sm:text-lg ${isDarkMode ? 'filter brightness-0 invert' : ''}`,
-                                                    children: "👤"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 146,
-                                                    columnNumber: 21
-                                                }, ("TURBOPACK compile-time value", void 0))
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 142,
-                                                columnNumber: 19
-                                            }, ("TURBOPACK compile-time value", void 0)),
-                                            showProfileMenu && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: `absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg border z-50 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`,
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "p-3 border-b border-gray-200 dark:border-gray-700",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                className: `font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                children: currentUser.name
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 152,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                className: `text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`,
-                                                                children: currentUser.email
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 153,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 151,
-                                                        columnNumber: 23
-                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "p-2",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>{
-                                                                    setIsDarkMode(!isDarkMode);
-                                                                    setShowProfileMenu(false);
-                                                                },
-                                                                className: `w-full flex items-center px-3 py-2 text-sm rounded-lg transition-all ${isDarkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-100 text-gray-900'}`,
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "mr-2",
-                                                                        children: isDarkMode ? '☀️' : '🌙'
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 163,
-                                                                        columnNumber: 27
-                                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                                    isDarkMode ? 'Light Mode' : 'Dark Mode'
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 156,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>{
-                                                                    logout();
-                                                                    setShowProfileMenu(false);
-                                                                },
-                                                                className: "w-full flex items-center px-3 py-2 text-sm rounded-lg transition-all text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "mr-2",
-                                                                        children: "🚪"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 173,
-                                                                        columnNumber: 27
-                                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                                    "Logout"
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 166,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 155,
-                                                        columnNumber: 23
-                                                    }, ("TURBOPACK compile-time value", void 0))
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 150,
-                                                columnNumber: 21
-                                            }, ("TURBOPACK compile-time value", void 0))
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 141,
-                                        columnNumber: 17
-                                    }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex items-center space-x-1 sm:space-x-2",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>setIsDarkMode(!isDarkMode),
-                                                className: `p-1.5 sm:p-2 rounded-lg transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`,
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "text-base sm:text-lg",
-                                                    children: isDarkMode ? '☀️' : '🌙'
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 186,
-                                                    columnNumber: 21
-                                                }, ("TURBOPACK compile-time value", void 0))
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 182,
-                                                columnNumber: 19
-                                            }, ("TURBOPACK compile-time value", void 0)),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>{
-                                                    setLoginAction('login');
-                                                    setShowLoginPrompt(true);
-                                                },
-                                                className: "bg-teal-600 hover:bg-teal-700 text-white px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all",
-                                                children: "Login"
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 188,
-                                                columnNumber: 19
-                                            }, ("TURBOPACK compile-time value", void 0)),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: onStaffLogin,
-                                                className: "bg-gray-600 hover:bg-gray-700 text-white px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all",
-                                                children: "Staff"
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 197,
-                                                columnNumber: 19
-                                            }, ("TURBOPACK compile-time value", void 0))
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 181,
-                                        columnNumber: 17
-                                    }, ("TURBOPACK compile-time value", void 0))
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                lineNumber: 127,
-                                columnNumber: 13
-                            }, ("TURBOPACK compile-time value", void 0))
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                        lineNumber: 90,
-                        columnNumber: 11
-                    }, ("TURBOPACK compile-time value", void 0))
-                }, void 0, false, {
+                                    }, ("TURBOPACK compile-time value", void 0))),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    onClick: ()=>setActiveTab('cart'),
+                                    className: "rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm hover:bg-white/10",
+                                    type: "button",
+                                    children: [
+                                        "🛒 ",
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "ml-1 text-slate-300",
+                                            children: [
+                                                "(",
+                                                cart.length,
+                                                ")"
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 149,
+                                            columnNumber: 18
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 144,
+                                    columnNumber: 13
+                                }, ("TURBOPACK compile-time value", void 0))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                            lineNumber: 126,
+                            columnNumber: 11
+                        }, ("TURBOPACK compile-time value", void 0))
+                    ]
+                }, void 0, true, {
                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                    lineNumber: 89,
+                    lineNumber: 101,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                lineNumber: 88,
+                lineNumber: 100,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
-                className: "md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 backdrop-blur-sm bg-opacity-95 pb-safe-bottom",
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur border-t border-gray-700/60 lg:hidden",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "flex justify-around py-2",
-                    children: menuItems.slice(0, 5).map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                            onClick: ()=>{
-                                if (!currentUser && (item.id === 'my-orders' || item.id === 'my-tickets')) {
-                                    setLoginAction('login');
-                                    setShowLoginPrompt(true);
-                                    return;
-                                }
-                                setActiveTab(item.id);
-                            },
-                            className: `flex flex-col items-center px-2 py-1 rounded-lg text-xs font-medium transition-all ${activeTab === item.id ? 'text-teal-600' : isDarkMode ? 'text-gray-400' : 'text-gray-600'}`,
+                    className: "grid grid-cols-5 gap-1 px-2 py-2",
+                    children: [
+                        menuItems.slice(0, 4).map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>{
+                                    if (!currentUser && (item.id === 'my-orders' || item.id === 'my-tickets')) {
+                                        setLoginAction('login');
+                                        setShowLoginPrompt(true);
+                                        return;
+                                    }
+                                    setActiveTab(item.id);
+                                },
+                                className: `flex flex-col items-center py-2 px-1 rounded-lg text-xs transition-colors ${activeTab === item.id ? 'text-green-500 bg-white/10' : 'text-slate-400'}`,
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "text-lg mb-1",
+                                        children: item.icon
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                        lineNumber: 173,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "truncate",
+                                        children: item.label
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                        lineNumber: 174,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, item.id, true, {
+                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                lineNumber: 159,
+                                columnNumber: 13
+                            }, ("TURBOPACK compile-time value", void 0))),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: ()=>setActiveTab('get-quote'),
+                            className: `flex flex-col items-center py-2 px-1 rounded-lg text-xs transition-colors ${activeTab === 'get-quote' ? 'text-green-500 bg-white/10' : 'text-slate-400'}`,
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                     className: "text-lg mb-1",
-                                    children: item.icon
+                                    children: "💰"
                                 }, void 0, false, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 230,
-                                    columnNumber: 15
+                                    lineNumber: 183,
+                                    columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                    className: "text-xs",
-                                    children: item.label
+                                    className: "truncate",
+                                    children: "Quote"
                                 }, void 0, false, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 231,
-                                    columnNumber: 15
+                                    lineNumber: 184,
+                                    columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
-                        }, item.id, true, {
+                        }, void 0, true, {
                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                            lineNumber: 214,
-                            columnNumber: 13
-                        }, ("TURBOPACK compile-time value", void 0)))
-                }, void 0, false, {
+                            lineNumber: 177,
+                            columnNumber: 11
+                        }, ("TURBOPACK compile-time value", void 0))
+                    ]
+                }, void 0, true, {
                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                    lineNumber: 212,
+                    lineNumber: 157,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                lineNumber: 211,
+                lineNumber: 156,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
-            showProfileMenu && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "fixed inset-0 z-40",
-                onClick: ()=>setShowProfileMenu(false)
-            }, void 0, false, {
-                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                lineNumber: 239,
-                columnNumber: 9
-            }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "pt-16 pb-20 md:pb-0",
+                className: "pb-20 lg:pb-0",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
-                    className: "max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8",
+                    className: "mx-auto max-w-7xl px-4 py-6 lg:py-10",
                     children: [
                         activeTab === 'home' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: `relative rounded-2xl sm:rounded-3xl overflow-hidden mb-8 sm:mb-12 lg:mb-16 ${isDarkMode ? 'bg-gradient-to-r from-teal-600 to-blue-600' : 'bg-gradient-to-r from-teal-500 to-blue-500'}`,
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "relative px-4 py-8 sm:px-6 sm:py-12 lg:px-16 lg:py-24",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "max-w-3xl",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                                                        className: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight",
+                                    className: "relative overflow-hidden mb-8",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "absolute inset-0 bg-gradient-to-br from-green-500/15 via-transparent to-white/5"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 197,
+                                            columnNumber: 17
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 md:grid-cols-2 md:py-16",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "relative",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-slate-200",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "h-2 w-2 rounded-full bg-green-500"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 201,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                "Power solutions for homes, businesses & industry"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 200,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                                                            className: "mt-5 text-4xl font-semibold leading-tight tracking-tight md:text-5xl",
+                                                            children: [
+                                                                "Reliable ",
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "text-green-500",
+                                                                    children: "Electrical"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 206,
+                                                                    columnNumber: 32
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                " Products",
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {
+                                                                    className: "hidden sm:block"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 207,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                "+ Expert Services"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 205,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                            className: "mt-4 max-w-xl text-slate-300",
+                                                            children: "Buy authentic power products (inverters, batteries, solar, wiring) and book installation, maintenance, AMC, and audits — all in one place."
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 211,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "mt-6 flex flex-wrap gap-3",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                    onClick: ()=>setActiveTab('products'),
+                                                                    className: "rounded-2xl bg-green-500 px-5 py-3 text-sm font-semibold text-black hover:brightness-110",
+                                                                    children: "Shop Products"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 217,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                    onClick: ()=>setActiveTab('services'),
+                                                                    className: "rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-100 hover:bg-white/10",
+                                                                    children: "Explore Services"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 223,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                    onClick: ()=>setActiveTab('get-quote'),
+                                                                    className: "rounded-2xl border border-green-500/40 bg-black/20 px-5 py-3 text-sm font-semibold text-green-500 hover:border-green-500/70",
+                                                                    children: "Request a Quote"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 229,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 216,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "rounded-2xl border border-white/10 bg-white/5 p-4",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "text-sm font-semibold",
+                                                                            children: "Warranty-backed"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 239,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "mt-1 text-xs text-slate-400",
+                                                                            children: "Genuine products only"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 240,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 238,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "rounded-2xl border border-white/10 bg-white/5 p-4",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "text-sm font-semibold",
+                                                                            children: "Fast Support"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 243,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "mt-1 text-xs text-slate-400",
+                                                                            children: "Phone + onsite"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 244,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 242,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "rounded-2xl border border-white/10 bg-white/5 p-4",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "text-sm font-semibold",
+                                                                            children: "Professional Install"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 247,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "mt-1 text-xs text-slate-400",
+                                                                            children: "Certified team"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 248,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 246,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 237,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 199,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "relative",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "rounded-3xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6 shadow-2xl shadow-black/40",
                                                         children: [
-                                                            "Powering Tomorrow with",
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "block text-yellow-300",
-                                                                children: "Clean Energy"
-                                                            }, void 0, false, {
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                className: "flex items-center justify-between",
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "text-sm font-semibold text-slate-100",
+                                                                                children: "Today's Deal"
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                lineNumber: 258,
+                                                                                columnNumber: 27
+                                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "mt-1 text-xs text-slate-400",
+                                                                                children: "Limited stock • Best price"
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                lineNumber: 259,
+                                                                                columnNumber: 27
+                                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                                        ]
+                                                                    }, void 0, true, {
+                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                        lineNumber: 257,
+                                                                        columnNumber: 25
+                                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                        className: "rounded-full bg-green-500/20 px-3 py-1 text-xs font-semibold text-green-500",
+                                                                        children: "-15%"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                        lineNumber: 261,
+                                                                        columnNumber: 25
+                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                ]
+                                                            }, void 0, true, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 257,
+                                                                lineNumber: 256,
+                                                                columnNumber: 23
+                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                className: "mt-6 space-y-3",
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "rounded-2xl border border-white/10 bg-black/20 p-4",
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "flex items-start justify-between gap-4",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                        children: [
+                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                                className: "text-sm font-semibold",
+                                                                                                children: "Pure Sine Wave Inverter"
+                                                                                            }, void 0, false, {
+                                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                                lineNumber: 268,
+                                                                                                columnNumber: 31
+                                                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                                className: "mt-1 text-xs text-slate-400",
+                                                                                                children: "1kVA • Home/Office backup"
+                                                                                            }, void 0, false, {
+                                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                                lineNumber: 269,
+                                                                                                columnNumber: 31
+                                                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                                className: "mt-3 flex items-center gap-2",
+                                                                                                children: [
+                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                                        className: "text-lg font-semibold text-green-500",
+                                                                                                        children: "₹18,990"
+                                                                                                    }, void 0, false, {
+                                                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                                        lineNumber: 271,
+                                                                                                        columnNumber: 33
+                                                                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                                        className: "text-sm text-slate-500 line-through",
+                                                                                                        children: "₹22,490"
+                                                                                                    }, void 0, false, {
+                                                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                                        lineNumber: 272,
+                                                                                                        columnNumber: 33
+                                                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                                                ]
+                                                                                            }, void 0, true, {
+                                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                                lineNumber: 270,
+                                                                                                columnNumber: 31
+                                                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                                                        ]
+                                                                                    }, void 0, true, {
+                                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                        lineNumber: 267,
+                                                                                        columnNumber: 29
+                                                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                        className: "h-14 w-14 rounded-2xl bg-green-500/15 ring-1 ring-green-500/20 grid place-items-center",
+                                                                                        children: "⚡"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                        lineNumber: 275,
+                                                                                        columnNumber: 29
+                                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                lineNumber: 266,
+                                                                                columnNumber: 27
+                                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "mt-4 flex gap-2",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                                        className: "w-full rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110",
+                                                                                        type: "button",
+                                                                                        children: "Add to Cart"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                        lineNumber: 280,
+                                                                                        columnNumber: 29
+                                                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                                        className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-center text-sm font-semibold hover:bg-white/10",
+                                                                                        children: "Install +"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                        lineNumber: 283,
+                                                                                        columnNumber: 29
+                                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                lineNumber: 279,
+                                                                                columnNumber: 27
+                                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                                        ]
+                                                                    }, void 0, true, {
+                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                        lineNumber: 265,
+                                                                        columnNumber: 25
+                                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "grid grid-cols-2 gap-3",
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "rounded-2xl border border-white/10 bg-black/20 p-4",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                        className: "text-xs text-slate-400",
+                                                                                        children: "Avg dispatch"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                        lineNumber: 291,
+                                                                                        columnNumber: 29
+                                                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                        className: "mt-1 text-lg font-semibold",
+                                                                                        children: "24–48 hrs"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                        lineNumber: 292,
+                                                                                        columnNumber: 29
+                                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                lineNumber: 290,
+                                                                                columnNumber: 27
+                                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "rounded-2xl border border-white/10 bg-black/20 p-4",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                        className: "text-xs text-slate-400",
+                                                                                        children: "Service coverage"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                        lineNumber: 295,
+                                                                                        columnNumber: 29
+                                                                                    }, ("TURBOPACK compile-time value", void 0)),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                        className: "mt-1 text-lg font-semibold",
+                                                                                        children: "Onsite"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                        lineNumber: 296,
+                                                                                        columnNumber: 29
+                                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                lineNumber: 294,
+                                                                                columnNumber: 27
+                                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                                        ]
+                                                                    }, void 0, true, {
+                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                        lineNumber: 289,
+                                                                        columnNumber: 25
+                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                lineNumber: 264,
                                                                 columnNumber: 23
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
@@ -8101,132 +8372,102 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
                                                         lineNumber: 255,
                                                         columnNumber: 21
-                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                        className: `text-sm sm:text-base lg:text-xl mb-6 sm:mb-8 leading-relaxed text-white/90`,
-                                                        children: "Transform your home or business with our premium solar solutions. Professional installation, maintenance, and support included."
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 259,
-                                                        columnNumber: 21
-                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex flex-col sm:flex-row gap-3 sm:gap-4",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>setActiveTab('products'),
-                                                                className: "bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-sm sm:text-base lg:text-lg transition-all transform hover:scale-105 shadow-lg",
-                                                                children: "Explore Products"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 264,
-                                                                columnNumber: 23
-                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>setActiveTab('services'),
-                                                                className: "border-2 border-white text-white hover:bg-white hover:text-teal-700 px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-sm sm:text-base lg:text-lg transition-all",
-                                                                children: "Our Services"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 270,
-                                                                columnNumber: 23
-                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 263,
-                                                        columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0))
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 254,
-                                                columnNumber: 19
-                                            }, ("TURBOPACK compile-time value", void 0)),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "absolute right-0 top-0 w-1/2 h-full opacity-10 hidden sm:block",
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "w-full h-full bg-gradient-to-l from-yellow-400/30 to-transparent"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 279,
-                                                    columnNumber: 21
-                                                }, ("TURBOPACK compile-time value", void 0))
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 278,
-                                                columnNumber: 19
-                                            }, ("TURBOPACK compile-time value", void 0))
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 253,
-                                        columnNumber: 17
-                                    }, ("TURBOPACK compile-time value", void 0))
-                                }, void 0, false, {
-                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 252,
-                                    columnNumber: 15
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "mb-16",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-center mb-12",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                                    className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`,
-                                                    children: "Our Solar Solutions"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 287,
-                                                    columnNumber: 19
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: `text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-2xl mx-auto`,
-                                                    children: "Comprehensive solar energy solutions tailored to your needs"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 288,
+                                                    lineNumber: 254,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 286,
+                                            lineNumber: 198,
+                                            columnNumber: 17
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 196,
+                                    columnNumber: 15
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "mb-10",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-end justify-between gap-4",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                            className: "text-2xl font-semibold",
+                                                            children: "Shop by Category"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 309,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                            className: "mt-1 text-sm text-slate-400",
+                                                            children: "Quickly find what you need."
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 310,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 308,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    onClick: ()=>setActiveTab('products'),
+                                                    className: "text-sm font-semibold text-green-500 hover:underline",
+                                                    children: "View all →"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 312,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 307,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8",
+                                            className: "mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4",
                                             children: categories.slice(0, 4).map((category)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                     onClick: ()=>setActiveTab('products'),
-                                                    className: `group p-8 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'}`,
+                                                    className: "group rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 text-left",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:bg-teal-200 transition-colors",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "text-3xl",
-                                                                children: category.icon
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 302,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                        }, void 0, false, {
+                                                            className: "flex items-center justify-between",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "text-sm font-semibold",
+                                                                    children: category.name
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 323,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "rounded-2xl bg-green-500/15 px-3 py-2 text-green-500 ring-1 ring-green-500/20",
+                                                                    children: category.icon
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 324,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 301,
-                                                            columnNumber: 23
-                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                            className: `text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`,
-                                                            children: category.name
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 304,
+                                                            lineNumber: 322,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: `text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`,
+                                                            className: "mt-3 text-sm text-slate-400",
                                                             children: [
                                                                 "Professional ",
                                                                 category.name.toLowerCase(),
@@ -8234,172 +8475,268 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 305,
+                                                            lineNumber: 328,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                            className: "mt-4 text-xs text-slate-500 group-hover:text-slate-300",
+                                                            children: "Explore →"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 329,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, category.name, true, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 294,
+                                                    lineNumber: 317,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 292,
+                                            lineNumber: 315,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 285,
+                                    lineNumber: 306,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "mb-8 sm:mb-12 lg:mb-16",
+                                    className: "mb-10",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-2",
+                                            className: "flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                    className: `text-xl sm:text-2xl lg:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                    children: "Featured Products"
-                                                }, void 0, false, {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                            className: "text-2xl font-semibold",
+                                                            children: "Featured Products"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 339,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                            className: "mt-1 text-sm text-slate-400",
+                                                            children: "Add to cart or request installation."
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 340,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 314,
+                                                    lineNumber: 338,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    onClick: ()=>setActiveTab('products'),
-                                                    className: "text-teal-600 hover:text-teal-700 font-semibold flex items-center text-sm sm:text-base self-start sm:self-auto",
-                                                    children: "View All Products →"
-                                                }, void 0, false, {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex flex-wrap gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            className: "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10",
+                                                            type: "button",
+                                                            children: "All"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 343,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            className: "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10",
+                                                            type: "button",
+                                                            children: "Inverters"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 344,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            className: "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10",
+                                                            type: "button",
+                                                            children: "Batteries"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 345,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            className: "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10",
+                                                            type: "button",
+                                                            children: "Solar"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 346,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 315,
+                                                    lineNumber: 342,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 313,
+                                            lineNumber: 337,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8",
-                                            children: data.products?.slice(0, 3).map((product)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: `group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'}`,
+                                            className: "mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
+                                            children: data.products?.slice(0, 3).map((product)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("article", {
+                                                    className: "rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: `h-48 flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`,
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "text-6xl",
-                                                                children: "⚡"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 330,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 327,
-                                                            columnNumber: 23
-                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "p-6",
+                                                            className: "flex items-start justify-between gap-4",
                                                             children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                                    className: `text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                    children: product.name
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 333,
-                                                                    columnNumber: 25
-                                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                    className: `text-sm mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                    children: product.category
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 334,
-                                                                    columnNumber: 25
-                                                                }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "flex justify-between items-center",
                                                                     children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            className: "text-2xl font-bold text-teal-600",
-                                                                            children: [
-                                                                                "₹",
-                                                                                product.price?.toLocaleString()
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 336,
-                                                                            columnNumber: 27
-                                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                            onClick: ()=>setActiveTab('products'),
-                                                                            className: "bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-all",
-                                                                            children: "View Details"
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                                            className: "text-base font-semibold",
+                                                                            children: product.name
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 337,
+                                                                            lineNumber: 355,
+                                                                            columnNumber: 27
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                            className: "mt-1 text-sm text-slate-400",
+                                                                            children: product.category
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 356,
+                                                                            columnNumber: 27
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "mt-3 flex items-center gap-2",
+                                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                className: "text-lg font-semibold text-green-500",
+                                                                                children: [
+                                                                                    "₹",
+                                                                                    product.price?.toLocaleString()
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                lineNumber: 358,
+                                                                                columnNumber: 29
+                                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 357,
+                                                                            columnNumber: 27
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                            className: "mt-2 text-xs text-slate-500",
+                                                                            children: "⭐ 4.5 • Reviews"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 360,
                                                                             columnNumber: 27
                                                                         }, ("TURBOPACK compile-time value", void 0))
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 335,
+                                                                    lineNumber: 354,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "grid h-14 w-14 place-items-center rounded-2xl bg-green-500/15 ring-1 ring-green-500/20",
+                                                                    children: "⚡"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 362,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 332,
+                                                            lineNumber: 353,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "mt-4 flex gap-2",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                    onClick: ()=>{
+                                                                        const existingItem = cart.find((cartItem)=>cartItem.id === product.id);
+                                                                        if (!existingItem) {
+                                                                            setCart([
+                                                                                ...cart,
+                                                                                {
+                                                                                    ...product,
+                                                                                    quantity: 1
+                                                                                }
+                                                                            ]);
+                                                                        }
+                                                                    },
+                                                                    className: "w-full rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110",
+                                                                    type: "button",
+                                                                    children: "Add to Cart"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 367,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                    className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-center text-sm font-semibold hover:bg-white/10",
+                                                                    children: "Install +"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 379,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 366,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, product.id, true, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 324,
+                                                    lineNumber: 352,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 322,
+                                            lineNumber: 350,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 312,
+                                    lineNumber: 336,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: `rounded-3xl p-8 lg:p-12 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                    className: "rounded-3xl p-8 lg:p-12 text-white",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "text-center mb-12",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                    className: `text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                    className: "text-3xl font-bold mb-4 text-white",
                                                     children: "Why Choose MJPOWER Solar?"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 353,
+                                                    lineNumber: 391,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: `text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                    className: "text-lg text-gray-300",
                                                     children: "Leading the way in sustainable energy solutions"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 354,
+                                                    lineNumber: 392,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 352,
+                                            lineNumber: 390,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8409,1101 +8746,1506 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                     className: "text-center",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4",
+                                                            className: "w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4",
                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "text-2xl",
                                                                 children: "🏆"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 359,
+                                                                lineNumber: 397,
                                                                 columnNumber: 23
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 358,
+                                                            lineNumber: 396,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                            className: `text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: "text-lg font-semibold mb-2 text-white",
                                                             children: "Expert Installation"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 361,
+                                                            lineNumber: 399,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: `${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: "text-gray-300",
                                                             children: "Professional installation by certified technicians"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 362,
+                                                            lineNumber: 400,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 357,
+                                                    lineNumber: 395,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "text-center",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4",
+                                                            className: "w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4",
                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "text-2xl",
                                                                 children: "⚡"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 366,
+                                                                lineNumber: 404,
                                                                 columnNumber: 23
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 365,
+                                                            lineNumber: 403,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                            className: `text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: "text-lg font-semibold mb-2 text-white",
                                                             children: "Premium Quality"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 368,
+                                                            lineNumber: 406,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: `${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: "text-gray-300",
                                                             children: "High-efficiency solar panels and components"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 369,
+                                                            lineNumber: 407,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 364,
+                                                    lineNumber: 402,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "text-center",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4",
+                                                            className: "w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4",
                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "text-2xl",
                                                                 children: "🛠️"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 373,
+                                                                lineNumber: 411,
                                                                 columnNumber: 23
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 372,
+                                                            lineNumber: 410,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                            className: `text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: "text-lg font-semibold mb-2 text-white",
                                                             children: "24/7 Support"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 375,
+                                                            lineNumber: 413,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: `${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: "text-gray-300",
                                                             children: "Round-the-clock maintenance and support"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 376,
+                                                            lineNumber: 414,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 371,
+                                                    lineNumber: 409,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 356,
+                                            lineNumber: 394,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 351,
+                                    lineNumber: 389,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                            lineNumber: 250,
+                            lineNumber: 194,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         activeTab === 'services' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "text-center mb-12",
+                                    className: "flex items-end justify-between gap-4 mb-6",
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                            className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                            children: "Solar Services"
-                                        }, void 0, false, {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                    className: "text-2xl font-semibold",
+                                                    children: "Services"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 425,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "mt-1 text-sm text-slate-400",
+                                                    children: "Book onsite work, AMC, and audits."
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 426,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 386,
+                                            lineNumber: 424,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            className: `text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-2xl mx-auto`,
-                                            children: "Professional solar services to maximize your energy efficiency"
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                            className: "text-sm font-semibold text-green-500 hover:underline",
+                                            children: "Request service →"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 387,
+                                            lineNumber: 428,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 385,
+                                    lineNumber: 423,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
-                                    children: data.services?.map((service)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: `group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'}`,
+                                    className: "grid gap-4 sm:grid-cols-2 lg:grid-cols-4",
+                                    children: data.services?.map((service)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("article", {
+                                            className: "rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: `h-48 flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-gradient-to-br from-blue-50 to-blue-100'}`,
-                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "text-6xl",
-                                                        children: "🔧"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 399,
-                                                        columnNumber: 23
-                                                    }, ("TURBOPACK compile-time value", void 0))
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 396,
-                                                    columnNumber: 21
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "p-6",
+                                                    className: "flex items-center justify-between",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                            className: `text-xl font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                            className: "text-sm font-semibold",
                                                             children: service.name
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 402,
+                                                            lineNumber: 434,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: `mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'} leading-relaxed`,
-                                                            children: service.description
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "rounded-2xl bg-green-500/15 px-3 py-2 text-green-500 ring-1 ring-green-500/20",
+                                                            children: "🔧"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 403,
-                                                            columnNumber: 23
-                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex justify-between items-center mb-4",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-2xl font-bold text-teal-600",
-                                                                    children: [
-                                                                        "₹",
-                                                                        service.price?.toLocaleString()
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 405,
-                                                                    columnNumber: 25
-                                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: `text-sm px-3 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                    children: "Service"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 406,
-                                                                    columnNumber: 25
-                                                                }, ("TURBOPACK compile-time value", void 0))
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 404,
-                                                            columnNumber: 23
-                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>{
-                                                                const existingItem = cart.find((cartItem)=>cartItem.id === service.id);
-                                                                if (!existingItem) {
-                                                                    setCart([
-                                                                        ...cart,
-                                                                        {
-                                                                            ...service,
-                                                                            quantity: 1
-                                                                        }
-                                                                    ]);
-                                                                    alert('Added to cart!');
-                                                                }
-                                                            },
-                                                            className: "w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105",
-                                                            children: "Book Service"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 408,
+                                                            lineNumber: 435,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 401,
+                                                    lineNumber: 433,
+                                                    columnNumber: 21
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "mt-3 text-sm text-slate-400",
+                                                    children: service.description
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 437,
+                                                    columnNumber: 21
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "mt-3 flex items-center gap-2",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-lg font-semibold text-green-500",
+                                                        children: [
+                                                            "₹",
+                                                            service.price?.toLocaleString()
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                        lineNumber: 439,
+                                                        columnNumber: 23
+                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 438,
+                                                    columnNumber: 21
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    onClick: ()=>{
+                                                        const existingItem = cart.find((cartItem)=>cartItem.id === service.id);
+                                                        if (!existingItem) {
+                                                            setCart([
+                                                                ...cart,
+                                                                {
+                                                                    ...service,
+                                                                    quantity: 1
+                                                                }
+                                                            ]);
+                                                        }
+                                                    },
+                                                    className: "mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110",
+                                                    children: "Book Service"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 441,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, service.id, true, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 393,
+                                            lineNumber: 432,
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0)))
                                 }, void 0, false, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 391,
+                                    lineNumber: 430,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                            lineNumber: 384,
+                            lineNumber: 422,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         activeTab === 'products' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "text-center mb-12",
+                                    className: "flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6",
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                            className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                            children: "Products & Services"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 430,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            className: `text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-2xl mx-auto`,
-                                            children: "Complete solar solutions for your energy needs"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 431,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 429,
-                                    columnNumber: 15
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "mb-8 sm:mb-12 lg:mb-16",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                            className: `text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                            children: "Solar Products"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 438,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8",
-                                            children: data.products?.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: `group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'}`,
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: `h-48 flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-gradient-to-br from-teal-50 to-teal-100'}`,
-                                                            children: item.image ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                                                src: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$images$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getImageUrl"])(item.image),
-                                                                alt: item.name,
-                                                                className: "w-full h-full object-cover"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 448,
-                                                                columnNumber: 27
-                                                            }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "text-6xl",
-                                                                children: "⚡"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 450,
-                                                                columnNumber: 27
-                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 444,
-                                                            columnNumber: 23
-                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "p-6",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "flex justify-between items-start mb-3",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                                            className: `text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                            children: item.name
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 455,
-                                                                            columnNumber: 27
-                                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            className: `text-xs px-2 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                            children: item.category
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 456,
-                                                                            columnNumber: 27
-                                                                        }, ("TURBOPACK compile-time value", void 0))
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 454,
-                                                                    columnNumber: 25
-                                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                    className: `text-sm mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'} line-clamp-2`,
-                                                                    children: item.description
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 460,
-                                                                    columnNumber: 25
-                                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "flex items-center justify-between mb-4",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            className: "text-2xl font-bold text-teal-600",
-                                                                            children: [
-                                                                                "₹",
-                                                                                item.price?.toLocaleString()
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 462,
-                                                                            columnNumber: 27
-                                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                                            className: `rounded-lg px-3 py-1 text-sm border ${isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-50 text-gray-900 border-gray-300'}`,
-                                                                            onChange: (e)=>setOrderForm({
-                                                                                    ...orderForm,
-                                                                                    quantity: parseInt(e.target.value),
-                                                                                    itemId: item.id
-                                                                                }),
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "1",
-                                                                                    children: "Qty: 1"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 469,
-                                                                                    columnNumber: 29
-                                                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "2",
-                                                                                    children: "Qty: 2"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 470,
-                                                                                    columnNumber: 29
-                                                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "3",
-                                                                                    children: "Qty: 3"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 471,
-                                                                                    columnNumber: 29
-                                                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "5",
-                                                                                    children: "Qty: 5"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 472,
-                                                                                    columnNumber: 29
-                                                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "10",
-                                                                                    children: "Qty: 10"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 473,
-                                                                                    columnNumber: 29
-                                                                                }, ("TURBOPACK compile-time value", void 0))
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 463,
-                                                                            columnNumber: 27
-                                                                        }, ("TURBOPACK compile-time value", void 0))
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 461,
-                                                                    columnNumber: 25
-                                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                    onClick: ()=>{
-                                                                        const existingItem = cart.find((cartItem)=>cartItem.id === item.id);
-                                                                        if (existingItem) {
-                                                                            setActiveTab('cart');
-                                                                        } else {
-                                                                            const quantity = orderForm.quantity || 1;
-                                                                            setCart([
-                                                                                ...cart,
-                                                                                {
-                                                                                    ...item,
-                                                                                    quantity
-                                                                                }
-                                                                            ]);
-                                                                            alert('Added to cart!');
-                                                                        }
-                                                                    },
-                                                                    className: `w-full py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${cart.find((cartItem)=>cartItem.id === item.id) ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-teal-600 hover:bg-teal-700 text-white'}`,
-                                                                    children: cart.find((cartItem)=>cartItem.id === item.id) ? '✓ In Cart' : 'Add to Cart'
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 476,
-                                                                    columnNumber: 25
-                                                                }, ("TURBOPACK compile-time value", void 0))
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 453,
-                                                            columnNumber: 23
-                                                        }, ("TURBOPACK compile-time value", void 0))
-                                                    ]
-                                                }, item.id, true, {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                    className: "text-2xl font-semibold",
+                                                    children: "Featured Products"
+                                                }, void 0, false, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 441,
-                                                    columnNumber: 21
-                                                }, ("TURBOPACK compile-time value", void 0)))
-                                        }, void 0, false, {
+                                                    lineNumber: 462,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "mt-1 text-sm text-slate-400",
+                                                    children: "Add to cart or request installation."
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 463,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 439,
+                                            lineNumber: 461,
+                                            columnNumber: 17
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex flex-wrap gap-2",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    className: "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10",
+                                                    type: "button",
+                                                    children: "All"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 466,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    className: "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10",
+                                                    type: "button",
+                                                    children: "Inverters"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 467,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    className: "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10",
+                                                    type: "button",
+                                                    children: "Batteries"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 468,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    className: "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10",
+                                                    type: "button",
+                                                    children: "Solar"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 469,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 465,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 437,
+                                    lineNumber: 460,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                            className: `text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                            children: "Solar Services"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 503,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8",
-                                            children: data.services?.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: `group rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50 border border-gray-200'}`,
+                                    className: "grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
+                                    children: data.products?.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("article", {
+                                            className: "rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex items-start justify-between gap-4",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: `h-48 flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-gradient-to-br from-orange-50 to-orange-100'}`,
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "text-6xl",
-                                                                children: "🔧"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 512,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 509,
-                                                            columnNumber: 23
-                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "p-6",
                                                             children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "flex justify-between items-start mb-3",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                                            className: `text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                            children: item.name
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 516,
-                                                                            columnNumber: 27
-                                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            className: `text-xs px-2 py-1 rounded-full ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                            children: "Service"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 517,
-                                                                            columnNumber: 27
-                                                                        }, ("TURBOPACK compile-time value", void 0))
-                                                                    ]
-                                                                }, void 0, true, {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                                    className: "text-base font-semibold",
+                                                                    children: item.name
+                                                                }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 515,
+                                                                    lineNumber: 478,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                    className: `text-sm mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'} line-clamp-2`,
+                                                                    className: "mt-1 text-sm text-slate-400",
                                                                     children: item.description
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 521,
+                                                                    lineNumber: 479,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "mb-4",
+                                                                    className: "mt-3 flex items-center gap-2",
                                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "text-2xl font-bold text-teal-600",
+                                                                        className: "text-lg font-semibold text-green-500",
                                                                         children: [
                                                                             "₹",
                                                                             item.price?.toLocaleString()
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 523,
+                                                                        lineNumber: 481,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 522,
+                                                                    lineNumber: 480,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                    onClick: ()=>{
-                                                                        const existingItem = cart.find((cartItem)=>cartItem.id === item.id);
-                                                                        if (!existingItem) {
-                                                                            setCart([
-                                                                                ...cart,
-                                                                                {
-                                                                                    ...item,
-                                                                                    quantity: 1
-                                                                                }
-                                                                            ]);
-                                                                            alert('Service added to cart!');
-                                                                        } else {
-                                                                            setActiveTab('cart');
-                                                                        }
-                                                                    },
-                                                                    className: `w-full py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${cart.find((cartItem)=>cartItem.id === item.id) ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-orange-500 hover:bg-orange-600 text-white'}`,
-                                                                    children: cart.find((cartItem)=>cartItem.id === item.id) ? '✓ In Cart' : 'Book Service'
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                    className: "mt-2 text-xs text-slate-500",
+                                                                    children: "⭐ 4.5 • Reviews"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 525,
+                                                                    lineNumber: 483,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 514,
+                                                            lineNumber: 477,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "grid h-14 w-14 place-items-center rounded-2xl bg-green-500/15 ring-1 ring-green-500/20",
+                                                            children: "⚡"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 485,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
-                                                }, item.id, true, {
+                                                }, void 0, true, {
                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                    lineNumber: 506,
+                                                    lineNumber: 476,
                                                     columnNumber: 21
-                                                }, ("TURBOPACK compile-time value", void 0)))
-                                        }, void 0, false, {
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "mt-4 flex gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            onClick: ()=>{
+                                                                const existingItem = cart.find((cartItem)=>cartItem.id === item.id);
+                                                                if (existingItem) {
+                                                                    setActiveTab('cart');
+                                                                } else {
+                                                                    const quantity = orderForm.quantity || 1;
+                                                                    setCart([
+                                                                        ...cart,
+                                                                        {
+                                                                            ...item,
+                                                                            quantity
+                                                                        }
+                                                                    ]);
+                                                                }
+                                                            },
+                                                            className: "w-full rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110",
+                                                            children: cart.find((cartItem)=>cartItem.id === item.id) ? '✓ In Cart' : 'Add to Cart'
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 490,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-center text-sm font-semibold hover:bg-white/10",
+                                                            children: "Install +"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 504,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 489,
+                                                    columnNumber: 21
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, item.id, true, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 504,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
+                                            lineNumber: 475,
+                                            columnNumber: 19
+                                        }, ("TURBOPACK compile-time value", void 0)))
+                                }, void 0, false, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 502,
+                                    lineNumber: 473,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                            lineNumber: 428,
+                            lineNumber: 459,
+                            columnNumber: 13
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        activeTab === 'get-quote' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-end justify-between gap-4 mb-6",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                className: "text-2xl font-semibold",
+                                                children: "Get Solar Quote"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                lineNumber: 518,
+                                                columnNumber: 19
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "mt-1 text-sm text-slate-400",
+                                                children: "Get a personalized solar solution estimate"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                lineNumber: 519,
+                                                columnNumber: 19
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                        lineNumber: 517,
+                                        columnNumber: 17
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                }, void 0, false, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 516,
+                                    columnNumber: 15
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid gap-4 lg:grid-cols-2",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "rounded-3xl border border-white/10 bg-white/5 p-5",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                    className: "text-base font-semibold mb-4",
+                                                    children: "Request Quote"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 525,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
+                                                    onSubmit: (e)=>{
+                                                        e.preventDefault();
+                                                        const newQuote = {
+                                                            ...quoteForm,
+                                                            customerId: currentUser?.id,
+                                                            customerName: currentUser?.name || quoteForm.name,
+                                                            status: 'pending',
+                                                            createdAt: new Date().toISOString().split('T')[0],
+                                                            estimatedCost: Math.round((parseInt(quoteForm.monthlyBill) || 0) * 12 * 8),
+                                                            estimatedSavings: Math.round((parseInt(quoteForm.monthlyBill) || 0) * 12 * 0.8),
+                                                            type: cart.length > 0 ? 'cart-quote' : 'form-quote',
+                                                            ...cart.length > 0 && {
+                                                                items: cart.map((item)=>({
+                                                                        id: item.id,
+                                                                        name: item.name,
+                                                                        price: item.price,
+                                                                        quantity: item.quantity,
+                                                                        total: item.price * item.quantity
+                                                                    })),
+                                                                subtotal: cart.reduce((total, item)=>total + (item.price || 0) * item.quantity, 0),
+                                                                tax: Math.round(cart.reduce((total, item)=>total + (item.price || 0) * item.quantity, 0) * 0.18),
+                                                                totalAmount: Math.round(cart.reduce((total, item)=>total + (item.price || 0) * item.quantity, 0) * 1.18)
+                                                            }
+                                                        };
+                                                        addItem('quotes', newQuote);
+                                                        alert('Quote request submitted successfully! We will contact you soon.');
+                                                        setQuoteForm({
+                                                            name: '',
+                                                            phone: '',
+                                                            email: '',
+                                                            address: '',
+                                                            propertyType: 'residential',
+                                                            roofArea: '',
+                                                            monthlyBill: '',
+                                                            requirements: ''
+                                                        });
+                                                        setCart([]);
+                                                        setActiveTab('my-quotes');
+                                                    },
+                                                    className: "space-y-3",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "grid gap-3 sm:grid-cols-2",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                                    type: "text",
+                                                                    placeholder: "Full Name",
+                                                                    value: quoteForm.name,
+                                                                    onChange: (e)=>setQuoteForm({
+                                                                            ...quoteForm,
+                                                                            name: e.target.value
+                                                                        }),
+                                                                    className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20",
+                                                                    required: true
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 557,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                                    type: "tel",
+                                                                    placeholder: "Phone Number",
+                                                                    value: quoteForm.phone,
+                                                                    onChange: (e)=>setQuoteForm({
+                                                                            ...quoteForm,
+                                                                            phone: e.target.value
+                                                                        }),
+                                                                    className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20",
+                                                                    required: true
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 565,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 556,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                            type: "email",
+                                                            placeholder: "Email Address",
+                                                            value: quoteForm.email,
+                                                            onChange: (e)=>setQuoteForm({
+                                                                    ...quoteForm,
+                                                                    email: e.target.value
+                                                                }),
+                                                            className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20",
+                                                            required: true
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 574,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
+                                                            placeholder: "Installation Address",
+                                                            value: quoteForm.address,
+                                                            onChange: (e)=>setQuoteForm({
+                                                                    ...quoteForm,
+                                                                    address: e.target.value
+                                                                }),
+                                                            className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20",
+                                                            rows: 2,
+                                                            required: true
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 582,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "grid gap-3 sm:grid-cols-2",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                                    value: quoteForm.propertyType,
+                                                                    onChange: (e)=>setQuoteForm({
+                                                                            ...quoteForm,
+                                                                            propertyType: e.target.value
+                                                                        }),
+                                                                    className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                            value: "residential",
+                                                                            children: "Residential"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 596,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                            value: "commercial",
+                                                                            children: "Commercial"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 597,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                            value: "industrial",
+                                                                            children: "Industrial"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 598,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 591,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                                    type: "number",
+                                                                    placeholder: "Roof Area (sq ft)",
+                                                                    value: quoteForm.roofArea,
+                                                                    onChange: (e)=>setQuoteForm({
+                                                                            ...quoteForm,
+                                                                            roofArea: e.target.value
+                                                                        }),
+                                                                    className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 600,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 590,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                            type: "number",
+                                                            placeholder: "Monthly Electricity Bill (₹)",
+                                                            value: quoteForm.monthlyBill,
+                                                            onChange: (e)=>setQuoteForm({
+                                                                    ...quoteForm,
+                                                                    monthlyBill: e.target.value
+                                                                }),
+                                                            className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20",
+                                                            required: true
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 608,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
+                                                            placeholder: "Special Requirements or Questions",
+                                                            value: quoteForm.requirements,
+                                                            onChange: (e)=>setQuoteForm({
+                                                                    ...quoteForm,
+                                                                    requirements: e.target.value
+                                                                }),
+                                                            className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20",
+                                                            rows: 2
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 616,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        cart.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "rounded-2xl border border-green-500/20 bg-green-500/5 p-4",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                                                                    className: "text-sm font-semibold text-green-500 mb-3",
+                                                                    children: "Selected Items"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 626,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "space-y-2",
+                                                                    children: cart.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "flex justify-between text-sm",
+                                                                            children: [
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                    children: [
+                                                                                        item.name,
+                                                                                        " x",
+                                                                                        item.quantity
+                                                                                    ]
+                                                                                }, void 0, true, {
+                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                    lineNumber: 630,
+                                                                                    columnNumber: 31
+                                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                    children: [
+                                                                                        "₹",
+                                                                                        (item.price * item.quantity).toLocaleString()
+                                                                                    ]
+                                                                                }, void 0, true, {
+                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                    lineNumber: 631,
+                                                                                    columnNumber: 31
+                                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                                            ]
+                                                                        }, item.id, true, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 629,
+                                                                            columnNumber: 29
+                                                                        }, ("TURBOPACK compile-time value", void 0)))
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 627,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "border-t border-green-500/20 mt-3 pt-3",
+                                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "flex justify-between text-sm font-semibold text-green-500",
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                children: "Total (incl. tax):"
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                lineNumber: 637,
+                                                                                columnNumber: 29
+                                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                children: [
+                                                                                    "₹",
+                                                                                    Math.round(cart.reduce((total, item)=>total + (item.price || 0) * item.quantity, 0) * 1.18).toLocaleString()
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                lineNumber: 638,
+                                                                                columnNumber: 29
+                                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                                        ]
+                                                                    }, void 0, true, {
+                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                        lineNumber: 636,
+                                                                        columnNumber: 27
+                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 635,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 625,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            type: "submit",
+                                                            className: "w-full rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110",
+                                                            children: cart.length > 0 ? 'Submit Quote Request' : 'Get Free Quote'
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 644,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 526,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 524,
+                                            columnNumber: 17
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "space-y-4",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "rounded-3xl border border-white/10 bg-white/5 p-5",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                            className: "text-sm font-semibold mb-3",
+                                                            children: "Why Choose Solar?"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 655,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "space-y-2",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "flex items-center gap-3",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-xs",
+                                                                            children: "💰"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 658,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            children: [
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                    className: "text-sm font-semibold",
+                                                                                    children: "Save Money"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                    lineNumber: 662,
+                                                                                    columnNumber: 27
+                                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                    className: "text-xs text-slate-400",
+                                                                                    children: "Reduce electricity bills by 80%"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                    lineNumber: 663,
+                                                                                    columnNumber: 27
+                                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                                            ]
+                                                                        }, void 0, true, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 661,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 657,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "flex items-center gap-3",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-xs",
+                                                                            children: "🌱"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 667,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            children: [
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                    className: "text-sm font-semibold",
+                                                                                    children: "Go Green"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                    lineNumber: 671,
+                                                                                    columnNumber: 27
+                                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                    className: "text-xs text-slate-400",
+                                                                                    children: "Reduce carbon footprint"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                    lineNumber: 672,
+                                                                                    columnNumber: 27
+                                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                                            ]
+                                                                        }, void 0, true, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 670,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 666,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "flex items-center gap-3",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-xs",
+                                                                            children: "📈"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 676,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            children: [
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                    className: "text-sm font-semibold",
+                                                                                    children: "Increase Value"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                    lineNumber: 680,
+                                                                                    columnNumber: 27
+                                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                    className: "text-xs text-slate-400",
+                                                                                    children: "Boost property value"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                                    lineNumber: 681,
+                                                                                    columnNumber: 27
+                                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                                            ]
+                                                                        }, void 0, true, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 679,
+                                                                            columnNumber: 25
+                                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 675,
+                                                                    columnNumber: 23
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 656,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 654,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "rounded-3xl border border-white/10 bg-white/5 p-5",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                            className: "text-sm font-semibold mb-3",
+                                                            children: "Quick Estimate"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 688,
+                                                            columnNumber: 21
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        quoteForm.monthlyBill && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "space-y-2",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "flex justify-between text-xs",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            children: "Annual Bill:"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 692,
+                                                                            columnNumber: 27
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            children: [
+                                                                                "₹",
+                                                                                (parseInt(quoteForm.monthlyBill) * 12).toLocaleString()
+                                                                            ]
+                                                                        }, void 0, true, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 693,
+                                                                            columnNumber: 27
+                                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 691,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "flex justify-between text-xs",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            children: "Estimated System Cost:"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 696,
+                                                                            columnNumber: 27
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            children: [
+                                                                                "₹",
+                                                                                (parseInt(quoteForm.monthlyBill) * 12 * 8).toLocaleString()
+                                                                            ]
+                                                                        }, void 0, true, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 697,
+                                                                            columnNumber: 27
+                                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 695,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "flex justify-between text-xs text-green-500",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            children: "Annual Savings:"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 700,
+                                                                            columnNumber: 27
+                                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            children: [
+                                                                                "₹",
+                                                                                (parseInt(quoteForm.monthlyBill) * 12 * 0.8).toLocaleString()
+                                                                            ]
+                                                                        }, void 0, true, {
+                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                            lineNumber: 701,
+                                                                            columnNumber: 27
+                                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 699,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 690,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        !quoteForm.monthlyBill && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                            className: "text-xs text-slate-400",
+                                                            children: "Enter your monthly bill to see estimate"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 706,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 687,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 653,
+                                            columnNumber: 17
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 523,
+                                    columnNumber: 15
+                                }, ("TURBOPACK compile-time value", void 0))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                            lineNumber: 515,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         activeTab === 'cart' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "text-center mb-12",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                            className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                            children: "Shopping Cart"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 554,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            className: `text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                            children: "Review your selected items"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 555,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
+                                    className: "flex items-end justify-between gap-4 mb-6",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                className: "text-2xl font-semibold",
+                                                children: "Shopping Cart"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                lineNumber: 718,
+                                                columnNumber: 19
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "mt-1 text-sm text-slate-400",
+                                                children: "Review your selected items"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                lineNumber: 719,
+                                                columnNumber: 19
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                        lineNumber: 717,
+                                        columnNumber: 17
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                }, void 0, false, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 553,
+                                    lineNumber: 716,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 cart.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "text-center py-16",
+                                    className: "text-center py-8",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-8xl mb-6",
+                                            className: "text-4xl mb-3",
                                             children: "🛒"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 560,
+                                            lineNumber: 725,
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                            className: `text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: "text-lg font-semibold mb-2",
                                             children: "Your cart is empty"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 561,
+                                            lineNumber: 726,
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            className: `text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: "text-sm text-slate-400 mb-4",
                                             children: "Add some solar products to get started!"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 562,
+                                            lineNumber: 727,
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             onClick: ()=>setActiveTab('products'),
-                                            className: "bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105",
+                                            className: "rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110",
                                             children: "Browse Products"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 563,
+                                            lineNumber: 728,
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 559,
+                                    lineNumber: 724,
                                     columnNumber: 17
                                 }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "lg:col-span-2",
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: `rounded-2xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: `p-6 border-b ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                            className: `text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                    className: "grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
+                                    children: cart.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("article", {
+                                            className: "rounded-3xl border border-white/10 bg-white/5 p-5 hover:bg-white/10",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex items-start justify-between gap-4",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             children: [
-                                                                "Cart Items (",
-                                                                cart.length,
-                                                                ")"
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                                    className: "text-base font-semibold",
+                                                                    children: item.name
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 741,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                    className: "mt-1 text-sm text-slate-400",
+                                                                    children: item.category
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 742,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "mt-3 flex items-center gap-2",
+                                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                        className: "text-lg font-semibold text-green-500",
+                                                                        children: [
+                                                                            "₹",
+                                                                            item.price?.toLocaleString()
+                                                                        ]
+                                                                    }, void 0, true, {
+                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                        lineNumber: 744,
+                                                                        columnNumber: 29
+                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 743,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 575,
+                                                            lineNumber: 740,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "grid h-14 w-14 place-items-center rounded-2xl bg-green-500/15 ring-1 ring-green-500/20",
+                                                            children: item.image ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                                src: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$images$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getImageUrl"])(item.image),
+                                                                alt: item.name,
+                                                                className: "w-full h-full object-cover rounded-2xl"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                lineNumber: 749,
+                                                                columnNumber: 29
+                                                            }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: "⚡"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                lineNumber: 751,
+                                                                columnNumber: 29
+                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 747,
                                                             columnNumber: 25
                                                         }, ("TURBOPACK compile-time value", void 0))
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 574,
-                                                        columnNumber: 23
-                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "p-6 space-y-6",
-                                                        children: cart.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: `flex items-center space-x-3 sm:space-x-4 lg:space-x-6 p-3 sm:p-4 lg:p-6 border rounded-xl sm:rounded-2xl transition-all hover:shadow-md ${isDarkMode ? 'border-gray-700 hover:bg-gray-750' : 'border-gray-200 hover:bg-gray-50'}`,
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: `w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-lg sm:rounded-xl flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`,
-                                                                        children: item.image ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                                                            src: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$images$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getImageUrl"])(item.image),
-                                                                            alt: item.name,
-                                                                            className: "w-full h-full object-cover rounded-xl"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 586,
-                                                                            columnNumber: 33
-                                                                        }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            className: "text-2xl",
-                                                                            children: "⚡"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 588,
-                                                                            columnNumber: 33
-                                                                        }, ("TURBOPACK compile-time value", void 0))
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 582,
-                                                                        columnNumber: 29
-                                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex-1",
-                                                                        children: [
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                                                className: `text-sm sm:text-base lg:text-lg font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                                children: item.name
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                lineNumber: 592,
-                                                                                columnNumber: 31
-                                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                className: `text-xs sm:text-sm mb-1 sm:mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                                children: item.category
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                lineNumber: 593,
-                                                                                columnNumber: 31
-                                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                className: "text-base sm:text-lg lg:text-xl font-bold text-teal-600",
-                                                                                children: [
-                                                                                    "₹",
-                                                                                    item.price?.toLocaleString()
-                                                                                ]
-                                                                            }, void 0, true, {
-                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                lineNumber: 594,
-                                                                                columnNumber: 31
-                                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 591,
-                                                                        columnNumber: 29
-                                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex items-center space-x-3",
-                                                                        children: [
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                                onClick: ()=>{
-                                                                                    setCart(cart.map((cartItem)=>cartItem.id === item.id && cartItem.quantity > 1 ? {
-                                                                                            ...cartItem,
-                                                                                            quantity: cartItem.quantity - 1
-                                                                                        } : cartItem));
-                                                                                },
-                                                                                className: `w-10 h-10 rounded-lg flex items-center justify-center font-semibold transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'}`,
-                                                                                children: "-"
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                lineNumber: 597,
-                                                                                columnNumber: 31
-                                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: `w-12 text-center font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                                children: item.quantity
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                lineNumber: 611,
-                                                                                columnNumber: 31
-                                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                                onClick: ()=>{
-                                                                                    setCart(cart.map((cartItem)=>cartItem.id === item.id ? {
-                                                                                            ...cartItem,
-                                                                                            quantity: cartItem.quantity + 1
-                                                                                        } : cartItem));
-                                                                                },
-                                                                                className: `w-10 h-10 rounded-lg flex items-center justify-center font-semibold transition-all ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'}`,
-                                                                                children: "+"
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                lineNumber: 612,
-                                                                                columnNumber: 31
-                                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 596,
-                                                                        columnNumber: 29
-                                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                        onClick: ()=>{
-                                                                            setCart(cart.filter((cartItem)=>cartItem.id !== item.id));
-                                                                        },
-                                                                        className: `p-3 rounded-lg transition-all ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                        children: "🗑️"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 627,
-                                                                        columnNumber: 29
-                                                                    }, ("TURBOPACK compile-time value", void 0))
-                                                                ]
-                                                            }, item.id, true, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 579,
-                                                                columnNumber: 27
-                                                            }, ("TURBOPACK compile-time value", void 0)))
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 577,
-                                                        columnNumber: 23
-                                                    }, ("TURBOPACK compile-time value", void 0))
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 573,
-                                                columnNumber: 21
-                                            }, ("TURBOPACK compile-time value", void 0))
-                                        }, void 0, false, {
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 739,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "mt-4 flex items-center justify-between",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex items-center gap-2",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                    onClick: ()=>{
+                                                                        setCart(cart.map((cartItem)=>cartItem.id === item.id && cartItem.quantity > 1 ? {
+                                                                                ...cartItem,
+                                                                                quantity: cartItem.quantity - 1
+                                                                            } : cartItem));
+                                                                    },
+                                                                    className: "w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-sm font-semibold hover:bg-white/10 transition-all",
+                                                                    children: "-"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 757,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "w-8 text-center text-sm font-semibold",
+                                                                    children: item.quantity
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 769,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                    onClick: ()=>{
+                                                                        setCart(cart.map((cartItem)=>cartItem.id === item.id ? {
+                                                                                ...cartItem,
+                                                                                quantity: cartItem.quantity + 1
+                                                                            } : cartItem));
+                                                                    },
+                                                                    className: "w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-sm font-semibold hover:bg-white/10 transition-all",
+                                                                    children: "+"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 770,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 756,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            onClick: ()=>{
+                                                                setCart(cart.filter((cartItem)=>cartItem.id !== item.id));
+                                                            },
+                                                            className: "rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold hover:bg-white/10",
+                                                            children: "Remove"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 783,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 755,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, item.id, true, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 572,
-                                            columnNumber: 19
-                                        }, ("TURBOPACK compile-time value", void 0)),
+                                            lineNumber: 738,
+                                            columnNumber: 21
+                                        }, ("TURBOPACK compile-time value", void 0)))
+                                }, void 0, false, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 736,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                cart.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "mt-6 rounded-3xl border border-white/10 bg-white/5 p-5",
+                                    children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "lg:col-span-1",
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: `rounded-2xl sticky top-24 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: `p-6 border-b ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                            className: `text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: "flex items-center justify-between",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "text-sm font-semibold",
                                                             children: "Order Summary"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 644,
-                                                            columnNumber: 25
+                                                            lineNumber: 801,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "mt-1 text-xs text-slate-400",
+                                                            children: [
+                                                                cart.length,
+                                                                " items • Tax included"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 802,
+                                                            columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0))
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 643,
-                                                        columnNumber: 23
-                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "p-6 space-y-4",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: `flex justify-between text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        children: "Subtotal:"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 648,
-                                                                        columnNumber: 27
-                                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        children: [
-                                                                            "₹",
-                                                                            cart.reduce((total, item)=>total + (item.price || 0) * item.quantity, 0).toLocaleString()
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 649,
-                                                                        columnNumber: 27
-                                                                    }, ("TURBOPACK compile-time value", void 0))
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 647,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: `flex justify-between text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        children: "Tax (18%):"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 652,
-                                                                        columnNumber: 27
-                                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        children: [
-                                                                            "₹",
-                                                                            Math.round(cart.reduce((total, item)=>total + (item.price || 0) * item.quantity, 0) * 0.18).toLocaleString()
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 653,
-                                                                        columnNumber: 27
-                                                                    }, ("TURBOPACK compile-time value", void 0))
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 651,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: `border-t pt-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: `flex justify-between text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            children: "Total:"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 657,
-                                                                            columnNumber: 29
-                                                                        }, ("TURBOPACK compile-time value", void 0)),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            children: [
-                                                                                "₹",
-                                                                                Math.round(cart.reduce((total, item)=>total + (item.price || 0) * item.quantity, 0) * 1.18).toLocaleString()
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 658,
-                                                                            columnNumber: 29
-                                                                        }, ("TURBOPACK compile-time value", void 0))
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 656,
-                                                                    columnNumber: 27
-                                                                }, ("TURBOPACK compile-time value", void 0))
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 655,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>{
-                                                                    if (!currentUser) {
-                                                                        setLoginAction('checkout');
-                                                                        setShowLoginPrompt(true);
-                                                                        return;
-                                                                    }
-                                                                    cart.forEach((item)=>{
-                                                                        const newOrder = {
-                                                                            type: 'product',
-                                                                            itemId: item.id,
-                                                                            quantity: item.quantity,
-                                                                            description: '',
-                                                                            preferredDate: new Date().toISOString().split('T')[0],
-                                                                            customerId: currentUser.id,
-                                                                            customerName: currentUser.name,
-                                                                            itemName: item.name,
-                                                                            itemPrice: item.price,
-                                                                            totalPrice: item.price * item.quantity,
-                                                                            status: 'pending',
-                                                                            createdAt: new Date().toISOString().split('T')[0]
-                                                                        };
-                                                                        addItem('orders', newOrder);
-                                                                    });
-                                                                    setCart([]);
-                                                                    alert('Order placed successfully!');
-                                                                    setActiveTab('my-orders');
-                                                                },
-                                                                className: "w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105",
-                                                                children: "💳 Proceed to Checkout"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 661,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 646,
-                                                        columnNumber: 23
-                                                    }, ("TURBOPACK compile-time value", void 0))
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 642,
-                                                columnNumber: 21
-                                            }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 800,
+                                                    columnNumber: 21
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "text-right",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "text-lg font-semibold text-green-500",
+                                                            children: [
+                                                                "₹",
+                                                                Math.round(cart.reduce((total, item)=>total + (item.price || 0) * item.quantity, 0) * 1.18).toLocaleString()
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 805,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "text-xs text-slate-400",
+                                                            children: "Total with 18% tax"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 806,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 804,
+                                                    columnNumber: 21
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 799,
+                                            columnNumber: 19
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                            onClick: ()=>{
+                                                // Autofill quote form with user data if logged in
+                                                if (currentUser) {
+                                                    setQuoteForm({
+                                                        ...quoteForm,
+                                                        name: currentUser.name || '',
+                                                        email: currentUser.email || '',
+                                                        phone: currentUser.phone || '',
+                                                        address: currentUser.address || ''
+                                                    });
+                                                }
+                                                setActiveTab('get-quote');
+                                            },
+                                            className: "mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-green-500 px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110",
+                                            children: "💰 Generate Quote"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 641,
+                                            lineNumber: 809,
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 571,
+                                    lineNumber: 798,
                                     columnNumber: 17
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                            lineNumber: 552,
+                            lineNumber: 715,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         activeTab === 'raise-ticket' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "max-w-2xl mx-auto",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "text-center mb-12",
+                                    className: "mb-6",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                            className: `text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: "text-2xl font-semibold",
                                             children: "Support Center"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 704,
+                                            lineNumber: 835,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            className: `text-xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                            className: "mt-1 text-sm text-slate-400",
                                             children: "Get help with your solar solutions"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 705,
+                                            lineNumber: 836,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 703,
+                                    lineNumber: 834,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: `p-8 rounded-2xl ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                    className: "rounded-3xl border border-white/10 bg-white/5 p-6",
                                     children: !currentUser ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "text-center py-12",
+                                        className: "text-center py-8",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "text-6xl mb-6",
+                                                className: "text-4xl mb-4",
                                                 children: "🔒"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 711,
+                                                lineNumber: 842,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                className: `text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                className: "text-lg font-semibold mb-2",
                                                 children: "Login Required"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 712,
+                                                lineNumber: 843,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: `text-lg mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                className: "text-sm mb-6 text-slate-400",
                                                 children: "Please login to raise a support ticket"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 713,
+                                                lineNumber: 844,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9511,40 +10253,40 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                     setLoginAction('ticket');
                                                     setShowLoginPrompt(true);
                                                 },
-                                                className: "bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105",
+                                                className: "rounded-2xl bg-green-500 px-6 py-2.5 text-sm font-semibold text-black hover:brightness-110",
                                                 children: "Login to Continue"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 714,
+                                                lineNumber: 845,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 710,
+                                        lineNumber: 841,
                                         columnNumber: 19
                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                className: `text-2xl font-semibold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                className: "text-lg font-semibold mb-4",
                                                 children: "Create Support Ticket"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 726,
+                                                lineNumber: 857,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
                                                 onSubmit: handleRaiseTicket,
-                                                className: "space-y-6",
+                                                className: "space-y-4",
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                className: "block text-sm font-medium mb-2",
                                                                 children: "Category"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 729,
+                                                                lineNumber: 860,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -9554,14 +10296,14 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                         type: e.target.value,
                                                                         itemId: ''
                                                                     }),
-                                                                className: `w-full p-4 rounded-xl border transition-all ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'}`,
+                                                                className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20",
                                                                 children: [
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                         value: "product",
                                                                         children: "Solar Product"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 737,
+                                                                        lineNumber: 866,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -9569,29 +10311,29 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                         children: "Solar Service"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 738,
+                                                                        lineNumber: 867,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 730,
+                                                                lineNumber: 861,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 728,
+                                                        lineNumber: 859,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                className: "block text-sm font-medium mb-2",
                                                                 children: "Select Item"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 743,
+                                                                lineNumber: 872,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -9600,7 +10342,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                         ...ticketForm,
                                                                         itemId: e.target.value
                                                                     }),
-                                                                className: `w-full p-4 rounded-xl border transition-all ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'}`,
+                                                                className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20",
                                                                 required: true,
                                                                 children: [
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -9611,7 +10353,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                        lineNumber: 752,
+                                                                        lineNumber: 879,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     (ticketForm.type === 'product' ? data.products : data.services)?.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -9619,29 +10361,29 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             children: item.name
                                                                         }, item.id, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 754,
+                                                                            lineNumber: 881,
                                                                             columnNumber: 29
                                                                         }, ("TURBOPACK compile-time value", void 0)))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 744,
+                                                                lineNumber: 873,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 742,
+                                                        lineNumber: 871,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                                className: "block text-sm font-medium mb-2",
                                                                 children: "Issue Description"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 760,
+                                                                lineNumber: 887,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -9651,80 +10393,359 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                         ...ticketForm,
                                                                         issue: e.target.value
                                                                     }),
-                                                                className: `w-full p-4 rounded-xl border transition-all ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'}`,
+                                                                className: "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-green-500/60 focus:ring-2 focus:ring-green-500/20",
                                                                 rows: 4,
                                                                 required: true
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 761,
+                                                                lineNumber: 888,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 759,
-                                                        columnNumber: 23
-                                                    }, ("TURBOPACK compile-time value", void 0)),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                                                children: "Additional Notes (Optional)"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 774,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0)),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
-                                                                placeholder: "Any additional information...",
-                                                                value: ticketForm.notes,
-                                                                onChange: (e)=>setTicketForm({
-                                                                        ...ticketForm,
-                                                                        notes: e.target.value
-                                                                    }),
-                                                                className: `w-full p-4 rounded-xl border transition-all ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'}`,
-                                                                rows: 3
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                lineNumber: 775,
-                                                                columnNumber: 25
-                                                            }, ("TURBOPACK compile-time value", void 0))
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 773,
+                                                        lineNumber: 886,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                         type: "submit",
-                                                        className: "w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105",
+                                                        className: "w-full rounded-2xl bg-green-500 px-5 py-3 text-sm font-semibold text-black hover:brightness-110",
                                                         children: "Submit Support Ticket"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 786,
+                                                        lineNumber: 898,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 727,
+                                                lineNumber: 858,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 725,
+                                        lineNumber: 856,
                                         columnNumber: 19
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 708,
+                                    lineNumber: 839,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                            lineNumber: 702,
+                            lineNumber: 833,
+                            columnNumber: 13
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        activeTab === 'my-quotes' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-end justify-between gap-4 mb-6",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                className: "text-2xl font-semibold",
+                                                children: "My Quotes"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                lineNumber: 915,
+                                                columnNumber: 19
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "mt-1 text-sm text-slate-400",
+                                                children: "Track your quote requests"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                lineNumber: 916,
+                                                columnNumber: 19
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                        lineNumber: 914,
+                                        columnNumber: 17
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                }, void 0, false, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 913,
+                                    columnNumber: 15
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                !currentUser ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "text-center py-12",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "text-6xl mb-6",
+                                            children: "🔒"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 922,
+                                            columnNumber: 19
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                            className: "text-2xl font-semibold mb-4",
+                                            children: "Login Required"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 923,
+                                            columnNumber: 19
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            className: "text-lg mb-8",
+                                            children: "Please login to view your quotes"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 924,
+                                            columnNumber: 19
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                            onClick: ()=>{
+                                                setLoginAction('login');
+                                                setShowLoginPrompt(true);
+                                            },
+                                            className: "rounded-2xl bg-green-500 px-6 py-3 text-sm font-semibold text-black hover:brightness-110",
+                                            children: "Login to Continue"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 925,
+                                            columnNumber: 19
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 921,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0)) : myQuotes.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "text-center py-12",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "text-6xl mb-6",
+                                            children: "💰"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 937,
+                                            columnNumber: 19
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                            className: "text-2xl font-semibold mb-4",
+                                            children: "No Quotes Yet"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 938,
+                                            columnNumber: 19
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            className: "text-lg mb-8",
+                                            children: "Add items to cart to generate quotes"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 939,
+                                            columnNumber: 19
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                            onClick: ()=>setActiveTab('products'),
+                                            className: "rounded-2xl bg-green-500 px-6 py-3 text-sm font-semibold text-black hover:brightness-110",
+                                            children: "Browse Products"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 940,
+                                            columnNumber: 19
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 936,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid gap-4 sm:grid-cols-1 lg:grid-cols-2",
+                                    children: myQuotes.map((quote)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "rounded-3xl border border-white/10 bg-white/5 p-5",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex justify-between items-start mb-4",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                                    className: "text-base font-semibold",
+                                                                    children: [
+                                                                        "Quote #",
+                                                                        quote.id
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 953,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                    className: "text-xs text-slate-400 mt-1",
+                                                                    children: quote.createdAt
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 954,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 952,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: `px-3 py-1 rounded-full text-xs font-medium ${quote.status === 'approved' ? 'bg-green-500/20 text-green-500' : quote.status === 'rejected' ? 'bg-red-500/20 text-red-500' : 'bg-yellow-500/20 text-yellow-500'}`,
+                                                            children: quote.status.charAt(0).toUpperCase() + quote.status.slice(1)
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 956,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 951,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "space-y-2 mb-4",
+                                                    children: quote.items?.map((item, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex justify-between text-sm",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: [
+                                                                        item.name,
+                                                                        " x",
+                                                                        item.quantity
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 968,
+                                                                    columnNumber: 29
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: [
+                                                                        "₹",
+                                                                        item.total?.toLocaleString()
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 969,
+                                                                    columnNumber: 29
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, index, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 967,
+                                                            columnNumber: 27
+                                                        }, ("TURBOPACK compile-time value", void 0)))
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 965,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "border-t border-white/10 pt-3 space-y-1",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex justify-between text-sm",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: "Subtotal:"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 976,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: [
+                                                                        "₹",
+                                                                        quote.subtotal?.toLocaleString()
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 977,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 975,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex justify-between text-sm",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: "Tax (18%):"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 980,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: [
+                                                                        "₹",
+                                                                        quote.tax?.toLocaleString()
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 981,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 979,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex justify-between text-base font-semibold",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    children: "Total:"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 984,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "text-green-500",
+                                                                    children: [
+                                                                        "₹",
+                                                                        quote.totalAmount?.toLocaleString()
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                                    lineNumber: 985,
+                                                                    columnNumber: 27
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                            lineNumber: 983,
+                                                            columnNumber: 25
+                                                        }, ("TURBOPACK compile-time value", void 0))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                                    lineNumber: 974,
+                                                    columnNumber: 23
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, quote.id, true, {
+                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                            lineNumber: 950,
+                                            columnNumber: 21
+                                        }, ("TURBOPACK compile-time value", void 0)))
+                                }, void 0, false, {
+                                    fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                                    lineNumber: 948,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
+                            lineNumber: 912,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         activeTab === 'my-orders' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9737,7 +10758,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             children: "My Orders"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 802,
+                                            lineNumber: 998,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9745,13 +10766,13 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             children: "Track your solar product orders"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 803,
+                                            lineNumber: 999,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 801,
+                                    lineNumber: 997,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9764,12 +10785,12 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                 children: "Order History"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 808,
+                                                lineNumber: 1004,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0))
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 807,
+                                            lineNumber: 1003,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9782,7 +10803,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "🔒"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 813,
+                                                        lineNumber: 1009,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -9790,7 +10811,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "Login Required"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 814,
+                                                        lineNumber: 1010,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9798,7 +10819,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "Please login to view your orders"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 815,
+                                                        lineNumber: 1011,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9810,13 +10831,13 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "Login to Continue"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 816,
+                                                        lineNumber: 1012,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 812,
+                                                lineNumber: 1008,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)) : myOrders.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "text-center py-12",
@@ -9826,7 +10847,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "📦"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 828,
+                                                        lineNumber: 1024,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -9834,7 +10855,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "No Orders Yet"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 829,
+                                                        lineNumber: 1025,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9842,7 +10863,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "Start shopping for solar products"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 830,
+                                                        lineNumber: 1026,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9851,13 +10872,13 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "Browse Products"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 831,
+                                                        lineNumber: 1027,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 827,
+                                                lineNumber: 1023,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "space-y-6",
@@ -9874,7 +10895,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             children: order.itemName
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 846,
+                                                                            lineNumber: 1042,
                                                                             columnNumber: 31
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9885,7 +10906,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                     children: order.type
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 848,
+                                                                                    lineNumber: 1044,
                                                                                     columnNumber: 33
                                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                                 order.type === 'product' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9896,13 +10917,13 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 852,
+                                                                                    lineNumber: 1048,
                                                                                     columnNumber: 35
                                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 847,
+                                                                            lineNumber: 1043,
                                                                             columnNumber: 31
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9913,7 +10934,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 855,
+                                                                            lineNumber: 1051,
                                                                             columnNumber: 31
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         order.description && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9921,7 +10942,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             children: order.description
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 856,
+                                                                            lineNumber: 1052,
                                                                             columnNumber: 53
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9934,7 +10955,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 858,
+                                                                                    lineNumber: 1054,
                                                                                     columnNumber: 33
                                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9944,19 +10965,19 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 859,
+                                                                                    lineNumber: 1055,
                                                                                     columnNumber: 33
                                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 857,
+                                                                            lineNumber: 1053,
                                                                             columnNumber: 31
                                                                         }, ("TURBOPACK compile-time value", void 0))
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 845,
+                                                                    lineNumber: 1041,
                                                                     columnNumber: 29
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9964,40 +10985,40 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                     children: order.status.charAt(0).toUpperCase() + order.status.slice(1)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 862,
+                                                                    lineNumber: 1058,
                                                                     columnNumber: 29
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 844,
+                                                            lineNumber: 1040,
                                                             columnNumber: 27
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, order.id, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 841,
+                                                        lineNumber: 1037,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0)))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 839,
+                                                lineNumber: 1035,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 810,
+                                            lineNumber: 1006,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 806,
+                                    lineNumber: 1002,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                            lineNumber: 800,
+                            lineNumber: 996,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         activeTab === 'my-tickets' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10010,7 +11031,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             children: "Support Tickets"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 882,
+                                            lineNumber: 1078,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10018,13 +11039,13 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             children: "Track your support requests"
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 883,
+                                            lineNumber: 1079,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 881,
+                                    lineNumber: 1077,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10037,12 +11058,12 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                 children: "Ticket History"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 888,
+                                                lineNumber: 1084,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0))
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 887,
+                                            lineNumber: 1083,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10055,7 +11076,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "🔒"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 893,
+                                                        lineNumber: 1089,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -10063,7 +11084,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "Login Required"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 894,
+                                                        lineNumber: 1090,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10071,7 +11092,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "Please login to view your support tickets"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 895,
+                                                        lineNumber: 1091,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10083,13 +11104,13 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "Login to Continue"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 896,
+                                                        lineNumber: 1092,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 892,
+                                                lineNumber: 1088,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)) : myTickets.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "text-center py-12",
@@ -10099,7 +11120,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "🎟️"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 908,
+                                                        lineNumber: 1104,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -10107,7 +11128,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "No Support Tickets"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 909,
+                                                        lineNumber: 1105,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10115,7 +11136,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "Need help? Create a support ticket"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 910,
+                                                        lineNumber: 1106,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10124,13 +11145,13 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                         children: "Create Ticket"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 911,
+                                                        lineNumber: 1107,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 907,
+                                                lineNumber: 1103,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "space-y-6",
@@ -10155,7 +11176,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 930,
+                                                                                    lineNumber: 1126,
                                                                                     columnNumber: 35
                                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10163,13 +11184,13 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                     children: ticket.type
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 931,
+                                                                                    lineNumber: 1127,
                                                                                     columnNumber: 35
                                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 929,
+                                                                            lineNumber: 1125,
                                                                             columnNumber: 33
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10180,7 +11201,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 935,
+                                                                            lineNumber: 1131,
                                                                             columnNumber: 33
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10188,7 +11209,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             children: ticket.issue
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 938,
+                                                                            lineNumber: 1134,
                                                                             columnNumber: 33
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         ticket.notes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10199,7 +11220,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                                     children: "Notes:"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                                    lineNumber: 941,
+                                                                                    lineNumber: 1137,
                                                                                     columnNumber: 37
                                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                                 " ",
@@ -10207,7 +11228,7 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 940,
+                                                                            lineNumber: 1136,
                                                                             columnNumber: 35
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10218,13 +11239,13 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                            lineNumber: 944,
+                                                                            lineNumber: 1140,
                                                                             columnNumber: 33
                                                                         }, ("TURBOPACK compile-time value", void 0))
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 928,
+                                                                    lineNumber: 1124,
                                                                     columnNumber: 31
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10232,62 +11253,54 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                                     children: ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                                    lineNumber: 948,
+                                                                    lineNumber: 1144,
                                                                     columnNumber: 31
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                            lineNumber: 927,
+                                                            lineNumber: 1123,
                                                             columnNumber: 29
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, ticket.id, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 924,
+                                                        lineNumber: 1120,
                                                         columnNumber: 27
                                                     }, ("TURBOPACK compile-time value", void 0));
                                                 })
                                             }, void 0, false, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 919,
+                                                lineNumber: 1115,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         }, void 0, false, {
                                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 890,
+                                            lineNumber: 1086,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                    lineNumber: 886,
+                                    lineNumber: 1082,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                            lineNumber: 880,
+                            lineNumber: 1076,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         showLoginPrompt && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4",
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: `rounded-2xl p-4 sm:p-6 lg:p-8 max-w-md w-full ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`,
+                                className: "bg-gray-800 rounded-lg p-6 max-w-md w-full",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                        className: `text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                        className: "text-xl font-bold text-white mb-4",
                                         children: "Customer Login"
                                     }, void 0, false, {
                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 971,
-                                        columnNumber: 17
-                                    }, ("TURBOPACK compile-time value", void 0)),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: `mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
-                                        children: loginAction === 'checkout' ? 'Please login to complete your purchase.' : loginAction === 'ticket' ? 'Please login to raise a support ticket.' : 'Please login to access your account.'
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 974,
+                                        lineNumber: 1167,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -10313,55 +11326,55 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                        className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                        className: "block text-sm font-medium text-gray-300 mb-2",
                                                         children: "Email"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 994,
+                                                        lineNumber: 1183,
                                                         columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                         name: "email",
                                                         type: "email",
                                                         required: true,
-                                                        className: `w-full p-3 rounded-lg border ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                        className: "w-full bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-green-500 focus:outline-none",
                                                         placeholder: "Enter your email"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 995,
+                                                        lineNumber: 1184,
                                                         columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 993,
+                                                lineNumber: 1182,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                        className: `block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                        className: "block text-sm font-medium text-gray-300 mb-2",
                                                         children: "Password"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 1004,
+                                                        lineNumber: 1193,
                                                         columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                         name: "password",
                                                         type: "password",
                                                         required: true,
-                                                        className: `w-full p-3 rounded-lg border ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                        className: "w-full bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-green-500 focus:outline-none",
                                                         placeholder: "Enter your password"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 1005,
+                                                        lineNumber: 1194,
                                                         columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 1003,
+                                                lineNumber: 1192,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10369,87 +11382,65 @@ const CustomerPortal = ({ onStaffLogin })=>{
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                         type: "button",
-                                                        onClick: ()=>{
-                                                            setShowLoginPrompt(false);
-                                                            setActiveTab('home');
-                                                        },
-                                                        className: `flex-1 py-3 px-4 rounded-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`,
+                                                        onClick: ()=>setShowLoginPrompt(false),
+                                                        className: "flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors",
                                                         children: "Cancel"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 1014,
+                                                        lineNumber: 1203,
                                                         columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                         type: "submit",
-                                                        className: "flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 px-4 rounded-lg font-semibold",
+                                                        className: "flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg transition-colors",
                                                         children: "Login"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                        lineNumber: 1024,
+                                                        lineNumber: 1210,
                                                         columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                                lineNumber: 1013,
+                                                lineNumber: 1202,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 979,
-                                        columnNumber: 17
-                                    }, ("TURBOPACK compile-time value", void 0)),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "mt-4 text-center",
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>{
-                                                setShowLoginPrompt(false);
-                                                onStaffLogin();
-                                            },
-                                            className: "text-teal-600 hover:text-teal-700 text-sm font-medium",
-                                            children: "Staff Login"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                            lineNumber: 1033,
-                                            columnNumber: 19
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                        lineNumber: 1032,
+                                        lineNumber: 1168,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                                lineNumber: 970,
+                                lineNumber: 1166,
                                 columnNumber: 15
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                            lineNumber: 969,
+                            lineNumber: 1165,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                    lineNumber: 248,
+                    lineNumber: 192,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-                lineNumber: 246,
+                lineNumber: 190,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/widgets/bottom-sheet/index.tsx",
-        lineNumber: 86,
+        lineNumber: 98,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(CustomerPortal, "wjuVxWeotQjw0KijhgiAbIXJ/DI=", false, function() {
+_s(CustomerPortal, "Xwnk74qakU/3NGtWG9dL+WGpVyU=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useApp"]
     ];

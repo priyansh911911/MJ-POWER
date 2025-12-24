@@ -43,12 +43,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   const loadFromDatabase = async () => {
     try {
-      const [customers, products, services, tickets, orders] = await Promise.all([
+      const [customers, products, services, tickets, quotes] = await Promise.all([
         fql.customers.findMany({}),
         fql.products.findMany({}),
         fql.services.findMany({}),
         fql.tickets.findMany({}),
-        fql.orders.findMany({})
+        fql.quotes.findMany({})
       ]);
 
       console.log('Setting data from FQL:', {
@@ -56,7 +56,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         products: products?.result || [],
         services: services?.result || [],
         tickets: tickets?.result || [],
-        orders: orders?.result || []
+        quotes: quotes?.result || []
       });
       
       setData({
@@ -65,7 +65,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         products: products?.result || [],
         services: services?.result || [],
         tickets: tickets?.result || [],
-        orders: orders?.result || []
+        quotes: quotes?.result || [],
+        orders: [] // Use empty array until table is created
       });
     } catch (error) {
       console.error('Failed to load from database:', error);

@@ -54,6 +54,7 @@ const Dashboard = () => {
       case 'customers': return <Customers />;
       case 'products': return <Products />;
       case 'services': return <Services />;
+      case 'quotes': return <Orders />;
       case 'orders': return <Orders />;
       case 'tickets': return <Tickets />;
       case 'reports': return <Reports />;
@@ -101,10 +102,10 @@ const Dashboard = () => {
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-gray-600 text-sm font-medium">Orders</h3>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{(data.orders || []).length}</p>
+                  <h3 className="text-gray-600 text-sm font-medium">Quotes</h3>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{(data.quotes || []).length}</p>
                 </div>
-                <span className="text-3xl text-orange-500">📦</span>
+                <span className="text-3xl text-orange-500">📋</span>
               </div>
             </div>
           </div>

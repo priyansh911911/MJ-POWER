@@ -68,3 +68,30 @@ export interface Users extends BaseRecord {
   role: string;
   name: string;
 }
+
+export interface Quotes extends BaseRecord {
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  propertyType: string;
+  roofArea: string;
+  monthlyBill: string;
+  requirements: string;
+  customerId?: number;
+  customerName: string;
+  status: string;
+  estimatedCost: number;
+  estimatedSavings: number;
+  type: string;
+  items?: Array<{
+    id: number;
+    name: string;
+    price: number;
+    quantity: number;
+    total: number;
+  }>;
+  subtotal?: number;
+  tax?: number;
+  totalAmount?: number;
+}

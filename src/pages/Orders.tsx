@@ -7,7 +7,7 @@ const Orders = () => {
 
   const canManageOrders = ['admin', 'manager'].includes(currentUser?.role);
 
-  const filteredOrders = data.orders?.filter((order: any) => 
+  const filteredOrders = data.quotes?.filter((order: any) => 
     statusFilter === 'all' || order.status === statusFilter
   ) || [];
 
@@ -29,14 +29,14 @@ const Orders = () => {
     <div className="p-2">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center">
-          <span className="mr-2">📦</span> Customer Orders
+          <span className="mr-2">📋</span> Customer Quotes
         </h2>
         <select
           value={statusFilter}
           onChange={(e: any) => setStatusFilter(e.target.value)}
           className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
         >
-          <option value="all">All Orders</option>
+          <option value="all">All Quotes</option>
           <option value="pending">Pending</option>
           <option value="in-progress">In Progress</option>
           <option value="completed">Completed</option>
@@ -49,13 +49,15 @@ const Orders = () => {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="p-3 text-left text-gray-900 font-semibold">Order ID</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Quote ID</th>
               <th className="p-3 text-left text-gray-900 font-semibold">Customer</th>
-              <th className="p-3 text-left text-gray-900 font-semibold">Item</th>
-              <th className="p-3 text-left text-gray-900 font-semibold">Type</th>
-              <th className="p-3 text-left text-gray-900 font-semibold">Quantity</th>
-              <th className="p-3 text-left text-gray-900 font-semibold">Total Price</th>
-              <th className="p-3 text-left text-gray-900 font-semibold">Status</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Email</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Phone</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Address</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Items</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Subtotal</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Tax</th>
+              <th className="p-3 text-left text-gray-900 font-semibold">Total</th>
               <th className="p-3 text-left text-gray-900 font-semibold">Date</th>
               {canManageOrders && <th className="p-3 text-left text-gray-900 font-semibold">Actions</th>}
             </tr>
@@ -65,11 +67,23 @@ const Orders = () => {
               filteredOrders.map((order: any) => (
                 <tr key={order.id} className="border-t border-gray-200 hover:bg-gray-50 transition-all">
                   <td className="p-3 text-gray-900 font-medium">#{order.id}</td>
-                  <td className="p-3 text-gray-700">{order.customerName}</td>
-                  <td className="p-3 text-gray-700">{order.itemName}</td>
-                  <td className="p-3 text-gray-700 capitalize">{order.type}</td>
-                  <td className="p-3 text-gray-700">{order.quantity || 1}</td>
-                  <td className="p-3 text-green-600 font-semibold">₹{order.totalPrice || order.itemPrice}</td>
+                  <td className="p-3 text-gray-700">{order.name}</td>
+                  <td className="p-3 text-gray-700">{order.email}</td>
+                  <td className="p-3 text-gray-700">{order.phone}</td>
+                  <td className="p-3 text-gray-700 max-w-xs truncate" title={order.address}>{order.address}</td>
+                  <td className="p-3 text-gray-700">
+                    <div className="max-w-xs">
+                      {order.items?.map((item: any, idx: number) => (
+                        <div key={idx} className="text-sm">
+                          {item.name} - ₹{item.price} x {item.quantity}
+                        </div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="p-3 text-gray-700">₹{order.subtotal}</td>
+                  <td className="p-3 text-gray-700">₹{order.tax}</td>
+                  <td className="p-3 text-green-600 font-semibold">₹{order.totalAmount}</td>
+                  <td className="p-3 text-gray-700">{new Date(order.created_at || Date.now()).toLocaleDateString()}</td>
                   <td className="p-3">
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
                       {order.status}
@@ -89,7 +103,7 @@ const Orders = () => {
                         <option value="cancelled">Cancelled</option>
                       </select>
                       <button
-                        onClick={() => deleteItem('orders', order.id)}
+                        onClick={() => deleteItem('quotes', order.id)}
                         className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-sm transition-all"
                       >
                         Delete
@@ -100,8 +114,8 @@ const Orders = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={canManageOrders ? 9 : 8} className="p-6 text-center text-gray-500">
-                  No orders found for the selected filter.
+                <td colSpan={canManageOrders ? 11 : 10} className="p-6 text-center text-gray-500">
+                  No quotes found for the selected filter.
                 </td>
               </tr>
             )}
@@ -160,7 +174,7 @@ const Orders = () => {
                       <option value="cancelled">Cancelled</option>
                     </select>
                     <button
-                      onClick={() => deleteItem('orders', order.id)}
+                      onClick={() => deleteItem('quotes', order.id)}
                       className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm transition-all"
                     >
                       Delete
@@ -172,7 +186,7 @@ const Orders = () => {
           ))
         ) : (
           <div className="bg-white border border-gray-200 p-6 rounded-xl text-center text-gray-500">
-            No orders found for the selected filter.
+            No quotes found for the selected filter.
           </div>
         )}
       </div>

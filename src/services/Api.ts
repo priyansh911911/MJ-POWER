@@ -2,7 +2,7 @@ import tokens from "./tokens.json";
 import { fqConfig } from './config';
 
 const FQ_APP_NAME = fqConfig.prod.appName;
-// const FQ_DEV_SERVER_URL = fqConfig.dev.serverUrl;
+const FQ_DEV_SERVER_URL = fqConfig.dev.serverUrl;
 const FQ_PROD_SERVER_URL = fqConfig.prod.serverUrl;
 const FQ_FULL_TOKEN_PATH = fqConfig.tokenPath;
 
@@ -78,26 +78,10 @@ function getKey(method: HttpMethod, url: string, options: RequestOptions) {
   for (let key in request) {
     tokenStr += key + ":" + request[key];
   }
-  const finalKey = method + ":" + _url + ">" + uniqueKey(tokenStr);
-  
-  console.log('🔑 TOKEN GENERATION DEBUG:');
-  console.log('Method:', method);
-  console.log('Original URL:', url);
-  console.log('Cleaned URL:', _url);
-  console.log('Token String:', tokenStr);
-  console.log('Generated Key:', finalKey);
-  console.log('Unique Hash:', uniqueKey(tokenStr));
-  
-  return finalKey;
+  return method + ":" + _url + ">" + uniqueKey(tokenStr);
 }
 
 const makeRequest = async (method: HttpMethod, endpoint: string, options: RequestOptions = {}): Promise<unknown> => {
-  // Debug: Log all API calls to detect duplicate requests
-  console.log(`🔍 API CALL: ${method.toUpperCase()} ${endpoint}`);
-  if (endpoint.includes('products')) {
-    console.log('⚠️ PRODUCTS API CALL DETECTED');
-    console.trace('Call stack for products API');
-  }
   const {
     body,
     page,
@@ -128,19 +112,11 @@ const makeRequest = async (method: HttpMethod, endpoint: string, options: Reques
   const key = getKey(method, endpoint, options);
   const token = (tokens as Tokens)[key] || false;
 
-  console.log('🔐 TOKEN LOOKUP DEBUG:');
-  console.log('Looking for key:', key);
-  console.log('Available tokens:', Object.keys(tokens));
-  console.log('Token found:', !!token);
-  console.log('Token value:', token);
-
   if (token) {
     headers["token"] = token;
-    console.log('✅ Using existing token');
   } else {
     headers["token-key"] = key;
     headers["token-path"] = FQ_FULL_TOKEN_PATH;
-    console.log('⚠️ No token found, sending token-key for generation');
   }
 
   const params: { [key: string]: string | number | boolean | object | undefined } = {
@@ -170,23 +146,24 @@ const makeRequest = async (method: HttpMethod, endpoint: string, options: Reques
       url += `?${query.toString()}`;
     }
 
-    const final_url = FQ_PROD_SERVER_URL + url
+    const final_url = token ? FQ_PROD_SERVER_URL + url : FQ_DEV_SERVER_URL + url
 
-    console.log('=== API Request Details ===');
-    console.log('URL:', final_url);
-    console.log('Method:', requestConfig.method);
-    console.log('Headers:', requestConfig.headers);
-    console.log('Body (parsed):', requestConfig.body ? JSON.parse(requestConfig.body as string) : {});
-    console.log('========================');
+    console.log(final_url, requestConfig)
 
     const response = await fetch(final_url, requestConfig);
 
     if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     return await response.json();
   } catch (error: any) {
     console.error(`${method.toUpperCase()} Error:`, error.message);
+    
+    // Handle network errors specifically
+    if (error.message === 'Failed to fetch') {
+      throw new Error('Network error: Unable to connect to server. Please check your internet connection or try again later.');
+    }
+    
     throw error;
   } finally {
     if (loading) {

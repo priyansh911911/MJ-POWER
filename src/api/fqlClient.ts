@@ -1,7 +1,7 @@
 import Api from "../services/Api";
 import { getCached, setCached, makeKey} from "../lib/simpleCache";
 import { getClientSessionToken, getCurrentUser } from "./authEvents";
-import type { BaseRecord, Customers, Orders, Products, Services, Tickets, Users } from "./fqlSchema";
+import type { BaseRecord, Customers, Orders, Products, Services, Tickets, Users, Quotes } from "./fqlSchema";
 
 const DEFAULT_TTL_MS = 5 * 60 * 1000;
 
@@ -351,4 +351,5 @@ export const fql = {
   products: createFQL<Products>("products"),
   services: createFQL<Services>("services"),
   customers: createFQL<Customers>("customers"),
+  quotes: createFQL<Quotes>("quotes"),
 };

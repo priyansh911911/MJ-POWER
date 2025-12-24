@@ -157,6 +157,7 @@ class FQLClient {
   services = new FQLCollection('services');
   orders = new FQLCollection('orders');
   tickets = new FQLCollection('tickets');
+  quotes = new FQLCollection('quotes');
 
   async sql<T>(query: string, params: any[] = [], options: CreateOptions = {}): Promise<FQLResponse<T[]>> {
     try {
